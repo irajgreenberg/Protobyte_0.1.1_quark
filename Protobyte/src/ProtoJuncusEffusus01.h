@@ -48,7 +48,7 @@ namespace ijg {
 		GroundPlane ground;
         
 		ProtoLight globalAmbient;
-		ProtoShader shader, shadowMapShader;
+		ProtoShader shader;
 
 		// for shadowmap
 		GLuint depthTexture;
@@ -66,6 +66,7 @@ namespace ijg {
 
 		bool initShadowMap();
 		void setShadowMapTransform();
+		void initUniforms();
         
     private:
         

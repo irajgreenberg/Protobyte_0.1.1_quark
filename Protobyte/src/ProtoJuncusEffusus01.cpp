@@ -30,13 +30,7 @@ using namespace ijg;
 void ProtoJuncusEffusus01::init() {
 
 	setBackground(0);
-
 	globalAmbient = ProtoLight(Col4f(.2f, .15f, .22f, 1)); // slight violet color
-
-
-
-
-	//lightsOn();
 
 	// light0
 	light0.setPosition(Vec3f(0, 0, 1));
@@ -84,8 +78,6 @@ void ProtoJuncusEffusus01::init() {
 			int tubuleInterpDetail = 2;//6;
 			int tubuleDetail = 12;//18;
 
-
-
 			std::vector<Vec3f> cps;
 
 			Vec3 pos = Vec3f(0, tubuleLen / 2, 0);
@@ -115,9 +107,6 @@ void ProtoJuncusEffusus01::init() {
 			tubules.at(ind).setTextureScale(1.0);
 			tubules.at(ind).setShininess(104);
 			tubules.at(ind).setColor(Col4f(1, 1, 1, 1));
-
-
-
 
 			//    
 			std::vector<Vec3f> pts;
@@ -171,22 +160,14 @@ void ProtoJuncusEffusus01::init() {
 	ground.textureOn();
 
 
-	shadowMapShader = ProtoShader("shadowMap.vert", "shadowMap.frag");
+	//shader = ProtoShader("shadowMap.vert", "shadowMap.frag");
 	shader = ProtoShader("shader1.vert", "shader1.frag");
-	//shader.bind();
 
-
-
-
-	//trace("ProtoUtility::getPathToOutput() =", ProtoUtility::getPathToOutput());
-
-
-	//********************** glm tests ********************************//
 	// START standard transformation matrices: ModelView / Projection / Normal
-	gl_viewMatrix = glm::lookAt(glm::vec3(0.0, 0.0, 5.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-	gl_modelMatrix = glm::mat4(1.0f); // set to identity
-	gl_modelViewMatrix = gl_viewMatrix*gl_modelMatrix;
-	gl_normalMatrix = glm::transpose(glm::inverse(glm::mat3(gl_modelViewMatrix)));
+	M = glm::mat4(1.0f); // set to identity
+	V = glm::lookAt(glm::vec3(0.0, 0.0, 5.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	MV = V * M;
+	N = glm::transpose(glm::inverse(glm::mat3(MV)));
 
 	// projection matrix and MVP Matrix
 	float viewAngle = 65.0f;
@@ -194,63 +175,50 @@ void ProtoJuncusEffusus01::init() {
 	float nearDist = .1f;
 	float farDist = 2000.0f;
 
-	gl_projectionMatrix = glm::perspective(viewAngle, aspect, nearDist, farDist);
-	gl_modelViewProjectionMatrix = gl_projectionMatrix * gl_modelViewMatrix;
+	P = glm::perspective(viewAngle, aspect, nearDist, farDist);
+	MVP = P * MV;
 	// END Model / View / Projection data
 
 	// tranformation matricies
-	gl_translationMatrix = glm::mat4(1.0f);
-	gl_rotationMatrix = glm::mat4(1.0f);
-	gl_scaleMatrix = glm::mat4(1.0f);
-
-
-	// START get all uniform shaders
-	GLint nUniforms, maxLen;
-	glGetProgramiv(shader.getID(), GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxLen);
-	glGetProgramiv(shader.getID(), GL_ACTIVE_UNIFORMS, &nUniforms);
-
-	GLchar* name = (GLchar*)malloc(maxLen);
-
-	GLint size, location;
-	GLsizei written;
-	GLenum type;
-	printf("\n Location | Name\n");
-	printf("--------------------------------------------------\n");
-	for (int i = 0; i < nUniforms; ++i){
-		glGetActiveUniform(shader.getID(), i, maxLen, &written, &size, &type, name);
-		location = glGetUniformLocation(shader.getID(), name);
-		printf(" %-8d | %s\n", location, name);
-	}
-	free(name);
-	// END get all uniform shaders
-
-	// get info about renderers
-	trace("renderer =", glGetString(GL_RENDERER));
-	trace("vendor =", glGetString(GL_VENDOR));
-	trace(" version =", glGetString(GL_VERSION));
-	trace("glslVersion =", glGetString(GL_SHADING_LANGUAGE_VERSION));
-
-	trace("vertexPosition Location =", glGetAttribLocation(shader.getID(), "vertexPosition"));
-	trace("vertexNormal Location =", glGetAttribLocation(shader.getID(), "vertexNormal"));
-	trace("vertexColor Location =", glGetAttribLocation(shader.getID(), "vertexColor"));
-	trace("vertexTexture Location =", glGetAttribLocation(shader.getID(), "vertexTexture"));
+	T = glm::mat4(1.0f);
+	R = glm::mat4(1.0f);
+	S = glm::mat4(1.0f);
 
 	/**************************************
 	Start FrameBuffer Object for Shadow Map
 	**************************************/
-	setupUniforms();
+	initUniforms();
 	// END
-
-
 
 	/**************************************
 	Start FrameBuffer Object for Shadow Map
 	**************************************/
 	initShadowMap();
-
 	// END
+
+	//GLSLInfo(&shadowMapShader);
+	GLSLInfo(&shader);
 }
 
+
+void ProtoJuncusEffusus01::initUniforms(){
+	// lighting
+	shader.bind();
+	lightPos0_U = glGetUniformLocation(shader.getID(), "light0Position");
+	lightDiffuse0_U = glGetUniformLocation(shader.getID(), "light0Diffuse");
+	lightAmbient0_U = glGetUniformLocation(shader.getID(), "light0Ambient");
+	lightSpecular0_U = glGetUniformLocation(shader.getID(), "light0Specular");
+
+	//matrices
+	MV_U = glGetUniformLocation(shader.getID(), "modelViewMatrix");
+	MVP_U = glGetUniformLocation(shader.getID(), "modelViewProjectionMatrix");
+	N_U = glGetUniformLocation(shader.getID(), "normalMatrix");
+
+	// shadow map
+	shadowMap_U = glGetUniformLocation(shader.getID(), "lightModelViewProjection");
+
+	shader.unbind();
+}
 
 void ProtoJuncusEffusus01::run() {
 	setBackground(0);
@@ -259,66 +227,33 @@ void ProtoJuncusEffusus01::run() {
 
 	glViewport(0, 0, width, height);
 
-
-
-	/******************** Realy Important *******************/
-	// You MUST bind shader prior to working with Uniforms  //
-	/******************** Still Important *******************/
-	//shader.bind();
+	shader.bind();
 
 	// Lighting 
-	float ltPos[] = { .5f, .5f, 20 };
-	GLuint gl_light0PositionLocation = glGetUniformLocation(shader.getID(), "light0Position");
-	if (gl_light0PositionLocation >= 0){
-		glUniform3fv(gl_light0PositionLocation, 1, &light0.getPosition().x);
-	}
+		glUniform3fv(lightPos0_U, 1, &light0.getPosition().x);
+		glUniform4fv(lightDiffuse0_U, 1, &light0.getDiffuse().r);
+		glUniform4fv(lightAmbient0_U, 1, &light0.getAmbient().r);
+		glUniform4fv(lightSpecular0_U, 1, &light0.getSpecular().r);
 
-	GLuint gl_light0DiffuseLocation = glGetUniformLocation(shader.getID(), "light0Diffuse");
-	if (gl_light0DiffuseLocation >= 0){
-		glUniform4fv(gl_light0DiffuseLocation, 1, &light0.getDiffuse().r);
-	}
-
-	GLuint gl_light0AmbientLocation = glGetUniformLocation(shader.getID(), "light0Ambient");
-	if (gl_light0AmbientLocation >= 0){
-		glUniform4fv(gl_light0AmbientLocation, 1, &light0.getAmbient().r);
-	}
-
-	GLuint gl_light0SpecularLocation = glGetUniformLocation(shader.getID(), "light0Specular");
-	if (gl_light0SpecularLocation >= 0){
-		glUniform4fv(gl_light0SpecularLocation, 1, &light0.getSpecular().r);
-	}
-
-	if (frameCount == 1){
+	
+		// save high resolution rendering
+		if (frameCount == 1){
 		// currently only works with max 999 tiles
-		save("juncs", 12);
+		//save("juncs", 12);
 	}
 
 	render();
 }
 
 void ProtoJuncusEffusus01::setShadowMapTransform(){
-	glm::vec3 lightInvDir = glm::vec3(0.5f, 2, 2);
+	// calulate matrices from light perspective
+	L_MV = glm::lookAt(glm::vec3(light0.getPosition().x, light0.getPosition().y, light0.getPosition().z), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	L_P = glm::perspective(50.0f, 1.0f, 1.0f, 25.0f); // where are these nums from???
+	L_B = glm::scale(glm::translate(glm::mat4(1), glm::vec3(0.5, 0.5, 0.5)), glm::vec3(0.5, 0.5, 0.5));
+	L_BP = L_B*L_P;
+	L_MVP = L_BP*L_MV;
 
-	glm::mat4 depthProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -10, 20);
-	glm::mat4 depthViewMatrix = glm::lookAt(lightInvDir, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-	glm::mat4 depthModelMatrix = glm::mat4(1.0);
-	glm::mat4 depthMVP = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
-
-	glm::mat4 biasMatrix(
-		0.5, 0.0, 0.0, 0.0,
-		0.0, 0.5, 0.0, 0.0,
-		0.0, 0.0, 0.5, 0.0,
-		0.5, 0.5, 0.5, 1.0
-		);
-	glm::mat4 depthBiasMVP = biasMatrix*depthMVP;
-
-	// Send our transformation to the currently bound shader,
-	// in the "MVP" uniform
-	// Compute the MVP matrix from the light's point of view
-	GLuint shadowMapMatrixLocation = glGetUniformLocation(shader.getID(), "shadowMapMVPMatrix");
-	if (shadowMapMatrixLocation >= 0){
-		glUniformMatrix4fv(shadowMapMatrixLocation, 1, GL_FALSE, &depthMVP[0][0]);
-	}
+	glUniformMatrix4fv(shadowMap_U, 1, GL_FALSE, &L_MVP[0][0]);
 }
 
 void ProtoJuncusEffusus01::render(){
@@ -327,79 +262,61 @@ void ProtoJuncusEffusus01::render(){
 	for (int i = 0; i < tubuleCount; ++i){
 		//trace("tubuleCount =", tubuleCount);
 		//GLuint gl_textureLocation = glGetUniformLocation(shader.getID(), "vertexTextureCoords");		gl_scaleMatrix = glm::mat4(1.0);
-		gl_rotationMatrix = glm::mat4(1.0);
-		gl_translationMatrix = glm::mat4(1.0);
-		gl_scaleMatrix = glm::mat4(1.0f);
-		gl_translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, -3, 0));
+		R = glm::mat4(1.0);
+		T = glm::mat4(1.0);
+		S = glm::mat4(1.0f);
+		T = glm::translate(glm::mat4(1.0f), glm::vec3(0, -3, 0));
 
-		gl_viewMatrix = glm::lookAt(glm::vec3(0.0, 0.0, 5.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-		gl_modelMatrix = gl_translationMatrix * gl_rotationMatrix * gl_scaleMatrix;
-		gl_modelViewMatrix = gl_viewMatrix*gl_modelMatrix;
-		gl_modelViewProjectionMatrix = gl_projectionMatrix * gl_modelViewMatrix;
+		V = glm::lookAt(glm::vec3(0.0, 0.0, 5.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+		M = T * R * S;
+		MV = V * M;
+		MVP = P * MV;
 
 		// some help from:http://www.opengl.org/discussion_boards/showthread.php/171184-GLM-to-create-gl_NormalMatrix
 		// update normals
-		gl_normalMatrix = glm::transpose(glm::inverse(glm::mat3(gl_modelViewMatrix)));
+		N = glm::transpose(glm::inverse(glm::mat3(MV)));
 
 
 		// connect Uniforms to GLSL
 		// modelView matrix
-		GLuint gl_modelViewMatrixLocation = glGetUniformLocation(shader.getID(), "modelViewMatrix");
-		if (gl_modelViewMatrixLocation >= 0){
-			glUniformMatrix4fv(gl_modelViewMatrixLocation, 1, GL_FALSE, &gl_modelViewMatrix[0][0]);
-		}
+		//HERE
 
-		// modelViewProjection matrix
-		GLuint gl_modelViewProjectionMatrixLocation = glGetUniformLocation(shader.getID(), "modelViewProjectionMatrix");
-		if (gl_modelViewProjectionMatrixLocation >= 0){
-			glUniformMatrix4fv(gl_modelViewProjectionMatrixLocation, 1, GL_FALSE, &gl_modelViewProjectionMatrix[0][0]);
-		}
 
-		// normal matrix
-		GLuint gl_normalMatrixLocation = glGetUniformLocation(shader.getID(), "normalMatrix");
-		if (gl_normalMatrixLocation >= 0){
-			glUniformMatrix3fv(gl_normalMatrixLocation, 1, GL_FALSE, &gl_normalMatrix[0][0]);
-		}
+			glUniformMatrix4fv(MV_U, 1, GL_FALSE, &MV[0][0]);
+			glUniformMatrix4fv(MVP_U, 1, GL_FALSE, &MVP[0][0]);
+			glUniformMatrix3fv(N_U, 1, GL_FALSE, &N[0][0]);
+
+	
 
 		ground.display();
 
 		// now deal with tendrils
-		gl_scaleMatrix = glm::mat4(1.0);
-		gl_rotationMatrix = glm::mat4(1.0);
-		gl_translationMatrix = glm::mat4(1.0);
+		S = glm::mat4(1.0);
+		R = glm::mat4(1.0);
+		T = glm::mat4(1.0);
 
-		gl_scaleMatrix = glm::mat4(1.0f);
-		gl_rotationMatrix = glm::rotate(glm::mat4(1.0f), float(frameCount*.06), glm::vec3(0, 1, 0));
-		gl_translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(tubules.at(i).getPosition().x, tubules.at(i).getPosition().y, tubules.at(i).getPosition().z - .75f));
+		S = glm::mat4(1.0f);
+		R = glm::rotate(glm::mat4(1.0f), float(frameCount*.06), glm::vec3(0, 1, 0));
+		T = glm::translate(glm::mat4(1.0f), glm::vec3(tubules.at(i).getPosition().x, tubules.at(i).getPosition().y, tubules.at(i).getPosition().z - .75f));
 
-		gl_viewMatrix = glm::lookAt(glm::vec3(0.0, 0.0, 5.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-		gl_modelMatrix = gl_translationMatrix * gl_rotationMatrix * gl_scaleMatrix;
-		gl_modelViewMatrix = gl_viewMatrix*gl_modelMatrix;
-		gl_modelViewProjectionMatrix = gl_projectionMatrix * gl_modelViewMatrix;
+		V = glm::lookAt(glm::vec3(0.0, 0.0, 5.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+		M = T * R * S;
+		MV = V * M;
+		MVP = P * MV;
 
 		// some help from:http://www.opengl.org/discussion_boards/showthread.php/171184-GLM-to-create-gl_NormalMatrix
 		// update normals
-		gl_normalMatrix = glm::transpose(glm::inverse(glm::mat3(gl_modelViewMatrix)));
+		N = glm::transpose(glm::inverse(glm::mat3(MV)));
 
 
 		// connect Uniforms to GLSL
 		// modelView matrix
-		//GLuint gl_modelViewMatrixLocation = glGetUniformLocation(shader.getID(), "modelViewMatrix");
-		if (gl_modelViewMatrixLocation >= 0){
-			glUniformMatrix4fv(gl_modelViewMatrixLocation, 1, GL_FALSE, &gl_modelViewMatrix[0][0]);
-		}
-
+		glUniformMatrix4fv(MV_U, 1, GL_FALSE, &MV[0][0]);
 		// modelViewProjection matrix
-		//GLuint gl_modelViewProjectionMatrixLocation = glGetUniformLocation(shader.getID(), "modelViewProjectionMatrix");
-		if (gl_modelViewProjectionMatrixLocation >= 0){
-			glUniformMatrix4fv(gl_modelViewProjectionMatrixLocation, 1, GL_FALSE, &gl_modelViewProjectionMatrix[0][0]);
-		}
-
+		glUniformMatrix4fv(MVP_U, 1, GL_FALSE, &MVP[0][0]);
 		// normal matrix
-		//GLuint gl_normalMatrixLocation = glGetUniformLocation(shader.getID(), "normalMatrix");
-		if (gl_normalMatrixLocation >= 0){
-			glUniformMatrix3fv(gl_normalMatrixLocation, 1, GL_FALSE, &gl_normalMatrix[0][0]);
-		}
+		glUniformMatrix3fv(N_U, 1, GL_FALSE, &N[0][0]);
+	
 
 		//scale(1.3, 1.3, 1.3);
 		tubules.at(i).display(WIREFRAME);
@@ -407,54 +324,6 @@ void ProtoJuncusEffusus01::render(){
 
 	}
 
-
-
-	//for (int i = 0; i < beings; ++i){
-	//	//GLuint gl_textureLocation = glGetUniformLocation(shader.getID(), "vertexTextureCoords");
-	//	gl_scaleMatrix = glm::mat4(1.0);
-	//	gl_rotationMatrix = glm::mat4(1.0);
-	//	gl_translationMatrix = glm::mat4(1.0);
-
-	//	gl_scaleMatrix = glm::mat4(1.0f);
-	//	gl_rotationMatrix = glm::rotate(glm::mat4(1.0f), float(frameCount*.0006), glm::vec3(0, 1, 0));
-	//	gl_translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(locs.at(i).x, locs.at(i).y, locs.at(i).z));
-
-	//	gl_viewMatrix = glm::lookAt(glm::vec3(0.0, 0.0, 5.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-	//	gl_modelMatrix = gl_translationMatrix * gl_rotationMatrix * gl_scaleMatrix;
-	//	gl_modelViewMatrix = gl_viewMatrix*gl_modelMatrix;
-	//	gl_modelViewProjectionMatrix = gl_projectionMatrix * gl_modelViewMatrix;
-
-	//	// some help from:http://www.opengl.org/discussion_boards/showthread.php/171184-GLM-to-create-gl_NormalMatrix
-	//	// update normals
-	//	gl_normalMatrix = glm::transpose(glm::inverse(glm::mat3(gl_modelViewMatrix)));
-
-
-	//	// connect Uniforms to GLSL
-	//	// modelView matrix
-	//	GLuint gl_modelViewMatrixLocation = glGetUniformLocation(shader.getID(), "modelViewMatrix");
-	//	if (gl_modelViewMatrixLocation >= 0){
-	//		glUniformMatrix4fv(gl_modelViewMatrixLocation, 1, GL_FALSE, &gl_modelViewMatrix[0][0]);
-	//	}
-
-	//	// modelViewProjection matrix
-	//	GLuint gl_modelViewProjectionMatrixLocation = glGetUniformLocation(shader.getID(), "modelViewProjectionMatrix");
-	//	if (gl_modelViewProjectionMatrixLocation >= 0){
-	//		glUniformMatrix4fv(gl_modelViewProjectionMatrixLocation, 1, GL_FALSE, &gl_modelViewProjectionMatrix[0][0]);
-	//	}
-
-	//	// normal matrix
-	//	GLuint gl_normalMatrixLocation = glGetUniformLocation(shader.getID(), "normalMatrix");
-	//	if (gl_normalMatrixLocation >= 0){
-	//		glUniformMatrix3fv(gl_normalMatrixLocation, 1, GL_FALSE, &gl_normalMatrix[0][0]);
-	//	}
-
-
-
-	//	//scale(1.3, 1.3, 1.3);
-	//	//tubule.display();
-	//	tubulesWrap.display();
-
-	//}
 }
 
 
@@ -692,4 +561,5 @@ bool ProtoJuncusEffusus01::initShadowMap(){
 
 	return true;
 }
+
 

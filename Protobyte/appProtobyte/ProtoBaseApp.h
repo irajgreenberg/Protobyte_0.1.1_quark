@@ -134,28 +134,38 @@ namespace ijg {
 		};
 
 		/***********************************
-		*         GLM|GLSL MATRICES        *
+		*           GLSL UNIFORMS          *
 		***********************************/
-		// Camera Matrices
-		glm::mat4 gl_viewMatrix, gl_modelMatrix, gl_modelViewMatrix, gl_projectionMatrix, gl_modelViewProjectionMatrix;
-		glm::mat3 gl_normalMatrix;
+		// using initials ONLY for matrices
+		// Uniform Camera Matrices
+		glm::mat4 M, V, MV, P, MVP;
 
-		// Transformation Matrices
-		glm::mat4 gl_translationMatrix, gl_rotationMatrix, gl_scaleMatrix;
+		// Uniform Transformation Matrices
+		glm::mat4 T, R, S;
 
-		// Shadow Map Matrices
-		glm::mat4 lightViewMatrix, lightProjMatrix, biasMatrix, biasProjMatrix, LVPMatrix;
+		// Uniform Shadow Map Matrices
+		glm::mat4 L_MV, L_P, L_B, L_BP, L_MVP;
 
-		// Uniform variables
-		glm::vec4 gl_light0Position;
-		glm::vec3 gl_light0ReflectionConstant, gl_light0Intensity;
+		// Uniform Normal Matrix
+		glm::mat3 N;
 
-		glm::vec4 uLightPos0, uLightPos1, uLightPos2, uLightPos3, uLightPos4, uLightPos5, uLightPos6, uLightPos7;
-		glm::vec4 uLightDiff0, uLightDiff1, uLightDiff2, uLightDiff3, uLightDiff4, uLightDiff5, uLightDiff6, uLightDiff7;
+		// flags for shader locations
+		GLuint M_U, V_U, MV_U, P_U, MVP_U, N_U;
+		GLuint T_U, R_U, S_U;
+		GLuint L_MVP_U; // only for Light perspective
 
-		glm::vec4 dc;
+		// Uniform Lighting location vars
+		GLuint lightPos0_U, lightPos1_U, lightPos2_U, lightPos3_U, lightPos4_U, lightPos5_U, lightPos6_U, lightPos7_U;
+		GLuint lightDiffuse0_U, lightDiffuse1_U, lightDiffuse2_U, lightDiffuse3_U, lightDiffuse4_U, lightDiffuse5_U, lightDiffuse6_U, lightDiffuse7_U;
+		GLuint lightSpecular0_U, lightSpecular1_U, lightSpecular2_U, lightSpecular3_U, lightSpecular4_U, lightSpecular5_U, lightSpecular6_U, lightSpecular7_U;
+		GLuint lightAmbient0_U, lightAmbient1_U, lightAmbient2_U, lightAmbient3_U, lightAmbient4_U, lightAmbient5_U, lightAmbient6_U, lightAmbient7_U;
+		GLuint lightEmissive0_U, lightEmissive1_U, lightEmissive2_U, lightEmissive3_U, lightEmissive4_U, lightEmissive5_U, lightEmissive6_U, lightEmissive7_U;
+		GLuint lightReflectionConst0_U, lightReflectionConst1_U, lightReflectionConst2_U, lightReflectionConst3_U, lightReflectionConst4_U, lightReflectionConst5_U, lightReflectionConst6_U, lightReflectionConst7_U;
+		GLuint lightIntensity0_U, lightIntensity1_U, lightIntensity2_U, lightIntensity3_U, lightIntensity4_U, lightIntensity5_U, lightIntensity6_U, lightIntensity7_U;
 		//END
 
+		// Shadow Map
+		GLuint shadowMap_U;
 
 
 		/************************************
@@ -204,6 +214,12 @@ namespace ijg {
 
 		// image loading using SFML
 		void loadImage(std::string url);
+
+		// shaders stuff
+		void GLSLInfo(ProtoShader* shader);
+			
+		// START get all uniform shaders;
+		virtual void initUniforms(); // virtual for now
 
 		// LIGHTS
 		void lightsOn();

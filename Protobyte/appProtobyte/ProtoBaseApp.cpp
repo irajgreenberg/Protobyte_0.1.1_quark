@@ -292,6 +292,46 @@ void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
     glEnable(GL_LIGHTING);
 }
 
+void ProtoBaseApp::initUniforms(){
+	// currenlty implemented in derived classes (need to think on this a bit)
+}
+
+
+
+
+void ProtoBaseApp::GLSLInfo(ProtoShader* shader){
+	// START get all uniform shaders
+	GLint nUniforms, maxLen;
+	glGetProgramiv(shader->getID(), GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxLen);
+	glGetProgramiv(shader->getID(), GL_ACTIVE_UNIFORMS, &nUniforms);
+
+	GLchar* name = (GLchar*)malloc(maxLen);
+
+	GLint size, location;
+	GLsizei written;
+	GLenum type;
+	printf("\n Location | Name\n");
+	printf("--------------------------------------------------\n");
+	for (int i = 0; i < nUniforms; ++i){
+		glGetActiveUniform(shader->getID(), i, maxLen, &written, &size, &type, name);
+		location = glGetUniformLocation(shader->getID(), name);
+		printf(" %-8d | %s\n", location, name);
+	}
+	free(name);
+	// END get all uniform shaders
+
+	// get info about renderers
+	trace("renderer =", glGetString(GL_RENDERER));
+	trace("vendor =", glGetString(GL_VENDOR));
+	trace(" version =", glGetString(GL_VERSION));
+	trace("glslVersion =", glGetString(GL_SHADING_LANGUAGE_VERSION));
+
+	trace("vertexPosition Location =", glGetAttribLocation(shader->getID(), "vertexPosition"));
+	trace("vertexNormal Location =", glGetAttribLocation(shader->getID(), "vertexNormal"));
+	trace("vertexColor Location =", glGetAttribLocation(shader->getID(), "vertexColor"));
+	trace("vertexTexture Location =", glGetAttribLocation(shader->getID(), "vertexTexture"));
+}
+
 void ProtoBaseApp::rect(Vec2 pt0, Vec2 pt1, Registration reg){
     rect(pt0.x, pt0.y, pt1.x-pt0.x, pt1.y-pt0.y, reg);
 }

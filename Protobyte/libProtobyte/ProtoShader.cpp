@@ -175,7 +175,14 @@ void ProtoShader::init() {
 }
 
 ProtoShader::~ProtoShader() {
-    glDetachShader(shader_id, shader_fp);
+	// clean up attribute and uniform variable locations
+	if (attribLocs.size() > 0){
+		attribLocs.clear();
+	}
+	if (uniformLocs.size() > 0){
+		uniformLocs.clear();
+	}
+	glDetachShader(shader_id, shader_fp);
     glDetachShader(shader_id, shader_vp);
     
     glDeleteShader(shader_fp);
@@ -192,16 +199,8 @@ void ProtoShader::printLog(GLuint program){
     std::cout << "program log: " << log << std::endl;
 }
 
-GLuint ProtoShader::getID() {
-    return shader_id;
+void ProtoShader::addAttribute(std::string name){
+}
+void ProtoShader::addUniform(std::string name){
 }
 
-void ProtoShader::bind() {
-	//trace("shader_id in bind =", shader_id);
-  glUseProgram(shader_id);
-}
-
-void ProtoShader::unbind() {
-	//trace("shader_id in unbind =", shader_id);
-   glUseProgram(0);
-}

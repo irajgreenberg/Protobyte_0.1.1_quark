@@ -56,6 +56,13 @@ namespace ijg {
 
         GLuint getID();
         GLuint shader_id;
+
+		// encapsulate passing shader loacations 
+		// for attribute and uniform vars
+		void addAttribute(std::string name);
+		void addUniform(std::string name);
+
+
     private:
         // must initialize these before using!!!
         std::string vShader, fShader;
@@ -63,7 +70,22 @@ namespace ijg {
         GLuint shader_fp;
         void printLog(GLuint program);
 
+		// vector for attribute and uniform locations
+		std::vector<GLuint> attribLocs, uniformLocs;
+
     };
+
+	inline GLuint ProtoShader::getID() {
+		return shader_id;
+	}
+
+	inline void ProtoShader::bind() {
+		glUseProgram(shader_id);
+	}
+
+	inline void ProtoShader::unbind() {
+		glUseProgram(0);
+	}
 
 }
 
