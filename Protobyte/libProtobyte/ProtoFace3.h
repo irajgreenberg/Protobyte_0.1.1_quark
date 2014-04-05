@@ -47,7 +47,10 @@
 
 namespace ijg {
     
-    class ProtoFace3 {
+	class ProtoFace3;
+	typedef ProtoFace3 Face3;
+	
+	class ProtoFace3 {
     private:
         //ProtoVector3 vecs[3];
         //Vec3f v0, v1, v2;
@@ -61,7 +64,6 @@ namespace ijg {
     public:
         friend std::ostream& operator<<(std::ostream& output, const ProtoFace3& face3);
         
-        //ProtoFace3(ProtoVertex3& v0, ProtoVertex3& v1, ProtoVertex3& v2);
         ProtoFace3(ProtoVertex3* v0_p, ProtoVertex3* v1_p, ProtoVertex3* v2_p);
         void display();
         
@@ -90,6 +92,9 @@ namespace ijg {
         
         void calcNorm();
         void calcCentroid();
+
+		// hack for retrieval for stl export (fix eventually 
+		Vec3f v0, v1, v2, n;
         
     };
     

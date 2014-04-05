@@ -27,13 +27,37 @@
 #include <iostream>
 //#include <algorithm>
 #include "ProtoCore.h"
+#include "ProtoUtility.h"
 #include <vector>
 #include "ProtoMath.h"
 #include "ProtoVector3.h"
 #include "ProtoDimension3.h"
+#include "ProtoTuple4.h"
 #include "ProtoColor4.h"
 #include "ProtoMatrix3.h"
 #include "ProtoMatrix4.h"
+
+//#if defined (_WIN32) || defined(_WIN64)
+//#include <GL/glew.h>
+//#include <Windows.h>
+//#endif
+//#include <memory>
+
+#include <sstream>
+
+
+// preproc dir for relative resource loading
+// from http://stackoverflow.com/questions/143174/how-do-i-get-the-directory-that-a-program-is-running-from
+// http://www.daniweb.com/software-development/cpp/threads/202937/ifdef-with-boolean-and-or
+#include <stdio.h>  /* defines FILENAME_MAX */
+#if defined (_WIN32) || defined (_WIN64)
+#include <direct.h>
+#define GetCurrentDir _getcwd
+#else
+#include <unistd.h>
+#define GetCurrentDir getcwd
+#endif
+// end relative loading proproc dir
 
 namespace ijg {
 

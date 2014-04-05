@@ -91,7 +91,7 @@ namespace ijg {
         // composite guts
         std::vector<ProtoVertex3> verts;
         //std::vector<ProtoVertex3*> verts;
-        std::vector<ProtoFace3> faces;
+       // std::vector<ProtoFace3> faces; //experiment making this public
         std::vector< ProtoTuple3<int> > inds;
 
         
@@ -133,8 +133,13 @@ namespace ijg {
         
         
     public:
-//        
-//        enum renderMode {
+//     
+		// experiment making this public
+		std::vector<float> packedFaces;
+		std::vector<ProtoFace3> faces;
+		std::vector<ProtoFace3> faces2;
+		
+//		enum renderMode {
 //            POINTS,
 //            WIREFRAME, // begin at 0
 //            SURFACE

@@ -35,7 +35,7 @@ ProtoShader::ProtoShader() {
 
 ProtoShader::ProtoShader(const std::string& vShader, const std::string& fShader):
 vShader(vShader), fShader(fShader){
-	trace("In Shader overloaded CSTR");
+	//trace("In Shader overloaded CSTR");
 	init();
 }
 
@@ -163,7 +163,7 @@ void ProtoShader::init() {
     //Check for errors
     GLint programSuccess = GL_TRUE;
     glGetProgramiv(shader_id, GL_LINK_STATUS, &programSuccess );
-    std::cout << "programSuccess = " << programSuccess << std::endl;
+ //   std::cout << "programSuccess = " << programSuccess << std::endl;
     if( programSuccess != GL_TRUE )
     {
         printf( "Error linking program %d!\n", shader_id);

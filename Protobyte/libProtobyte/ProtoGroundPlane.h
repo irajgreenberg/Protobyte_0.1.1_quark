@@ -56,6 +56,7 @@ namespace ijg {
     private:
         int columns, rows;
 
+
     };
 
     inline void ProtoGroundPlane::setRows(int rows) {

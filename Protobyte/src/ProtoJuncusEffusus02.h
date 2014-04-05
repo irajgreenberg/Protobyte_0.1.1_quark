@@ -1,4 +1,4 @@
-/*!  \brief  ProtoJuncusEffusus01.h: Single wrapped starnd study
+/*!  \brief  ProtoJuncusEffusus02.h: Single wrapped starnd study
  ProtoJuncusEffusus01.h
  Protobyte Library v02
  
@@ -21,29 +21,38 @@
  \sa NO LINK
  */
 
-#ifndef Protobyte_dev_OSX_2_ProtoJuncusEffusus01_cpp
-#define Protobyte_dev_OSX_2_ProtoJuncusEffusus01_cpp
+#ifndef Protobyte_dev_OSX_2_ProtoJuncusEffusus02_cpp
+#define Protobyte_dev_OSX_2_ProtoJuncusEffusus02_cpp
 
 #include <iostream>
-//#include <dirent.h>
+//#include <thread> 
+//#include <dirent.h> // no native implementation in WIN
 #include "appProtobyte/ProtoBaseApp.h"
+//#include  "libProtobyte/ProtoOSC.h"
+
+#include <cstring>
+#include <stdlib.h>
 
 
-namespace ijg {
+
+
+using namespace ijg;
     
-    class ProtoJuncusEffusus01 : public ProtoBaseApp {
+class ProtoJuncusEffusus02 : public ProtoBaseApp, public osc::OscPacketListener  {
     
     public:
         
-        void init();
+		ProtoJuncusEffusus02();
+		ProtoJuncusEffusus02(const ProtoOSC& listener);
+		
+		void init();
         void run();
-      
-        Tube tubule;
-        Tube tubulesWrap;
+
+		
+		ProtoTuple4<int, int, float, float> data;
 
 		int tubuleCount;
-		std::vector<Tube> tubules;
-		std::vector<Tube> tubulesWraps;
+		std::vector<ProtoJuncusEffusus> juncs;
 
 		GroundPlane ground;
         
@@ -56,22 +65,28 @@ namespace ijg {
 
 		ProtoShader depthShader;
 
-		void saveTiles(int rows, int columns);
-		void save(std::string name = "img", int scaleFactor = 1);
-		bool stitchTiles(std::string url, int tiles);
+		//void saveTiles(int rows, int columns);
+		//void save(std::string name = "img", int scaleFactor = 1);
+		//bool stitchTiles(std::string url, int tiles);
 
-		int beings;
-		std::vector<Vec3f> locs;
 
+		// override base
 		void render(int scaleFactor = 1);
 
 		bool initShadowMap();
 		void setShadowMapTransform();
 		void initUniforms();
+
+		int test;
+
+		
         
-    private:
+protected:
+	void ProcessMessage(const osc::ReceivedMessage& m,
+		const IpEndpointName& remoteEndpoint); 
+
+private:
         
     };
-}
 
-#endif // Protobyte_dev_OSX_2_ProtoJuncusEffusus01_cpp
+#endif // Protobyte_dev_OSX_2_ProtoJuncusEffusus02_cpp

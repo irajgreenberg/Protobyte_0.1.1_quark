@@ -23,9 +23,9 @@ void runOSC(){
 int main(int argc, char const** argv)
 {
 	
-	std::thread t1(runOSC);
+	//std::thread t1(runOSC);
 	
 	
-	ijg::ProtoPlasm p(1500, 800, "ProtoJuncusEffusus02", new ProtoJuncusEffusus02());
+	ijg::ProtoPlasm p(1920, 1080, "ProtoJuncusEffusus 02", new ProtoJuncusEffusus02());
 	return EXIT_SUCCESS;
 }

@@ -8,6 +8,8 @@ in vec2 textureCoords;
 in vec4 eyePosition;
 in vec3 normal;
 
+in vec4 shadowMapCoords;
+
 uniform vec3 light0Position;
 uniform vec4 light0Diffuse;
 uniform vec4 light0Ambient;
@@ -17,6 +19,7 @@ uniform vec4 light0Specular;
 // active texture slot 0
 //layout (binding = 0) uniform sampler2D basic_texture;
 uniform sampler2D textureSampler;
+uniform sampler2DShadow shadowMapTexture;  //shadowmap texture
 
 layout (location = 0) out vec4 fragColor;
 
@@ -57,7 +60,12 @@ void main(){
 
   // Define the final vertex color
 
-  
+ // shadow mapping
+  if(shadowMapCoords.w > 1) {
+    float shadow = textureProj(shadowMapTexture, shadowMapCoords);
+    //darken the diffuse component apprpriately
+    diffuse = mix(diffuse, diffuse*shadow, 0.5); 
+  }
   gl_FragColor = vec4(emissive + ambient + diffuse + specular, 1);
 	//gl_FragColor = sample;
 }

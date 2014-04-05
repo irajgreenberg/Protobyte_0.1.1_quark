@@ -31,11 +31,14 @@
 #include "ProtoBaseApp.h"
 #include <memory>
 
+
+
 // use GL3 context (OpenGL 3.2-4.1) // required for osx only, I think
 #define GLFW_INCLUDE_GLCOREARB
 
 // bring in GLU
 #define GLFW_INCLUDE_GLU
+
 
 
 

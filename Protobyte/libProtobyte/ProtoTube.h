@@ -26,7 +26,8 @@ namespace ijg {
     class ProtoTube : public ProtoGeom3 {
     public:
 
-        friend std::ostream& operator<<(std::ostream& out, const ProtoTube& tube);
+		friend class ProtoJuncusEffusus; // sort of crappy, but I'm in a rush. There is an argument for it as well (sort of)
+		friend std::ostream& operator<<(std::ostream& out, const ProtoTube& tube);
 
         /*!
          * Constructor */
@@ -155,6 +156,9 @@ namespace ijg {
         Vec3f getPerturbation() const;
         void rotateY();
         const std::vector<ProtoFrenetFrame>& getFrenetFrames() const;
+
+		// maybe
+		//std::vector<float>* getInterleavedPrims();
 
     protected:
         ProtoSpline3 path;

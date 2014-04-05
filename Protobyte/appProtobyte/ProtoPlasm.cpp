@@ -47,6 +47,9 @@ void ProtoPlasm::initSFMLInit(){
 //	}
 //#endif
    
+
+
+
 	
 	
 	baseApp->setFrameCount(0);
@@ -74,7 +77,7 @@ void ProtoPlasm::initSFMLInit(){
     // anti-aliasing
     glfwWindowHint(GLFW_SAMPLES, 8);
     
-    window = glfwCreateWindow(appWidth, appHeight, appTitle.c_str(), /*glfwGetPrimaryMonitor()*/NULL, NULL);
+    window = glfwCreateWindow(appWidth, appHeight, appTitle.c_str(), /*glfwGetPrimaryMonitor()*/ NULL, NULL);
     
     if (!window)
     {

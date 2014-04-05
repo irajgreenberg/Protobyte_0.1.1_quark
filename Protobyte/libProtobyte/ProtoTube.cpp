@@ -36,13 +36,13 @@ using namespace ijg;
 // default cstr
 
 ProtoTube::ProtoTube() {
-	trace("ProtoTube Default CSTR");
+	//trace("ProtoTube Default CSTR");
 }
 
 // overloaded cstr 1
 ProtoTube::ProtoTube(const ProtoSpline3& path, float radius, int crossSectionDetail, bool isClosed) :
 ProtoGeom3(Vec3f(0, 0, 0), Vec3f(0, 0, 0), ProtoDimension3f(1, 1, 1), ProtoColor4f(.3, .3, .3, 1.0)), path(path), radius(radius), crossSectionDetail(crossSectionDetail), isClosed(isClosed) {
-	trace( "ProtoTube CSTR 1 : (Spline3 path, radius, crossSectionDetail, isClosed)" );
+	//trace( "ProtoTube CSTR 1 : (Spline3 path, radius, crossSectionDetail, isClosed)" );
     if(radii.size()>0) radii.clear();
     if(col4s.size()>0) col4s.clear();
      
@@ -61,7 +61,7 @@ ProtoGeom3(Vec3f(0, 0, 0), Vec3f(0, 0, 0), ProtoDimension3f(1, 1, 1), ProtoColor
 // overloaded cstr 1-b
 ProtoTube::ProtoTube(const ProtoSpline3& path, float radius, int crossSectionDetail, bool isClosed, const std::string& textureImageURL) :
 ProtoGeom3(Vec3f(0, 0, 0), Vec3f(0, 0, 0), ProtoDimension3f(1, 1, 1), ProtoColor4f(.3, .3, .3, 1.0), textureImageURL), path(path), radius(radius), crossSectionDetail(crossSectionDetail), isClosed(isClosed) {
-	trace( "ProtoTube CSTR 1-b : (Spline3 path, radius, crossSectionDetail, isClosed, textureImageURL)" );
+	//trace( "ProtoTube CSTR 1-b : (Spline3 path, radius, crossSectionDetail, isClosed, textureImageURL)" );
     if(radii.size()>0) radii.clear();
     if(col4s.size()>0) col4s.clear();
     
@@ -83,7 +83,7 @@ ProtoGeom3(Vec3f(0, 0, 0), Vec3f(0, 0, 0), ProtoDimension3f(1, 1, 1), ProtoColor
 ProtoTube::ProtoTube(const ProtoSpline3& path, float radius, int crossSectionDetail, const ProtoTransformFunction& transFuncObj, bool isClosed) :
 ProtoGeom3(Vec3f(0, 0, 0), Vec3f(0, 0, 0), ProtoDimension3f(1, 1, 1), ProtoColor4f(.3, .3, .3, 1.0)), path(path), radius(radius), crossSectionDetail(crossSectionDetail), transFuncObj(transFuncObj), isClosed(isClosed) {
 
-	trace("ProtoTube CSTR 2 : (Spline3 path, radius, crossSectionDetail, Transformfunction, isClosed)");
+	//trace("ProtoTube CSTR 2 : (Spline3 path, radius, crossSectionDetail, Transformfunction, isClosed)");
 	
 	if (radii.size()>0) radii.clear();
     if(col4s.size()>0) col4s.clear();
@@ -104,7 +104,7 @@ ProtoGeom3(Vec3f(0, 0, 0), Vec3f(0, 0, 0), ProtoDimension3f(1, 1, 1), ProtoColor
 ProtoTube::ProtoTube(const ProtoSpline3& path, float radius, int crossSectionDetail, const ProtoTransformFunction& transFuncObj, bool isClosed, const std::string& textureImageURL) :
 ProtoGeom3(Vec3f(0, 0, 0), Vec3f(0, 0, 0), ProtoDimension3f(1, 1, 1), ProtoColor4f(.3, .3, .3, 1.0), textureImageURL), path(path), radius(radius), crossSectionDetail(crossSectionDetail), transFuncObj(transFuncObj), isClosed(isClosed) {
     
-	trace("ProtoTube CSTR 2 b : (Spline3 path, radius, crossSectionDetail, Transformfunction, isClosed)");
+	//trace("ProtoTube CSTR 2 b : (Spline3 path, radius, crossSectionDetail, Transformfunction, isClosed)");
 	
 	if (radii.size()>0) radii.clear();
     if(col4s.size()>0) col4s.clear();
@@ -126,7 +126,7 @@ ProtoGeom3(Vec3f(0, 0, 0), Vec3f(0, 0, 0), ProtoDimension3f(1, 1, 1), ProtoColor
 
     if(col4s.size()>0) col4s.clear();
     
-    std::cout << "ProtoTube CSTR 3" << std::endl;
+   // std::cout << "ProtoTube CSTR 3" << std::endl;
     setIsTransformFunction(true);
     perturbation.x = perturbation.y = perturbation.z = 0.0;
 
@@ -145,7 +145,7 @@ ProtoGeom3(Vec3f(0, 0, 0), Vec3f(0, 0, 0), ProtoDimension3f(1, 1, 1), ProtoColor
 
     if(col4s.size()>0) col4s.clear();
     
-    std::cout << "ProtoTube CSTR 4" << std::endl;
+   // std::cout << "ProtoTube CSTR 4" << std::endl;
     // no transform function
     setIsTransformFunction(false);
     perturbation.x = perturbation.y = perturbation.z = 0.0;
@@ -164,7 +164,7 @@ ProtoGeom3(Vec3f(0, 0, 0), Vec3f(0, 0, 0), ProtoDimension3f(1, 1, 1), col4s), pa
 
     if(radii.size()>0) radii.clear();
 
-    std::cout << "ProtoTube CSTR 5" << std::endl;
+    //std::cout << "ProtoTube CSTR 5" << std::endl;
     // no transform function
     setIsTransformFunction(false);
     perturbation.x = perturbation.y = perturbation.z = 0.0;
@@ -184,7 +184,7 @@ ProtoGeom3(Vec3f(0, 0, 0), Vec3f(0, 0, 0), ProtoDimension3f(1, 1, 1), col4s), pa
     if(radii.size()>0) radii.clear();
 
     
-    std::cout << "ProtoTube CSTR 6" << std::endl;
+   // std::cout << "ProtoTube CSTR 6" << std::endl;
     setIsTransformFunction(true);
     perturbation.x = perturbation.y = perturbation.z = 0.0;
 
@@ -200,7 +200,7 @@ ProtoGeom3(Vec3f(0, 0, 0), Vec3f(0, 0, 0), ProtoDimension3f(1, 1, 1), col4s), pa
 ProtoTube::ProtoTube(const std::vector< ProtoColor4f >& col4s, const ProtoSpline3& path, std::vector<float>& radii, int crossSectionDetail, bool isClosed) :
 ProtoGeom3(Vec3f(0, 0, 0), Vec3f(0, 0, 0), ProtoDimension3f(1, 1, 1), col4s), path(path), radii(radii), crossSectionDetail(crossSectionDetail), isClosed(isClosed) {
 
-    std::cout << "ProtoTube CSTR 7" << std::endl;
+   // std::cout << "ProtoTube CSTR 7" << std::endl;
     // no transform function
     setIsTransformFunction(false);
     perturbation.x = perturbation.y = perturbation.z = 0.0;
@@ -216,7 +216,7 @@ ProtoGeom3(pos, rot, size, col4), path(path), radius(radius), crossSectionDetail
     if(radii.size()>0) radii.clear();
     if(col4s.size()>0) col4s.clear();
     
-    std::cout << "ProtoTube CSTR 8" << std::endl;
+   // std::cout << "ProtoTube CSTR 8" << std::endl;
     // no transform function
     setIsTransformFunction(false);
     perturbation.x = perturbation.y = perturbation.z = 0.0;
@@ -237,7 +237,7 @@ ProtoGeom3(pos, rot, size, col4), path(path), radii(radii), crossSectionDetail(c
 
     if(col4s.size()>0) col4s.clear();
     
-    std::cout << "ProtoTube CSTR 9" << std::endl;
+   // std::cout << "ProtoTube CSTR 9" << std::endl;
     // no transform function
     setIsTransformFunction(false);
     perturbation.x = perturbation.y = perturbation.z = 0.0;
@@ -257,7 +257,7 @@ ProtoGeom3(pos, rot, size, col4s), path(path), radius(radius), crossSectionDetai
 
     if(radii.size()>0) radii.clear();
     
-    std::cout << "ProtoTube CSTR 10" << std::endl;
+   // std::cout << "ProtoTube CSTR 10" << std::endl;
     // no transform function
     setIsTransformFunction(false);
     perturbation.x = perturbation.y = perturbation.z = 0.0;
@@ -276,7 +276,7 @@ ProtoTube::ProtoTube(const Vec3f& pos, const Vec3f& rot, const ProtoDimension3f&
         int crossSectionDetail, bool isClosed) : // varied thickness & color
 ProtoGeom3(pos, rot, size, col4s), path(path), radii(radii), crossSectionDetail(crossSectionDetail), isClosed(isClosed) {
 
-    std::cout << "ProtoTube CSTR 11" << std::endl;
+  //  std::cout << "ProtoTube CSTR 11" << std::endl;
 
     // no transform function
     setIsTransformFunction(false);
@@ -308,7 +308,7 @@ ProtoTube::ProtoTube(const Vec3f& pos, const Vec3f& rot, const ProtoDimension3f&
  * all with varied color and TransformFunction obj */
 ProtoTube::ProtoTube(const Vec3f& pos, const Vec3f& rot, const ProtoDimension3f& size, const std::vector<ProtoColor4f>& col4s, const ProtoSpline3& path, float radius, int crossSectionDetail, const ProtoTransformFunction& transFuncObj, bool isClosed) : ProtoGeom3(pos, rot, size, col4s), path(path), radius(radius), crossSectionDetail(crossSectionDetail), transFuncObj(transFuncObj), isClosed(isClosed) {
 
-    std::cout << "ProtoTube CSTR 13" << std::endl;
+   // std::cout << "ProtoTube CSTR 13" << std::endl;
     setIsTransformFunction(true);
     perturbation.x = perturbation.y = perturbation.z = 0.0;
 
@@ -326,7 +326,7 @@ ProtoTube::ProtoTube(const Vec3f& pos, const Vec3f& rot, const ProtoDimension3f&
  * all with varied color and TransformFunction obj */
 ProtoTube::ProtoTube(const Vec3f& pos, const Vec3f& rot, const ProtoDimension3f& size, const ProtoColor4f& col4, const ProtoSpline3& path, std::vector<float>& radii, int crossSectionDetail, const ProtoTransformFunction& transFuncObj, bool isClosed){
     
-    std::cout << "ProtoTube CSTR 14" << std::endl;
+  //  std::cout << "ProtoTube CSTR 14" << std::endl;
     setIsTransformFunction(true);
     perturbation.x = perturbation.y = perturbation.z = 0.0;
 

@@ -36,18 +36,23 @@ namespace ijg {
 using namespace ijg;
 
 ProtoFace3::ProtoFace3(ProtoVertex3* v0_p, ProtoVertex3* v1_p, ProtoVertex3* v2_p) {
-    // get vertex addresses
-    this->v0_p = v0_p;
-    this->v1_p = v1_p;
-    this->v2_p = v2_p;
+	// get vertex addresses
+	this->v0_p = v0_p;
+	this->v1_p = v1_p;
+	this->v2_p = v2_p;
 
-    init();
+	init();
 }
 
 void ProtoFace3::init() {
     // initialize centroid and normal
     calcCentroid();
     calcNorm();
+
+	// store positional data by value
+	v0 = v0_p->pos;
+	v1 = v1_p->pos;
+	v2 = v2_p->pos;
 }
 
 void ProtoFace3::display() {

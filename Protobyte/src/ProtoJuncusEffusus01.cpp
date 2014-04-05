@@ -30,7 +30,8 @@ using namespace ijg;
 void ProtoJuncusEffusus01::init() {
 
 	setBackground(0);
-	globalAmbient = ProtoLight(Col4f(.2f, .15f, .22f, 1)); // slight violet color
+	glClearColor(1, .985f, .985f, 1);
+	globalAmbient = ProtoLight(Col4f(.25f, .19f, .27f, 1)); // slight violet color
 
 	// light0
 	light0.setPosition(Vec3f(0, 0, 1));
@@ -57,8 +58,8 @@ void ProtoJuncusEffusus01::init() {
 	//Spline3 path();
 
 	Dim2f arrayDim(5.75, 16.5);
-	int rows = 2;
-	int columns = 2;
+	int rows = 5;
+	int columns = 5;
 	float rowH = arrayDim.h / (rows - 1);
 	float colW = arrayDim.w / (columns - 1);
 	tubuleCount = rows*columns;
@@ -93,7 +94,7 @@ void ProtoJuncusEffusus01::init() {
 			//            tubule = Tube(Spline3(cps, tubuleInterpDetail, false, 1), random(.06, .08), tubuleDetail, ProtoTransformFunction(ProtoTransformFunction::LINEAR_INVERSE, Tup2f(tubuleRadius, .21), 1),true, "reptile3.jpg");
 
 			// curvey
-			tubules.push_back(Tube(Spline3(cps, tubuleInterpDetail, false, 1), random(.06, .08), tubuleDetail, ProtoTransformFunction(ProtoTransformFunction::SINUSOIDAL, Tup2f(tubuleRadius, .18), 6), true, "reptile3.jpg"));
+			tubules.push_back(Tube(Spline3(cps, tubuleInterpDetail, false, 1), random(.06, .08), tubuleDetail, ProtoTransformFunction(ProtoTransformFunction::SINUSOIDAL, Tup2f(tubuleRadius, .18), 6), true, "pebbles.jpg"));
 
 			// l-r and f-b
 			if (columns == 1){
@@ -215,19 +216,20 @@ void ProtoJuncusEffusus01::initUniforms(){
 	N_U = glGetUniformLocation(shader.getID(), "normalMatrix");
 
 	// shadow map
-	shadowMap_U = glGetUniformLocation(shader.getID(), "lightModelViewProjection");
+	shadowMapTex = glGetUniformLocation(shader.getID(), "shaderMapTexture");
+	L_MVP_U = glGetUniformLocation(shader.getID(), "lightModelViewProjectionMatrix");
 
-	shader.unbind();
+	//shader.unbind();
 }
 
 void ProtoJuncusEffusus01::run() {
 	setBackground(0);
-	glClearColor(0, 0, 0, 1.0f);
+	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	glViewport(0, 0, width, height);
 
-	shader.bind();
+	//shader.bind();
 
 	// Lighting 
 		glUniform3fv(lightPos0_U, 1, &light0.getPosition().x);
@@ -239,15 +241,16 @@ void ProtoJuncusEffusus01::run() {
 		// save high resolution rendering
 		if (frameCount == 1){
 		// currently only works with max 999 tiles
-		//save("juncs", 12);
+		save("juncs", 12);
 	}
 
 	render();
 }
 
+// don't really need this
 void ProtoJuncusEffusus01::setShadowMapTransform(){
 	// calulate matrices from light perspective
-	L_MV = glm::lookAt(glm::vec3(light0.getPosition().x, light0.getPosition().y, light0.getPosition().z), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	L_V = glm::lookAt(glm::vec3(light0.getPosition().x, light0.getPosition().y, light0.getPosition().z), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
 	L_P = glm::perspective(50.0f, 1.0f, 1.0f, 25.0f); // where are these nums from???
 	L_B = glm::scale(glm::translate(glm::mat4(1), glm::vec3(0.5, 0.5, 0.5)), glm::vec3(0.5, 0.5, 0.5));
 	L_BP = L_B*L_P;
@@ -256,12 +259,77 @@ void ProtoJuncusEffusus01::setShadowMapTransform(){
 	glUniformMatrix4fv(shadowMap_U, 1, GL_FALSE, &L_MVP[0][0]);
 }
 
-void ProtoJuncusEffusus01::render(){
-	setShadowMapTransform();
+void ProtoJuncusEffusus01::render(int scaleFactor){
+	//setShadowMapTransform();
 
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	//
+	////  01. draw to shadow map framebuffer
+	//glBindFramebuffer(GL_FRAMEBUFFER, framebufferID); // bind to framebuffer
+	//glClear(GL_DEPTH_BUFFER_BIT);
+	//glViewport(0, 0, 1024, 1024);
+
+	////enable front face culling
+	//glCullFace(GL_FRONT);
+
+	//for (int i = 0; i < tubuleCount; ++i){
+	//	// 1 Draw Ground
+	//	R = glm::mat4(1.0);
+	//	T = glm::mat4(1.0);
+	//	S = glm::mat4(1.0f);
+	//	T = glm::translate(glm::mat4(1.0f), glm::vec3(0, -3, 0));
+
+	//	M = T * R * S;
+	//	L_V = glm::lookAt(glm::vec3(light0.getPosition().x, light0.getPosition().y, light0.getPosition().z), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	//	L_MV = L_V * M;
+	//	L_P = glm::perspective(50.0f, 1.0f, 1.0f, 25.0f); // where are these nums from???
+	//	L_B = glm::scale(glm::translate(glm::mat4(1), glm::vec3(0.5, 0.5, 0.5)), glm::vec3(0.5, 0.5, 0.5));
+	//	L_BP = L_B*L_P;
+	//	L_MVP = L_BP*L_MV; 
+	//	glUniformMatrix4fv(L_MVP_U, 1, GL_FALSE, &L_MVP[0][0]);
+	//	glUniform1i(shadowMapTex, 0);
+
+	//	// some help from:http://www.opengl.org/discussion_boards/showthread.php/171184-GLM-to-create-gl_NormalMatrix
+	//	// update normals
+	//	//N = glm::transpose(glm::inverse(glm::mat3(MV)));
+
+	//	//glUniformMatrix4fv(MV_U, 1, GL_FALSE, &MV[0][0]);
+	//	//glUniformMatrix4fv(MVP_U, 1, GL_FALSE, &MVP[0][0]);
+	//	//glUniformMatrix3fv(N_U, 1, GL_FALSE, &N[0][0]);
+	//	ground.display();
+
+	//	// 2 Draw Tendrils
+	//	S = glm::mat4(1.0);
+	//	R = glm::mat4(1.0);
+	//	T = glm::mat4(1.0);
+
+	//	S = glm::mat4(1.0f);
+	//	//R = glm::rotate(glm::mat4(1.0f), float(frameCount*.06), glm::vec3(0, 1, 0));
+	//	T = glm::translate(glm::mat4(1.0f), glm::vec3(tubules.at(i).getPosition().x, tubules.at(i).getPosition().y, tubules.at(i).getPosition().z - .75f));
+
+	//	M = T * R * S;
+	//	L_V = glm::lookAt(glm::vec3(light0.getPosition().x, light0.getPosition().y, light0.getPosition().z), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+	//	L_MV = L_V * M;
+	//	L_P = glm::perspective(50.0f, 1.0f, 1.0f, 25.0f); // where are these nums from???
+	//	L_B = glm::scale(glm::translate(glm::mat4(1), glm::vec3(0.5, 0.5, 0.5)), glm::vec3(0.5, 0.5, 0.5));
+	//	L_BP = L_B*L_P;
+	//	L_MVP = L_BP*L_MV;
+	//	glUniformMatrix4fv(L_MVP_U, 1, GL_FALSE, &L_MVP[0][0]);
+
+	//	tubules.at(i).display(WIREFRAME);
+	//	tubulesWraps.at(i).display();
+	//}
+	//
+	////unbind FBO, set the default back buffer and reset the viewport to screen size
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glDrawBuffer(GL_BACK_LEFT);
+	//glCullFace(GL_BACK);
+	//glViewport(0, 0, width, height);
+
+	//  02. draw to regular buffer
 	for (int i = 0; i < tubuleCount; ++i){
-		//trace("tubuleCount =", tubuleCount);
-		//GLuint gl_textureLocation = glGetUniformLocation(shader.getID(), "vertexTextureCoords");		gl_scaleMatrix = glm::mat4(1.0);
+		// 1 Draw Ground
 		R = glm::mat4(1.0);
 		T = glm::mat4(1.0);
 		S = glm::mat4(1.0f);
@@ -276,27 +344,19 @@ void ProtoJuncusEffusus01::render(){
 		// update normals
 		N = glm::transpose(glm::inverse(glm::mat3(MV)));
 
-
-		// connect Uniforms to GLSL
-		// modelView matrix
-		//HERE
-
-
-			glUniformMatrix4fv(MV_U, 1, GL_FALSE, &MV[0][0]);
-			glUniformMatrix4fv(MVP_U, 1, GL_FALSE, &MVP[0][0]);
-			glUniformMatrix3fv(N_U, 1, GL_FALSE, &N[0][0]);
-
+		glUniformMatrix4fv(MV_U, 1, GL_FALSE, &MV[0][0]);
+		glUniformMatrix4fv(MVP_U, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix3fv(N_U, 1, GL_FALSE, &N[0][0]);
 	
+		//ground.display();
 
-		ground.display();
-
-		// now deal with tendrils
+		// 2 Draw Tendrils
 		S = glm::mat4(1.0);
 		R = glm::mat4(1.0);
 		T = glm::mat4(1.0);
 
 		S = glm::mat4(1.0f);
-		R = glm::rotate(glm::mat4(1.0f), float(frameCount*.06), glm::vec3(0, 1, 0));
+		//R = glm::rotate(glm::mat4(1.0f), float(frameCount*.06), glm::vec3(0, 1, 0));
 		T = glm::translate(glm::mat4(1.0f), glm::vec3(tubules.at(i).getPosition().x, tubules.at(i).getPosition().y, tubules.at(i).getPosition().z - .75f));
 
 		V = glm::lookAt(glm::vec3(0.0, 0.0, 5.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
@@ -306,24 +366,15 @@ void ProtoJuncusEffusus01::render(){
 
 		// some help from:http://www.opengl.org/discussion_boards/showthread.php/171184-GLM-to-create-gl_NormalMatrix
 		// update normals
+
 		N = glm::transpose(glm::inverse(glm::mat3(MV)));
-
-
-		// connect Uniforms to GLSL
-		// modelView matrix
 		glUniformMatrix4fv(MV_U, 1, GL_FALSE, &MV[0][0]);
-		// modelViewProjection matrix
 		glUniformMatrix4fv(MVP_U, 1, GL_FALSE, &MVP[0][0]);
-		// normal matrix
 		glUniformMatrix3fv(N_U, 1, GL_FALSE, &N[0][0]);
-	
 
-		//scale(1.3, 1.3, 1.3);
 		tubules.at(i).display(WIREFRAME);
 		tubulesWraps.at(i).display();
-
 	}
-
 }
 
 
@@ -353,7 +404,7 @@ void ProtoJuncusEffusus01::save(std::string name, int scaleFactor){
 	for (int i = 0; i < scaleFactor; ++i){
 		for (int j = 0; j < scaleFactor; ++j){
 			//trace("in drawToFrameBuffer");
-			glClearColor(0, 0, 0, 1.0f);
+			//glClearColor(0, 0, 0, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 			//From: http://stackoverflow.com/questions/12157646/how-to-render-offscreen-on-opengl
 
@@ -529,12 +580,10 @@ bool ProtoJuncusEffusus01::stitchTiles(std::string url, int tiles){
 }
 
 bool ProtoJuncusEffusus01::initShadowMap(){
-
-
 	// Depth texture for Frame Buffer. Slower than a depth buffer, but you can sample it later in your shader
-	GLuint depthTexture;
-	glGenTextures(1, &depthTexture);
-	glBindTexture(GL_TEXTURE_2D, depthTexture);
+	depthTextureID = 0;
+	glGenTextures(1, &depthTextureID);
+	glBindTexture(GL_TEXTURE_2D, depthTextureID);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -542,14 +591,14 @@ bool ProtoJuncusEffusus01::initShadowMap(){
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, depthTexture);
+	glBindTexture(GL_TEXTURE_2D, depthTextureID);
 
 
 	// The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth buffer.
-	GLuint FramebufferName = 0;
-	glGenFramebuffers(1, &FramebufferName);
-	glBindFramebuffer(GL_FRAMEBUFFER, FramebufferName);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTexture, 0);
+	framebufferID = 0;
+	glGenFramebuffers(1, &framebufferID);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebufferID);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthTextureID, 0);
 
 	glDrawBuffer(GL_NONE); // No color buffer is drawn to.
 

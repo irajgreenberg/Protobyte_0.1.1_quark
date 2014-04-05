@@ -13,6 +13,7 @@ out vec4 color;
 out vec2 textureCoords;
 out vec4 eyePosition;
 out vec3 normal;
+out vec4 shadowMapCoords;
 
 // Lighting
 uniform vec3 light0Position;
@@ -23,15 +24,19 @@ uniform vec4 light0Specular;
 uniform vec3 light1Position;
 
 
+
 // coord transforms
 uniform mat4 modelViewMatrix;
 uniform mat3 normalMatrix;
 uniform mat4 modelViewProjectionMatrix;
+uniform mat4 lightModelViewProjectionMatrix;
 
 
 void main(){
   
   textureCoords = vertexTextureCoords;
+
+  shadowMapCoords = lightModelViewProjectionMatrix * vec4(vertexPosition, 1);
   
   // Position in clip space
   gl_Position = modelViewProjectionMatrix * vec4(vertexPosition, 1);

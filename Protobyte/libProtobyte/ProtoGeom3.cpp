@@ -155,7 +155,27 @@ void ProtoGeom3::calcFaces() {
 	for (int i = 0; i < inds.size(); i++) {
 		faces.push_back(ProtoFace3(&verts.at(inds.at(i).elem0), &verts.at(inds.at(i).elem1),
                                    &verts.at(inds.at(i).elem2)));
-		//std::cout << faces.at(i)[2]->pos.z << std::endl;
+
+	/*	faces2.push_back(ProtoFace3(verts.at(inds.at(i).elem0), verts.at(inds.at(i).elem1),
+			verts.at(inds.at(i).elem2)));*/
+		//packedFaces.push_back(verts.at(inds.at(i).elem0).pos.x);
+		//packedFaces.push_back(verts.at(inds.at(i).elem0).pos.y);
+		//packedFaces.push_back(verts.at(inds.at(i).elem0).pos.z);
+
+		//packedFaces.push_back(verts.at(inds.at(i).elem1).pos.x);
+		//packedFaces.push_back(verts.at(inds.at(i).elem1).pos.y);
+		//packedFaces.push_back(verts.at(inds.at(i).elem1).pos.z);
+
+		//packedFaces.push_back(verts.at(inds.at(i).elem2).pos.x);
+		//packedFaces.push_back(verts.at(inds.at(i).elem2).pos.y);
+		//packedFaces.push_back(verts.at(inds.at(i).elem2).pos.z);
+
+		//packedFaces.push_back(verts.at(inds.at(i).elem0).pos.x);
+		//packedFaces.push_back(verts.at(inds.at(i).elem0).pos.y);
+		//packedFaces.push_back(verts.at(inds.at(i).elem0).pos.z);
+		//std::cout << faces.at(i)[0]->pos << std::endl; 
+		//std::cout << faces.at(i)[1]->pos << std::endl;
+		//std::cout << faces.at(i)[2]->pos << std::endl;
 	}
 }
 
@@ -366,7 +386,7 @@ void ProtoGeom3::createTexture(){
         std::string cp = cCurrentPath; //cast char[] to string
 #if defined(_WIN32) || (_WIN64)
 		// need to escape backslashes with themselves, ick
-        std::string pathExtension = "\\resources\\imgs\\";
+        std::string pathExtension = "\\..\\..\\Protobyte\\resources\\imgs\\";
 #else
 		// osx/posix use "normal" directory dividers
 		std::string pathExtension = "/resources/imgs/";
@@ -381,7 +401,8 @@ void ProtoGeom3::createTexture(){
 #ifdef FREEIMAGE_LIB
         FreeImage_Initialise();
 #endif
-        texture = ProtoTexture(url, GL_RGB, GL_RGB, 0, 0, textureID++);
+		// trace("Texture url =", url);
+		texture = ProtoTexture(url, GL_RGB, GL_RGB, 0, 0, textureID++);
         
         //std::cout << "texture.getTextureID() = " << texture.getTextureID() << std::endl;
         

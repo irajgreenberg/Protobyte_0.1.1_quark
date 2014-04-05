@@ -29,6 +29,7 @@
 //#include <iostream>
 //#include "ProtoPlasm.h"
 
+#include "libProtobyte/ProtoOSC.h"
 #include "libProtobyte/ProtoDimension2.h"
 #include "libProtobyte/ProtoDimension3.h"
 #include "libProtobyte/ProtoGroundPlane.h"
@@ -45,6 +46,9 @@
 #include "libProtobyte/ProtoTube.h"
 #include "libProtobyte/ProtoLight.h"
 #include "libProtobyte/ProtoCore.h"
+#include "libProtobyte/ProtoTuple4.h"
+
+#include "libProtobyte/ProtoJuncusEffusus.h"
 
 // preproc dir for relative resource loading
 // from http://stackoverflow.com/questions/143174/how-do-i-get-the-directory-that-a-program-is-running-from
@@ -72,6 +76,7 @@ namespace ijg {
 
 	public:
 		ProtoBaseApp();
+		ProtoBaseApp(const ProtoOSC& listener);
 		// void setAppWindowDetails(int appWidth, int appHeight, std::string appTitle);
 
 	private:
@@ -124,6 +129,12 @@ namespace ijg {
 			LIGHT_7
 		};
 
+		enum Format {
+			STL,
+			TXT,
+			RTF
+		};
+
 		//ProtoLight light0, light1, light2, light3, light4, light5, light6, light7;
 		//std::shared_ptr<ProtoLight> lights[8];
 
@@ -144,7 +155,7 @@ namespace ijg {
 		glm::mat4 T, R, S;
 
 		// Uniform Shadow Map Matrices
-		glm::mat4 L_MV, L_P, L_B, L_BP, L_MVP;
+		glm::mat4 L_V, L_MV, L_P, L_B, L_BP, L_MVP;
 
 		// Uniform Normal Matrix
 		glm::mat3 N;
@@ -153,6 +164,7 @@ namespace ijg {
 		GLuint M_U, V_U, MV_U, P_U, MVP_U, N_U;
 		GLuint T_U, R_U, S_U;
 		GLuint L_MVP_U; // only for Light perspective
+		GLuint shadowMapTex; // id for shadermap texture
 
 		// Uniform Lighting location vars
 		GLuint lightPos0_U, lightPos1_U, lightPos2_U, lightPos3_U, lightPos4_U, lightPos5_U, lightPos6_U, lightPos7_U;
@@ -166,6 +178,9 @@ namespace ijg {
 
 		// Shadow Map
 		GLuint shadowMap_U;
+
+		// OSC obj 
+		ProtoOSC listener;
 
 
 		/************************************
@@ -225,6 +240,9 @@ namespace ijg {
 		void lightsOn();
 		void lightsOff();
 
+		// exporting
+		void export(std::vector<Tup4v> vs, Format type);
+
 		// CAMERAS
 
 		// WORLD
@@ -241,6 +259,16 @@ namespace ijg {
 			CORNER_BL,
 			RANDOM
 		};
+
+
+		// saving stuff
+		virtual void render(int scaleFactor = 1) = 0; // evntually maybe make pure virtual (ehhh, maybe not)
+		void save(std::string name = "img", int scaleFactor = 1);
+		//void saveTiles(int rows, int columns);
+		bool stitchTiles(std::string url, int tiles);
+		
+
+
 
 		void rect(float x, float y, float w, float h, Registration reg = CORNER);
 		void rect(Vec2 pt0, Vec2 pt1, Registration reg = CORNER);
