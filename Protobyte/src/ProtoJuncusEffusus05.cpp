@@ -25,53 +25,22 @@ This class is part of the group common (update)
 #include "ProtoJuncusEffusus05.h"
 
 void ProtoJuncusEffusus05::init() {
-
-	setBackground(0);
-	//glClearColor(1, .985f, .985f, 1);
-	glClearColor(1, .88, .88, 1);
 	globalAmbient = ProtoLight(Col4f(.25f, .19f, .27f, 1)); // slight violet color
 
 	// light0
 	light0.setPosition(Vec3f(0, 0, 1));
 	light0.setDiffuse(Col4f(1, 1, 1, 1.0f));
-	light0.setAmbient(Col4f(.3, .3, .3, 1.0));
+	light0.setAmbient(Col4f(.5, .3, .3, 1.0));
 	light0.setSpecular(Col4f(1, 1, 1, 1.0));
 	light0.on();
 
-	shader = ProtoShader("shader1.vert", "shader1.frag");
+	light1.setPosition(Vec3f(-1, 0, 1));
+	light1.setDiffuse(Col4f(.2, .5, .65, 1.0f));
+	light1.setAmbient(Col4f(.3, .3, .3, 1.0));
+	light1.setSpecular(Col4f(1, 1, 1, 1.0));
+	light1.on();
 
-	// START standard transformation matrices: ModelView / Projection / Normal
-	M = glm::mat4(1.0f); // set to identity
-	V = glm::lookAt(glm::vec3(0.0, 0.0, 5.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-	MV = V * M;
-	N = glm::transpose(glm::inverse(glm::mat3(MV)));
-
-	// projection matrix and MVP Matrix
-	float viewAngle = 45.0f;
-	
-	//float aspect = getWidth()/getHeight();
-	float aspect = float(width) / float(height);
-	//float aspect = 800/1500;
-	float nearDist = .1f;
-	float farDist = 600.0f;
-
-	P = glm::perspective(viewAngle, aspect, nearDist, farDist);
-	MVP = P * MV;
-	// END Model / View / Projection data
-
-	// tranformation matricies
-	T = glm::mat4(1.0f);
-	R = glm::mat4(1.0f);
-	S = glm::mat4(1.0f);
-
-	/**************************************
-	Start FrameBuffer Object for Shadow Map
-	**************************************/
-	initUniforms();
-	// END
-	//ProtoJuncusEffusus(const ProtoColor4f& col4, const std::string& textureImageURL1, const std::string& textureImageURL2, const std::vector<Vec3f>& cps) 
-
-	juncsCount = 16;// 9;// 36;
+	juncsCount = 15;// 9;// 36;
 	float ht = 2.25;
 	int segs = 8;
 	float step = ht / segs;
@@ -79,7 +48,7 @@ void ProtoJuncusEffusus05::init() {
 	float radius = .107;
 	float x, y, z;
 	float chi = 0;
-	
+
 	// thanks to gamblin colors
 	for (int i = 0; i < juncsCount; ++i){
 		theta = TWO_PI / juncsCount * i;
@@ -128,7 +97,8 @@ void ProtoJuncusEffusus05::init() {
 		}
 		else if (dice == 9){
 			skin = "pink2.jpg";
-		}else if (dice == 10){
+		}
+		else if (dice == 10){
 			skin = "white3.jpg";
 		}
 		else if (dice == 11){
@@ -137,12 +107,12 @@ void ProtoJuncusEffusus05::init() {
 		else {
 			skin = "pink2.jpg";
 		}
-		juncs.push_back(ProtoJuncusEffusus(Col4f(.7, .7, .6, 1), skin, "pink2.jpg", cps, ProtoJuncusEffusus::MEDIUM));
+		juncs.push_back(ProtoJuncusEffusus(Col4f(.7, .7, .6, 1), skin, "pink2.jpg", cps, ProtoJuncusEffusus::LOW));
 	}
-	
-	
-	
-	
+
+
+
+
 	// For exporting geometry to STL
 	std::vector<Tup4v> vs;
 	for (int i = 0; i < juncs.size(); ++i){
@@ -151,14 +121,14 @@ void ProtoJuncusEffusus05::init() {
 		std::vector<Tup4v> temp = juncs.at(i).getGeomData(isTubule, true);
 		vs.insert(vs.end(), temp.begin(), temp.end());
 	}
-	
+
 	// export geometry data to STL
-	export(vs, STL);
+	//export(vs, STL);
 
 
 	// Locations for page placement
-	float arrayW = 9*.37;
-	float arrayH = 13*.39;
+	float arrayW = 9 * .37;
+	float arrayH = 13 * .39;
 	float gapX = arrayW / (COLUMNS - 1);
 	float gapY = arrayH / (ROWS - 1);
 	for (int i = 0; i < ROWS; ++i){
@@ -170,43 +140,8 @@ void ProtoJuncusEffusus05::init() {
 	}
 }
 
-
-
-void ProtoJuncusEffusus05::initUniforms(){
-	// lighting
-	shader.bind();
-	lightPos0_U = glGetUniformLocation(shader.getID(), "light0Position");
-	lightDiffuse0_U = glGetUniformLocation(shader.getID(), "light0Diffuse");
-	lightAmbient0_U = glGetUniformLocation(shader.getID(), "light0Ambient");
-	lightSpecular0_U = glGetUniformLocation(shader.getID(), "light0Specular");
-
-	//matrices
-	MV_U = glGetUniformLocation(shader.getID(), "modelViewMatrix");
-	MVP_U = glGetUniformLocation(shader.getID(), "modelViewProjectionMatrix");
-	N_U = glGetUniformLocation(shader.getID(), "normalMatrix");
-
-	// shadow map
-	shadowMapTex = glGetUniformLocation(shader.getID(), "shaderMapTexture");
-	L_MVP_U = glGetUniformLocation(shader.getID(), "lightModelViewProjectionMatrix");
-
-	//shader.unbind();
-}
-
 void ProtoJuncusEffusus05::run() {
-	setBackground(0);
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	//glViewport(0, 0, getWidth(), getHeight());
-	glViewport(0, 0, width, height);
-	//glViewport(0, 0, 800,1500);
-	//shader.bind();
-
-	// Lighting 
-	glUniform3fv(lightPos0_U, 1, &light0.getPosition().x);
-	glUniform4fv(lightDiffuse0_U, 1, &light0.getDiffuse().r);
-	glUniform4fv(lightAmbient0_U, 1, &light0.getAmbient().r);
-	glUniform4fv(lightSpecular0_U, 1, &light0.getSpecular().r);
-
+	setBackground(1, .85, .85);
 
 	// save high resolution rendering
 	// currently only works with max 999 tiles
@@ -214,72 +149,38 @@ void ProtoJuncusEffusus05::run() {
 	if (frameCounter++ < 1){
 		// save("juncs", 13);
 	}
-	
+
 	render();
 
 }
 
 
 void ProtoJuncusEffusus05::render(int scaleFactor){
+	//push();
+	translate(1, 0, 0);
+	rotate(-getFrameCount(), 0, 1, 0); 
+	juncs.at(0).display(SURFACE, SURFACE, 2, 1);
+	//pop();
 
-	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	//push();
+	translate(1, 0, 0);
+	rotate(getFrameCount(), 0, 1, 0);
+	juncs.at(0).display(SURFACE, SURFACE, 2, 1);
+	//pop();
+
+	
 
 
-		// 2 Draw Tendrils
-		S = glm::mat4(1.0);
-		R = glm::mat4(1.0);
-		T = glm::mat4(1.0);
-
-		//S = glm::scale(glm::mat4(1.0f), glm::vec3(.25, .25, .25));
-		R = glm::rotate(glm::mat4(1.0f), 70.0f, glm::vec3(0, 1, 0));
-		//T = glm::translate(glm::mat4(1.0f), glm::vec3(juncs.at(i).getPosition().x, juncs.at(i).getPosition().y, juncs.at(i).getPosition().z - .75f));
-
-		V = glm::lookAt(glm::vec3(0.0, 0.0, 7.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-		M = T * R * S;
-		MV = V * M;
-		MVP = P * MV;
-
-		// some help from:http://www.opengl.org/discussion_boards/showthread.php/171184-GLM-to-create-gl_NormalMatrix
-		// update normals
-
-		N = glm::transpose(glm::inverse(glm::mat3(MV)));
-		glUniformMatrix4fv(MV_U, 1, GL_FALSE, &MV[0][0]);
-		glUniformMatrix4fv(MVP_U, 1, GL_FALSE, &MVP[0][0]);
-		glUniformMatrix3fv(N_U, 1, GL_FALSE, &N[0][0]);
-
-		//junc01.display(SURFACE, SURFACE);
-
-		//for (int h = 0; h < ROWS*COLUMNS; ++h){
-		//	// 2 Draw Tendrils
-
-		//	S = glm::scale(glm::mat4(1.0f), glm::vec3(.22, .22, .22));
-		//	R = glm::rotate(glm::mat4(1.0f), thetas[h], glm::vec3(0, 1, 0));
-		//	T = glm::translate(glm::mat4(1.0f), glm::vec3(locs[h].x, locs[h].y, locs[h].z));
-
-		//	V = glm::lookAt(glm::vec3(0.0, 0, 9.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
-		//	M = T * R * S;
-		//	MV = V * M;
-		//	MVP = P * MV;
-
-		//	// some help from:http://www.opengl.org/discussion_boards/showthread.php/171184-GLM-to-create-gl_NormalMatrix
-		//	// update normals
-
-		//	N = glm::transpose(glm::inverse(glm::mat3(MV)));
-		//	glUniformMatrix4fv(MV_U, 1, GL_FALSE, &MV[0][0]);
-		//	glUniformMatrix4fv(MVP_U, 1, GL_FALSE, &MVP[0][0]);
-		//	glUniformMatrix3fv(N_U, 1, GL_FALSE, &N[0][0]);
-		//	for (int i = 0; i < juncIDCounts[h]; ++i){
-		//		juncs.at(i).display(SURFACE, SURFACE, 9, 1);
-		//	}
-		//}
-		for (int i = 0; i < juncsCount; ++i){
-			if (i % 3 == 0){
-				juncs.at(i).display(SURFACE, SURFACE, 2, 1);
-			}
-			else {
-				juncs.at(i).display(SURFACE, SURFACE, 4, 1);
-			}
+	push(); 
+	translate(-2, 0, 0);
+	rotate(getFrameCount(), 0, 1, 0);
+	for (int i = 0; i < juncsCount; ++i){
+		if (i % 3 == 0){
+			juncs.at(i).display(SURFACE, SURFACE, 2, 1);
 		}
-
+		else {
+			juncs.at(i).display(SURFACE, SURFACE, 4, 1);
+		}
+	}
+	pop();
 }

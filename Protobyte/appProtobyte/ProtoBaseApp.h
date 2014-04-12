@@ -66,6 +66,7 @@
 
 #define BUFFER_OFFSET(i) ((void*)(i))
 #include <iostream>
+#include <stack>
 
 namespace ijg {
 	class Protoplasm; // forward declare
@@ -88,7 +89,13 @@ namespace ijg {
 		void setHeight(int canvasHeight);
 		void setSize(const Dim2i& canvasSize);
 
+		void _init();
+		void _initUniforms();
+		void _run();
+		// void concat(); moved down for testing
+
 	protected:
+		void concat();
 		/************************************
 		 **********     FIELDS     **********
 		 ***********************************/
@@ -135,6 +142,9 @@ namespace ijg {
 			RTF
 		};
 
+		// shader
+		ProtoShader shader;
+		
 		//ProtoLight light0, light1, light2, light3, light4, light5, light6, light7;
 		//std::shared_ptr<ProtoLight> lights[8];
 
@@ -166,14 +176,18 @@ namespace ijg {
 		GLuint L_MVP_U; // only for Light perspective
 		GLuint shadowMapTex; // id for shadermap texture
 
-		// Uniform Lighting location vars
-		GLuint lightPos0_U, lightPos1_U, lightPos2_U, lightPos3_U, lightPos4_U, lightPos5_U, lightPos6_U, lightPos7_U;
-		GLuint lightDiffuse0_U, lightDiffuse1_U, lightDiffuse2_U, lightDiffuse3_U, lightDiffuse4_U, lightDiffuse5_U, lightDiffuse6_U, lightDiffuse7_U;
-		GLuint lightSpecular0_U, lightSpecular1_U, lightSpecular2_U, lightSpecular3_U, lightSpecular4_U, lightSpecular5_U, lightSpecular6_U, lightSpecular7_U;
-		GLuint lightAmbient0_U, lightAmbient1_U, lightAmbient2_U, lightAmbient3_U, lightAmbient4_U, lightAmbient5_U, lightAmbient6_U, lightAmbient7_U;
-		GLuint lightEmissive0_U, lightEmissive1_U, lightEmissive2_U, lightEmissive3_U, lightEmissive4_U, lightEmissive5_U, lightEmissive6_U, lightEmissive7_U;
-		GLuint lightReflectionConst0_U, lightReflectionConst1_U, lightReflectionConst2_U, lightReflectionConst3_U, lightReflectionConst4_U, lightReflectionConst5_U, lightReflectionConst6_U, lightReflectionConst7_U;
-		GLuint lightIntensity0_U, lightIntensity1_U, lightIntensity2_U, lightIntensity3_U, lightIntensity4_U, lightIntensity5_U, lightIntensity6_U, lightIntensity7_U;
+		std::stack <glm::mat4> matrixStack;
+
+
+		
+		// Uniform Lighting location vars - replace above
+		struct Light_U {
+			GLuint position;
+			GLuint diffuse;
+			GLuint ambient;
+			GLuint specular;;
+		};
+		Light_U lights_U[8];
 		//END
 
 		// Shadow Map
@@ -220,7 +234,7 @@ namespace ijg {
 		void setBackground(float r, float g, float b);
 		void setBackground(float c);
 		void setBackground(const Col3f& col);
-		void setBackground(const Col4f& col);
+		void setBackground(const ProtoColor4<float>& col);
 
 		// get window properties **READ ONLY**
 		int getWidth()const;
@@ -233,12 +247,25 @@ namespace ijg {
 		// shaders stuff
 		void GLSLInfo(ProtoShader* shader);
 			
-		// START get all uniform shaders;
-		virtual void initUniforms(); // virtual for now
 
 		// LIGHTS
 		void lightsOn();
 		void lightsOff();
+
+		//// create traditional interface for GPU controlled transforms
+		void translate(float tx, float ty, float tz);
+		void translate(const Vec3f& tXYZ);
+		void rotate(float angle, float axisX, float axisY, float axisZ);
+		void rotate(float angle, const Vec3f& rXYZ);
+		void scale(float s);
+		void scale(float sx, float sy, float sz);
+		void scale(const Vec3f& sXYZ);
+		//implements transform matrix stack
+		void push();
+		void pop();
+
+		//void lookAt(const Vec3f& eye, const Vec3f& center, const Vec3f& up);
+		//void perspective(float viewAngle, float aspect, float nearDist, float farDist);
 
 		// exporting
 		void export(std::vector<Tup4v> vs, Format type);
@@ -301,12 +328,13 @@ namespace ijg {
 #define WIREFRAME ProtoGeom3::WIREFRAME
 #define SURFACE ProtoGeom3::SURFACE
 
-#define pushMatrix glPushMatrix
-#define popMatrix glPopMatrix
-
-#define translatef glTranslatef
-#define rotatef glRotatef 
-#define scalef glScalef 
+// remove this old stuff
+//#define pushMatrix glPushMatrix
+//#define popMatrix glPopMatrix
+//
+//#define translatef glTranslatef
+//#define rotatef glRotatef 
+//#define scalef glScalef 
 
 #define light0 lights.at(0)
 #define light1 lights.at(1)

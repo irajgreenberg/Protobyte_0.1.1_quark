@@ -35,11 +35,11 @@ ProtoGeom3::ProtoGeom3() {
 
 
 ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4) :
-ProtoShape3(pos, rot, size, col4), textureImageURL("") {
+ProtoShape3(pos, rot, size, col4), textureImageURL("no_texture.jpg") {
 }
 
 ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const std::vector< ProtoColor4f > col4s) :
-ProtoShape3(pos, rot, size, col4s), textureImageURL("") {
+ProtoShape3(pos, rot, size, col4s), textureImageURL("no_texture.jpg") {
 }
 
 

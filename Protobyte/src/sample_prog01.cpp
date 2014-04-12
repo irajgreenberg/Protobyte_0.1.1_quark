@@ -33,26 +33,49 @@ void sample_prog01::init() {
 	light0.setSpecular(Col4f(1, 1, 1, 1.0));
 	light0.on();
 
-	t = Toroid(Vec3(2, 0, 0), Vec3f(), Dim3f(2, .1, 2), Col4f(1, 0, 0, 1), 36, 12, 1, .09, "brushed_metal.jpg");
-	//t = Toroid(Vec3(), Vec3f(), Dim3f(2, 2, 2), Col4f(), 12, 12, 1, .1);
+	t = Toroid(Vec3(0, 0, 0), Vec3f(), Dim3f(2, 2, 2), Col4f(.2, .5, 1, 1), 36, 12, 1, .09);
+
 
 	
 }
 
 void sample_prog01::run() {
-	setBackground(1, .85, .85);
+	setBackground(.2, .2, .22);
 
 	render();
 }
 
 
 void sample_prog01::render(int scaleFactor){
-	translate(1, 0, 0);
-	//push();
-	rotate(90, 1, .2, 0);
+	rotate(90, 1, 0, 0); 
+	
+	push();
+	scale(2.85);
+	rotate(getFrameCount()*.25, .15, .2, .4);
 	t.display();
-	//pop();
+	pop(); 
+	
+	push();
+	scale(.25);
+	rotate(getFrameCount()*.9, 0, 0, 1);
+	t.display();
+	pop();
+	
+	push();
+	rotate(getFrameCount()*.2, 0, 0, 1);
+	push();
+	translate(-1, 0, 0);
+	scale(.65);
+	rotate(-getFrameCount()*.8, 0, 0, 1);
+	t.display();
+	pop();
 
 
-
+	push();
+	translate(1, 0, 0);
+	scale(.65);
+	rotate(-getFrameCount()*.4, .3, .6, 1);
+	t.display();
+	pop();
+	pop();
 }

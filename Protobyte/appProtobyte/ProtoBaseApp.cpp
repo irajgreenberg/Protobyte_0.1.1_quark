@@ -13,26 +13,6 @@ using namespace ijg;
 
 // NOTE: called before GL context created
 ProtoBaseApp::ProtoBaseApp() {
-	// std::cout << "in base class cstr" << std::endl;
-
-	//    //instantiate lights w/o world
-	//light0 = std::shared_ptr<ProtoLight>(new ProtoLight());
-	//light1 = std::shared_ptr<ProtoLight>(new ProtoLight());
-	//light2 = std::shared_ptr<ProtoLight>(new ProtoLight());
-	//light3 = std::shared_ptr<ProtoLight>(new ProtoLight());
-	//light4 = std::shared_ptr<ProtoLight>(new ProtoLight());
-	//light5 = std::shared_ptr<ProtoLight>(new ProtoLight());
-	//light6 = std::shared_ptr<ProtoLight>(new ProtoLight());
-	//light7 = std::shared_ptr<ProtoLight>(new ProtoLight());
-
-	glLights[0] = GL_LIGHT0;
-	glLights[1] = GL_LIGHT1;
-	glLights[2] = GL_LIGHT2;
-	glLights[3] = GL_LIGHT3;
-	glLights[4] = GL_LIGHT4;
-	glLights[5] = GL_LIGHT5;
-	glLights[6] = GL_LIGHT6;
-	glLights[7] = GL_LIGHT7;
 
 	lights.push_back(ProtoLight());
 	lights.push_back(ProtoLight());
@@ -42,126 +22,126 @@ ProtoBaseApp::ProtoBaseApp() {
 	lights.push_back(ProtoLight());
 	lights.push_back(ProtoLight());
 	lights.push_back(ProtoLight());
+
 }
 
-ProtoBaseApp::ProtoBaseApp(const ProtoOSC& listener):
+ProtoBaseApp::ProtoBaseApp(const ProtoOSC& listener) :
 listener(listener){
-		//    //instantiate lights w/o world
 
-		glLights[0] = GL_LIGHT0;
-		glLights[1] = GL_LIGHT1;
-		glLights[2] = GL_LIGHT2;
-		glLights[3] = GL_LIGHT3;
-		glLights[4] = GL_LIGHT4;
-		glLights[5] = GL_LIGHT5;
-		glLights[6] = GL_LIGHT6;
-		glLights[7] = GL_LIGHT7;
-	
-		lights.push_back(ProtoLight());
-		lights.push_back(ProtoLight());
-		lights.push_back(ProtoLight());
-		lights.push_back(ProtoLight());
-		lights.push_back(ProtoLight());
-		lights.push_back(ProtoLight());
-		lights.push_back(ProtoLight());
-		lights.push_back(ProtoLight());
+	lights.push_back(ProtoLight());
+	lights.push_back(ProtoLight());
+	lights.push_back(ProtoLight());
+	lights.push_back(ProtoLight());
+	lights.push_back(ProtoLight());
+	lights.push_back(ProtoLight());
+	lights.push_back(ProtoLight());
+	lights.push_back(ProtoLight());
 }
 
+void ProtoBaseApp::_init(){
+	shader = ProtoShader("shader1.vert", "shader1.frag");
 
-//ProtoBaseApp::ProtoBaseApp(const ProtoOSC& listener) :
-//listener(listener){
-//	// std::cout << "in base class cstr" << std::endl;
-//
-//	//    //instantiate lights w/o world
-//	//light0 = std::shared_ptr<ProtoLight>(new ProtoLight());
-//	//light1 = std::shared_ptr<ProtoLight>(new ProtoLight());
-//	//light2 = std::shared_ptr<ProtoLight>(new ProtoLight());
-//	//light3 = std::shared_ptr<ProtoLight>(new ProtoLight());
-//	//light4 = std::shared_ptr<ProtoLight>(new ProtoLight());
-//	//light5 = std::shared_ptr<ProtoLight>(new ProtoLight());
-//	//light6 = std::shared_ptr<ProtoLight>(new ProtoLight());
-//	//light7 = std::shared_ptr<ProtoLight>(new ProtoLight());
-//
-//	glLights[0] = GL_LIGHT0;
-//	glLights[1] = GL_LIGHT1;
-//	glLights[2] = GL_LIGHT2;
-//	glLights[3] = GL_LIGHT3;
-//	glLights[4] = GL_LIGHT4;
-//	glLights[5] = GL_LIGHT5;
-//	glLights[6] = GL_LIGHT6;
-//	glLights[7] = GL_LIGHT7;
-//
-//	lights.push_back(ProtoLight());
-//	lights.push_back(ProtoLight());
-//	lights.push_back(ProtoLight());
-//	lights.push_back(ProtoLight());
-//	lights.push_back(ProtoLight());
-//	lights.push_back(ProtoLight());
-//	lights.push_back(ProtoLight());
-//	lights.push_back(ProtoLight());
-//
-//}
+	glViewport(0, 0, width, height);
+
+	// START standard transformation matrices: ModelView / Projection / Normal
+	M = glm::mat4(1.0f); // set to identity
+	V = glm::lookAt(glm::vec3(0.0, 0.0, 5.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	MV = V * M;
+	N = glm::transpose(glm::inverse(glm::mat3(MV)));
+
+	// projection matrix and MVP Matrix
+	float viewAngle = 45.0f;
+
+	//float aspect = getWidth()/getHeight();
+	float aspect = float(width) / float(height);
+	//float aspect = 800/1500;
+	float nearDist = .1f;
+	float farDist = 600.0f;
+
+	P = glm::perspective(viewAngle, aspect, nearDist, farDist);
+	MVP = P * MV;
+	// END Model / View / Projection data
+
+	// tranformation matricies
+	T = glm::mat4(1.0f);
+	R = glm::mat4(1.0f);
+	S = glm::mat4(1.0f);
+
+	_initUniforms();
 
 
+}
 
-// Get handle to world and init BaseApp
-// Note: this function does some work of cstr because
-// it is called after GL context has been created.
-//void ProtoBaseApp::setWorld(std::unique_ptr<ProtoWorld> world){
-//    this->world = std::move(world);
-//    
-//    //instantiate lights
-//    light0 = std::shared_ptr<ProtoLight>(new ProtoLight());
-//    light1 = std::shared_ptr<ProtoLight>(new ProtoLight());
-//    light2 = std::shared_ptr<ProtoLight>(new ProtoLight());
-//    light3 = std::shared_ptr<ProtoLight>(new ProtoLight());
-//    light4 = std::shared_ptr<ProtoLight>(new ProtoLight());
-//    light5 = std::shared_ptr<ProtoLight>(new ProtoLight());
-//    light6 = std::shared_ptr<ProtoLight>(new ProtoLight());
-//    light7 = std::shared_ptr<ProtoLight>(new ProtoLight());
-//    
-//    
-//    
-//    this->world->add(light0);
-//    this->world->add(light1);
-//    this->world->add(light2);
-//    this->world->add(light3);
-//    this->world->add(light4);
-//    this->world->add(light5);
-//    this->world->add(light6);
-//    this->world->add(light7);
-//    
-//    // set default light on
-//    // light0->on();
-//    
-//    
-//}
+void ProtoBaseApp::_initUniforms(){
+	// lighting
+	shader.bind();
 
-// start World rendering loop
-//void ProtoBaseApp::runWorld() {
-//    world->run();
-//}
+	// get shader location for default 8 lights
+	for (int i = 0; i < 8; ++i){
+		std::string pos = "lights[" + std::to_string(i) + "].position";
+		lights_U[i].position = glGetUniformLocation(shader.getID(), pos.c_str());
+
+		std::string diff = "lights[" + std::to_string(i) + "].diffuse";
+		lights_U[i].diffuse = glGetUniformLocation(shader.getID(), diff.c_str());
+
+		std::string amb = "lights[" + std::to_string(i) + "].ambient";
+		lights_U[i].ambient = glGetUniformLocation(shader.getID(), amb.c_str());
+
+		std::string spec = "lights[" + std::to_string(i) + "].specular";
+		lights_U[i].specular = glGetUniformLocation(shader.getID(), spec.c_str());
+	}
 
 
-//void ProtoBaseApp::add(std::unique_ptr<ProtoGeom3> geom){
-//    world->add(std::move(geom));
-//}
-//
-////void ProtoBaseApp::add(std::unique_ptr<ProtoLight> lt){
-////     world->add(std::move(lt));
-////}
-//
-//void ProtoBaseApp::add(std::unique_ptr<ProtoCamera> cam){
-//    world->add(std::move(cam));
-//}
+	//matrices
+	MV_U = glGetUniformLocation(shader.getID(), "modelViewMatrix");
+	MVP_U = glGetUniformLocation(shader.getID(), "modelViewProjectionMatrix");
+	N_U = glGetUniformLocation(shader.getID(), "normalMatrix");
+
+	// shadow map
+	shadowMapTex = glGetUniformLocation(shader.getID(), "shaderMapTexture");
+	L_MVP_U = glGetUniformLocation(shader.getID(), "lightModelViewProjectionMatrix");
+
+}
+
+void ProtoBaseApp::_run(){
+	// entry point to draw thread
+	// reset trrnaformation matrix
+	//T = glm::mat4(1.0f);
+	//R = glm::mat4(1.0f);
+	//S = glm::mat4(1.0f);
+	M = glm::mat4(1.0f);
+
+	// update all 8 lights in shaders
+	for (int i = 0; i < 8; ++i){
+		glUniform3fv(lights_U[i].position, 1, &lights[i].getPosition().x);
+		glUniform4fv(lights_U[i].diffuse, 1, &lights[i].getDiffuse().r);
+		glUniform4fv(lights_U[i].ambient, 1, &lights[i].getAmbient().r);
+		glUniform4fv(lights_U[i].specular, 1, &lights[i].getSpecular().r);
+	}
+
+	V = glm::lookAt(glm::vec3(0.0, 0.0, 7.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	//M = T * R * S;
+	MV = V * M;
+	MVP = P * MV;
+
+	// some help from:http://www.opengl.org/discussion_boards/showthread.php/171184-GLM-to-create-gl_NormalMatrix
+	// update normals
+
+	N = glm::transpose(glm::inverse(glm::mat3(MV)));
+	glUniformMatrix4fv(MV_U, 1, GL_FALSE, &MV[0][0]);
+	glUniformMatrix4fv(MVP_U, 1, GL_FALSE, &MVP[0][0]);
+	glUniformMatrix3fv(N_U, 1, GL_FALSE, &N[0][0]);
+}
+
 
 // gen funcs
 // overloaded background
 void ProtoBaseApp::setBackground(float r, float g, float b){
 	bgColor.setR(r);
-	bgColor.setG(r);
-	bgColor.setB(r);
-	// world->setBackgroundColor(Col3f(r, g, b));
+	bgColor.setG(g);
+	bgColor.setB(b);
+	glClearColor(r, g, b, 1);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 void ProtoBaseApp::setBackground(float c){
@@ -180,11 +160,11 @@ void ProtoBaseApp::setBackground(const Col4f& col){
 
 //LIGHTS
 void ProtoBaseApp::lightsOn(){
-	glEnable(GL_LIGHTING);
+	//	glEnable(GL_LIGHTING);
 
 }
 void ProtoBaseApp::lightsOff(){
-	glDisable(GL_LIGHTING);
+	//	glDisable(GL_LIGHTING);
 }
 //END LIGHTS
 
@@ -242,23 +222,16 @@ void ProtoBaseApp::loadImage(std::string imageName){
 
 // END window details
 
-void ProtoBaseApp::printMatrix(Matrix m){
-	GLfloat matrix[16];
-	if (m == MODEL_VIEW) {
-		glGetFloatv(GL_MODELVIEW_MATRIX, matrix);
-		std::cout << "\nGL ModelView Matrix" << std::endl;
-	}
-	else {
-		glGetFloatv(GL_PROJECTION_MATRIX, matrix);
-		std::cout << "\nGL Projection Matrix" << std::endl;
-	}
-	std::cout << matrix[0] << " | " << matrix[4] << " | " << matrix[8] << " | " << matrix[12] << "\n";
-	std::cout << matrix[1] << " | " << matrix[5] << " | " << matrix[9] << " | " << matrix[13] << "\n";
-	std::cout << matrix[2] << " | " << matrix[6] << " | " << matrix[10] << " | " << matrix[14] << "\n";
-	std::cout << matrix[3] << " | " << matrix[7] << " | " << matrix[11] << " | " << matrix[15] << std::endl;
-}
+// Note: need to update to GLSL
+//void ProtoBaseApp::printMatrix(){
+//
+//	std::cout << M[0][0] << " | " << matrix[4] << " | " << matrix[8] << " | " << matrix[12] << "\n";
+//	std::cout << matrix[1] << " | " << matrix[5] << " | " << matrix[9] << " | " << matrix[13] << "\n";
+//	std::cout << matrix[2] << " | " << matrix[6] << " | " << matrix[10] << " | " << matrix[14] << "\n";
+//	std::cout << matrix[3] << " | " << matrix[7] << " | " << matrix[11] << " | " << matrix[15] << std::endl;
+//}
 
-// 2D api
+// 2D api  ********************NOTE: This is not really implemented!**********************
 void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
 	float _x = 0, _y = 0;
 	// initialize glew for Windows
@@ -340,20 +313,16 @@ void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
 
 	glDisable(GL_LIGHTING);
 
-	pushMatrix();
-	translatef(0, 0, -500); // set camera to -500 default to get close to pixel accurate coords
+	//pushMatrix();
+	//translatef(0, 0, -500); // set camera to -500 default to get close to pixel accurate coords
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
-	popMatrix();
+	//popMatrix();
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	// reenable lighting
-	glEnable(GL_LIGHTING);
-}
-
-void ProtoBaseApp::initUniforms(){
-	// currenlty implemented in derived classes (need to think on this a bit)
+	//glEnable(GL_LIGHTING);
 }
 
 
@@ -657,7 +626,59 @@ bool ProtoBaseApp::stitchTiles(std::string url, int tiles){
 	return true;
 }
 
+// matrix transformation functions, in style of GL 1.0
+void ProtoBaseApp::translate(float tx, float ty, float tz){
+	M = glm::translate(M, glm::vec3(tx, ty, tz));
+	concat();
+}
+void ProtoBaseApp::translate(const Vec3f& tXYZ){
+	M = glm::translate(M, glm::vec3(tXYZ.x, tXYZ.y, tXYZ.z));
+	concat();
+}
+void ProtoBaseApp::rotate(float angle, float axisX, float axisY, float axisZ){
+	M = glm::rotate(M, angle, glm::vec3(axisX, axisY, axisZ));
+	concat();
+}
+void ProtoBaseApp::rotate(float angle, const Vec3f& rXYZ){
+	M = glm::rotate(M, angle, glm::vec3(rXYZ.x, rXYZ.y, rXYZ.z));
+	concat();
+}
+void ProtoBaseApp::scale(float s){
+	M = glm::scale(M, glm::vec3(s, s, s));
+	concat();
+}
+void ProtoBaseApp::scale(float sx, float sy, float sz){
+	M = glm::scale(M, glm::vec3(sx, sy, sz));
+	concat();
+}
+void ProtoBaseApp::scale(const Vec3f& sXYZ){
+	M = glm::scale(M, glm::vec3(sXYZ.x, sXYZ.y, sXYZ.z));
+	concat();
+}
 
+// concatenate MV, N, and MVP matrices and update values on GPU
+void ProtoBaseApp::concat(){
+	MV = V * M;
+	N = glm::transpose(glm::inverse(glm::mat3(MV)));
+	MVP = P * MV;
+	glUniformMatrix4fv(MV_U, 1, GL_FALSE, &MV[0][0]);
+	glUniformMatrix4fv(MVP_U, 1, GL_FALSE, &MVP[0][0]);
+	glUniformMatrix3fv(N_U, 1, GL_FALSE, &N[0][0]);
+}
+
+// implements transform matrix stack
+void ProtoBaseApp::push(){
+	// save current transformation matrix to stack
+	matrixStack.push(M);
+}
+
+// reset transformation matrix with stored matrix on stack
+void ProtoBaseApp::pop(){
+	// reset current transformation matrix with matrix on top of stack
+	M = matrixStack.top();
+	// remove matrix on top of stack
+	matrixStack.pop();
+}
 
 
 

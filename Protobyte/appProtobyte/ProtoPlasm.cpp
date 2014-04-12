@@ -236,7 +236,8 @@ void ProtoPlasm::initSFMLInit(){
     // std::cout << "baseApp->world->fovAngle = " << baseApp->world->fovAngle << std::endl;
     
     // Activate init function in user derived class.n.
-    baseApp->init();
+	baseApp->_init(); // base class
+	baseApp->init(); // derived class
 }
 
 // activate animation thread and run() function in user defined BaseApp derived class
@@ -266,7 +267,8 @@ void ProtoPlasm::initSFMLRun(){
         // Activate derived user class implementation.
 		baseApp->setFrameCount(frameCount);
 		//baseApp->runWorld();
-        baseApp->run();
+		baseApp->_run(); // called in base class
+		baseApp->run(); // called in derived class
 
         
         // handle GLFW events

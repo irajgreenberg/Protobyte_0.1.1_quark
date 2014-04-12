@@ -39,10 +39,10 @@ public:
 	GroundPlane ground;
 
 	ProtoLight globalAmbient;
-	ProtoShader shader;
+	//ProtoShader shader;
 
 	void render(int scaleFactor = 1);
-	void initUniforms();
+	//void initUniforms();
 
 	ProtoJuncusEffusus junc01;
 	int juncsCount;
