@@ -27,16 +27,30 @@ This class is part of the group common (update)
 void sample_prog01::init() {
 
 	// light0
-	light0.setPosition(Vec3f(0, 0, 1));
+	light0.setPosition(Vec3f(-.2, 0, 1.1));
 	light0.setDiffuse(Col4f(1, 1, 1, 1.0f));
 	light0.setAmbient(Col4f(.5, .3, .3, 1.0));
-	light0.setSpecular(Col4f(1, 1, 1, 1.0));
+	light0.setSpecular(Col4f(.2, .2, .2, 1.0));
 	light0.on();
 
-	t = Toroid(Vec3(0, 0, 0), Vec3f(), Dim3f(2, 2, 2), Col4f(.2, .5, 1, 1), 36, 12, 1, .09);
+	//t = Toroid(Vec3(0, 0, 0), Vec3f(), Dim3f(2, 2, 2), Col4f(1, .65, 1, 1), 36, 12, 1, .09, "leather2.jpg");
+	//t2 = Toroid(Vec3(0, 0, 0), Vec3f(), Dim3f(2, 2, 2), Col4f(1, 0, 0, 1), 36, 12, 1, .09);
 
 
-	
+	/*cephalopod = new ProtoCephalopod(Vec3f(), Vec3f(), Dim3f(.02, .02, .02),
+		Col4f(.7, .7, .75, 1), 6, 100, "leather2.jpg");*/
+
+	for (int i = 0; i < 20; ++i){
+		//cephalopod->reSpawn();
+	}
+
+	std::vector<Col4f> cols;
+	for (int i = 0; i < 8; ++i){
+		cols.push_back(Col4f(random(), random(), random(),1));
+	}
+	block = ProtoBlock(Vec3(), Vec3(), Dim3f(2, 2, 2), cols, "leather2.jpg");
+	plane = ProtoGroundPlane(Vec3f(), Vec3f(), Dim2f(3, 2), Col4f(1, 0, 0, 1), 80, 80, "leather2.jpg");
+
 }
 
 void sample_prog01::run() {
@@ -47,12 +61,22 @@ void sample_prog01::run() {
 
 
 void sample_prog01::render(int scaleFactor){
-	rotate(90, 1, 0, 0); 
+	translate(0, 0, -10);
+	rotate(90, 1, 0, 0);
+	plane.display();
+	scale(9, .3, 5);
+	//block.display();
 	
-	push();
+	
+	
+	
+	
+	
+	//cephalopod->display();
+	/*push();
 	scale(2.85);
 	rotate(getFrameCount()*.25, .15, .2, .4);
-	t.display();
+	t2.display();
 	pop(); 
 	
 	push();
@@ -67,7 +91,7 @@ void sample_prog01::render(int scaleFactor){
 	translate(-1, 0, 0);
 	scale(.65);
 	rotate(-getFrameCount()*.8, 0, 0, 1);
-	t.display();
+	t2.display();
 	pop();
 
 
@@ -77,5 +101,5 @@ void sample_prog01::render(int scaleFactor){
 	rotate(-getFrameCount()*.4, .3, .6, 1);
 	t.display();
 	pop();
-	pop();
+	pop();*/
 }

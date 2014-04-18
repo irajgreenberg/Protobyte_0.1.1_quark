@@ -151,7 +151,7 @@ void ProtoCilia::run() {
     for(size_t i = 0; i<sticks.size(); ++i){
         
         sticks.at(i)->constrainLen();
-        sticks.at(i)->display();
+        //sticks.at(i)->display();
     }
     glEnable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);;

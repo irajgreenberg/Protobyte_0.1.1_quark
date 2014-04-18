@@ -101,6 +101,29 @@ void ProtoFace3::calcNorm() {
     norm.normalize();
 }
 
+// calculates tangent for bump mapping based
+// on normal and uv coords
+Vec3f ProtoFace3::getTangentBM(){
+
+	Vec3f v0 = v1_p->pos - v0_p->pos;
+	Vec3f v1 = v2_p->pos - v0_p->pos;
+
+	float v0u = v1_p->getUV().elem0 - v0_p->getUV().elem0;
+	float v0v = v2_p->getUV().elem0 - v0_p->getUV().elem0;
+	float v1u = v1_p->getUV().elem1 - v0_p->getUV().elem1;
+	float v1v = v2_p->getUV().elem1 - v0_p->getUV().elem1;
+
+	float coef = 1 / (v0u * v1v - v1u * v0v);
+
+	tangentBM = Vec3f(	coef * ((v1.x * v1v) + (v2.x * -v0v)), 
+						coef * ((v1.y * v1v) + (v2.y * -v0v)), 
+						coef * ((v1.z * v1v) + (v2.z * -v0v)));
+
+	biTangent = norm.cross(tangentBM);
+
+	return tangentBM;
+}
+
 
 const ProtoVertex3* ProtoFace3::operator[](int index) {
     switch (index) {

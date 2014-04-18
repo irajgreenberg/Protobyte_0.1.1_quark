@@ -37,6 +37,7 @@
 #include "libProtobyte/ProtoWorld.h"
 #include "libProtobyte/ProtoColor3.h"
 #include "libProtobyte/ProtoColor4.h"
+#include "libProtobyte/ProtoBlock.h"
 #include "libProtobyte/ProtoMath.h"
 #include "libProtobyte/ProtoVector2.h"
 #include "libProtobyte/ProtoVector3.h"
@@ -49,6 +50,7 @@
 #include "libProtobyte/ProtoTuple4.h"
 
 #include "libProtobyte/ProtoJuncusEffusus.h"
+#include "libProtobyte/ProtoCephalopod.h"
 
 // preproc dir for relative resource loading
 // from http://stackoverflow.com/questions/143174/how-do-i-get-the-directory-that-a-program-is-running-from

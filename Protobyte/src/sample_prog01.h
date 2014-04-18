@@ -38,7 +38,9 @@ public:
 	void render(int scaleFactor = 1);
 
 	Toroid t, t2;
-	
+	ProtoCephalopod* cephalopod;
+	ProtoBlock block;
+	ProtoGroundPlane plane;
 }; 
 
 #endif // SAMPLE_PROG_01_H

@@ -35,11 +35,11 @@ ProtoGeom3::ProtoGeom3() {
 
 
 ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4) :
-ProtoShape3(pos, rot, size, col4), textureImageURL("no_texture.jpg") {
+ProtoShape3(pos, rot, size, col4), textureImageURL("white_tile.jpg") {
 }
 
 ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const std::vector< ProtoColor4f > col4s) :
-ProtoShape3(pos, rot, size, col4s), textureImageURL("no_texture.jpg") {
+ProtoShape3(pos, rot, size, col4s), textureImageURL("white_tile.jpg") {
 }
 
 
@@ -144,7 +144,7 @@ void ProtoGeom3::init() {
 	//    }
     
     // set default texture enabled state
-    isTextureEnabled = false;
+    isTextureEnabled = true;
 }
 
 void ProtoGeom3::calcFaces() {
@@ -155,33 +155,13 @@ void ProtoGeom3::calcFaces() {
 	for (int i = 0; i < inds.size(); i++) {
 		faces.push_back(ProtoFace3(&verts.at(inds.at(i).elem0), &verts.at(inds.at(i).elem1),
                                    &verts.at(inds.at(i).elem2)));
-
-	/*	faces2.push_back(ProtoFace3(verts.at(inds.at(i).elem0), verts.at(inds.at(i).elem1),
-			verts.at(inds.at(i).elem2)));*/
-		//packedFaces.push_back(verts.at(inds.at(i).elem0).pos.x);
-		//packedFaces.push_back(verts.at(inds.at(i).elem0).pos.y);
-		//packedFaces.push_back(verts.at(inds.at(i).elem0).pos.z);
-
-		//packedFaces.push_back(verts.at(inds.at(i).elem1).pos.x);
-		//packedFaces.push_back(verts.at(inds.at(i).elem1).pos.y);
-		//packedFaces.push_back(verts.at(inds.at(i).elem1).pos.z);
-
-		//packedFaces.push_back(verts.at(inds.at(i).elem2).pos.x);
-		//packedFaces.push_back(verts.at(inds.at(i).elem2).pos.y);
-		//packedFaces.push_back(verts.at(inds.at(i).elem2).pos.z);
-
-		//packedFaces.push_back(verts.at(inds.at(i).elem0).pos.x);
-		//packedFaces.push_back(verts.at(inds.at(i).elem0).pos.y);
-		//packedFaces.push_back(verts.at(inds.at(i).elem0).pos.z);
-		//std::cout << faces.at(i)[0]->pos << std::endl; 
-		//std::cout << faces.at(i)[1]->pos << std::endl;
-		//std::cout << faces.at(i)[2]->pos << std::endl;
 	}
 }
 
 
 
 
+// calculates vertex normals and tangents (for bump mapping)
 void ProtoGeom3::calcVertexNorms() {
     
     // calculate initial vertex normals and fill geomsets with vertex face association
@@ -191,20 +171,26 @@ void ProtoGeom3::calcVertexNorms() {
     }
     
     for (int i = 0; i < verts.size(); i++) {
-		Vec3f v;
+		Vec3f n; // for normals
+		Vec3f t; // for tangents
+
         std::vector<ProtoFace3*> fs;
 		for (int j = 0; j < faces.size(); j++) {
 			if (&verts.at(i) == faces.at(j)[0] || &verts.at(i) == faces.at(j)[1] ||
 				&verts.at(i) == faces.at(j)[2]) {
                 //std::cout << "i = " << i << ", " << "face " << j << std::endl;
-                v += faces.at(j).getNorm();
+                n += faces.at(j).getNorm();
+				t += faces.at(j).getTangentBM();
                 fs.push_back(&faces.at(j));
 			}
 		}
+		// NOTE: not updating normals to geoSets 
         geomSets.push_back(ProtoGeomSet(&verts.at(i), fs));
         //std::cout << "vertex has this many linked faces: " << geomSets.at(i).getLinkedFaces().size() << std::endl;
-		v.normalize();
-		verts.at(i).setNormal(v);
+		n.normalize();
+		t.normalize();
+		verts.at(i).setNormal(n);
+		verts.at(i).setTangent(t);
 	}
 }
 
@@ -389,7 +375,7 @@ void ProtoGeom3::createTexture(){
         std::string pathExtension = "\\..\\..\\Protobyte\\resources\\imgs\\";
 #else
 		// osx/posix use "normal" directory dividers
-		std::string pathExtension = "/resources/imgs/";
+		std::string pathExtension = "/Protobyte/resources/imgs/";
         
 #endif
 

@@ -47,10 +47,14 @@ namespace ijg {
         Vec3f pos;
 
         const Vec3f& getNormal() const;
+		const Vec3f& getBiNormal() const;
+		const Vec3f& getTangent() const;
         ProtoColor4<float> getColor() const;
         ProtoTuple2<float> getUV() const;
 
         void setNormal(const Vec3f& norm);
+		void setTangent(const Vec3f& tangent);
+		void setBiNormal(const Vec3f& biNorm);
         void setColor(const ProtoColor4<float>& col4);
         void setUV(const ProtoTuple2<float>& uv);
         
@@ -59,7 +63,7 @@ namespace ijg {
 
     private:
         ProtoColor4<float> col4;
-        Vec3f norm;
+        Vec3f norm, biNorm, tangent;
         ProtoTuple2<float> uv;
         
 
@@ -87,6 +91,22 @@ namespace ijg {
     inline void ProtoVertex3::setNormal(const Vec3f& norm) {
         this->norm = norm;
     }
+
+	inline const Vec3f& ProtoVertex3::getBiNormal() const{
+		return biNorm;
+	}
+	
+	inline void ProtoVertex3::setBiNormal(const Vec3f& biNorm) {
+		this->biNorm = biNorm;
+	}
+
+	inline const Vec3f& ProtoVertex3::getTangent() const{
+		return tangent;
+	}
+	
+	inline void ProtoVertex3::setTangent(const Vec3f& tangent) {
+		this->tangent = tangent;
+	}
 
     inline ProtoColor4<float> ProtoVertex3::getColor() const {
         return col4;

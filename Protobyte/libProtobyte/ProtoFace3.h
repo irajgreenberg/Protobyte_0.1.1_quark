@@ -57,7 +57,8 @@ namespace ijg {
         ProtoVertex3 vecs[3];
         //ProtoVertex3 v0, v1, v2;
         //ProtoVertex3 *v0_p, *v1_p, *v2_p;
-        Vec3f norm, centroid, biNorm, tangent;
+        Vec3f norm, centroid, biNorm, tangent, biTangent;
+		Vec3f tangentBM;
         
         void init();
         
@@ -71,7 +72,9 @@ namespace ijg {
         Vec3f& getCentroid();
         
         Vec3f getBiNorm();
-        Vec3f getTangent();
+		Vec3f getTangent();
+		Vec3f getTangentBM(); // tangent for bump mapping
+		Vec3f getBiTangent() const; // for bump mapping
         
         
         const Vec3f& getNorm() const ;
@@ -145,6 +148,12 @@ namespace ijg {
         T.normalize();
         return T;
     }
+
+
+
+	inline Vec3f ProtoFace3::getBiTangent() const{
+		return biTangent;
+	}
     
     inline Mat3 ProtoFace3::getTNBFrame(){
         // this can be MUCH more efficient

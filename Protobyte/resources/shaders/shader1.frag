@@ -53,12 +53,13 @@ void main(){
 	vec3 L = normalize(lights[0].position - P);
     float diffuseLight = max(dot(N, L), 0);
 	vec4 tex = texture(textureSampler, textureCoords.st)*color;
+	//tex*=vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	vec3 diffuse = vec3(lights[0].diffuse) * vec3(tex) *  diffuseLight;
 
   // Compute the specular term
     vec3 V = normalize(-P);      // Normalized vector toward the viewpoint
     vec3 H = normalize(L + V);   // Normalized vector that is halfway between V and L
-    float specularLight = pow(max(dot(N, H),0), 120);
+    float specularLight = pow(max(dot(N, H),0), 128);
     if(diffuseLight <= 0){ specularLight = 0; }
 
 	vec3 specular = vec3(lights[0].specular * lights[0].diffuse) * specularLight;
@@ -67,9 +68,9 @@ void main(){
 
  // shadow mapping
   if(shadowMapCoords.w > 1) {
-    float shadow = textureProj(shadowMapTexture, shadowMapCoords);
+  //  float shadow = textureProj(shadowMapTexture, shadowMapCoords);
     //darken the diffuse component apprpriately
-    diffuse = mix(diffuse, diffuse*shadow, 0.5); 
+  //  diffuse = mix(diffuse, diffuse*shadow, 0.5); 
   }
 
   gl_FragColor = vec4(emissive + ambient + diffuse + specular, 1);

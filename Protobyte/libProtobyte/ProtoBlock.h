@@ -43,7 +43,18 @@ namespace ijg {
         /*!
          * Constructor */
         ProtoBlock(const Vec3f& pos, const Vec3f& rot, const ProtoDimension3f& size,
-                const ProtoColor4<float>& col4, const std::string& textureImageURL, float textureScale);
+                const ProtoColor4<float>& col4, const std::string& textureImageURL, float textureScale=1);
+
+		/*!
+		* Constructor */
+		ProtoBlock(const Vec3f& pos, const Vec3f& rot, const Dim3f& size,
+			const std::vector<Col4f>& cols4);
+		/*!
+		* Constructor */
+		ProtoBlock(const Vec3f& pos, const Vec3f& rot, const ProtoDimension3f& size,
+			const std::vector<Col4f>& cols4, const std::string& textureImageURL, float textureScale=1);
+
+
 
         /*!
          * Declared pure virtual in GeomBase base class
