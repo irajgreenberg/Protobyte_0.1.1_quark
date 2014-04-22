@@ -154,7 +154,27 @@ namespace ijg {
 		enum Matrix {
 			MODEL_VIEW,
 			PROJECTION
+		}; 
+		
+		float viewAngle, aspect, nearDist, farDist; 
+
+		void setViewAngle(float viewAngle);
+		void setAspect(float aspect);
+		void setNearDist(float nearDist);
+		void setFarDist(float farDist);
+
+		float left, right, bottom, top;
+
+		void setLeft(float left);
+		void setRight(float right);
+		void setBottom(float bottom);
+		void setTop(float top);
+
+		enum ProjectionType {
+			PERSPECTIVE,
+			ORTHOGONAL
 		};
+		void setProjection(ProjectionType projType = PERSPECTIVE);
 
 		/***********************************
 		*           GLSL UNIFORMS          *
@@ -324,6 +344,42 @@ namespace ijg {
 		return frameCount;
 	}
 
+
+	inline void ProtoBaseApp::setProjection(ProjectionType projType){
+		if (projType == PERSPECTIVE)
+			P = glm::perspective(viewAngle, aspect, nearDist, farDist);
+		else
+			//ortho (T const &left, T const &right, T const &bottom, T const &top, T const &zNear, T const &zFar)
+			P = glm::ortho(left, right, bottom, top, nearDist, farDist);
+	}
+
+	// perspective projection
+	inline void ProtoBaseApp::setViewAngle(float viewAngle){
+		this->viewAngle = viewAngle;
+	}
+	inline void ProtoBaseApp::setAspect(float aspect){
+		this->aspect = aspect;
+	}
+	inline void ProtoBaseApp::setNearDist(float nearDist){
+		this->nearDist = nearDist;
+	}
+	inline void ProtoBaseApp::setFarDist(float farDist){
+		this->farDist = farDist;
+	}
+
+	// ortho projection
+	inline void  ProtoBaseApp::setLeft(float left){
+		this->left = left;
+	}
+	inline void  ProtoBaseApp::setRight(float right){
+		this->right = right;
+	}
+	inline void  ProtoBaseApp::setBottom(float bottom){
+		this->bottom = bottom;
+	}
+	inline void  ProtoBaseApp::setTop(float top){
+		this->top = top;
+	}
 
 
 #define POINTS ProtoGeom3::POINTS

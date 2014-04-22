@@ -26,7 +26,7 @@ This class is part of the group common (update)
 
 void ProtoJuncusEffusus04::init() {
 
-	stitchTiles("C:\\Users\\Ira\\Dropbox\\ira_dev\\Protobyte_0.1.0_quark\\Protobyte\\output\\juncs_2014_3_31_7_32_10\\", 13);
+	stitchTiles("C:\\Users\\Ira\\Dropbox\\ira_dev\\Protobyte_0.1.0_quark\\Protobyte\\output\\juncs_2014_4_19_23_36_48\\", 13);
 }
 
 

@@ -27,7 +27,7 @@ This class is part of the group common (update)
 void sample_prog01::init() {
 
 	// light0
-	light0.setPosition(Vec3f(-.2, 0, 1.1));
+	light0.setPosition(Vec3f(-.2, 0, 200));
 	light0.setDiffuse(Col4f(1, 1, 1, 1.0f));
 	light0.setAmbient(Col4f(.5, .3, .3, 1.0));
 	light0.setSpecular(Col4f(.2, .2, .2, 1.0));
@@ -48,24 +48,40 @@ void sample_prog01::init() {
 	for (int i = 0; i < 8; ++i){
 		cols.push_back(Col4f(random(), random(), random(),1));
 	}
-	block = ProtoBlock(Vec3(), Vec3(), Dim3f(2, 2, 2), cols, "leather2.jpg");
-	plane = ProtoGroundPlane(Vec3f(), Vec3f(), Dim2f(3, 2), Col4f(1, 0, 0, 1), 80, 80, "leather2.jpg");
-
+	block = ProtoBlock(Vec3(), Vec3(), Dim3f(width, 100, height), cols, "leather2.jpg");
+	plane = ProtoGroundPlane(Vec3f(), Vec3f(), Dim2f(width/2, height/2), Col4f(1, 1, 1, 1), 1, 1, "leather2.jpg");
+	setProjection(ORTHOGONAL);
+	
+	//plane = ProtoGroundPlane(Vec3f(), Vec3f(), Dim2f(5, 3), Col4f(1, 1, 1, 1), 1, 1, "leather2.jpg");
+	//setProjection(PERSPECTIVE);
 }
 
 void sample_prog01::run() {
 	setBackground(.2, .2, .22);
-
 	render();
 }
 
 
 void sample_prog01::render(int scaleFactor){
-	translate(0, 0, -10);
+	//setProjection(ORTHOGONAL);
+	translate(0, 0, 5);
 	rotate(90, 1, 0, 0);
+	
+
+	push();
+	translate(-150, 0, 0);
+	setProjection(ORTHOGONAL);
 	plane.display();
-	scale(9, .3, 5);
-	//block.display();
+	pop();
+
+	push();
+	translate(150, 0, 0);
+	scale(.2, .2, .2);
+	setProjection(PERSPECTIVE);
+	plane.display();
+	pop();
+	/*scale(200, 200, 200);
+	block.display();*/
 	
 	
 	

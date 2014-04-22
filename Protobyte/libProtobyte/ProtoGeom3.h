@@ -69,11 +69,14 @@ namespace ijg {
     protected:
         
         std::string textureImageURL;
-        ProtoTexture bumpMap; //?
+		std::vector<std::string> textureImageURLs; // multi-texturing
+        
+		ProtoTexture bumpMap; //?
         ProtoTexture texture;
+		std::vector<ProtoTexture> textures;
         float textureScale;
         
-        
+		
         virtual void init();
         virtual void calcVerts() = 0;
         virtual void calcInds() = 0;
@@ -82,7 +85,6 @@ namespace ijg {
         virtual void calcPrimitives();
         virtual void createTexture();
         
-        void fillDisplayLists();
         
 
         
@@ -102,12 +104,20 @@ namespace ijg {
 		std::vector<float> tangentPrims; // added 4/16/14
         std::vector<float> colorPrims;
         std::vector<float> texturePrims;
+
+		// currently interleaving all attributes
+		// Note: may want to use multiple VBOs and a VAO instead
+		//static const int STRIDE = 15;
+		enum { STRIDE = 15 };
         std::vector<float> interleavedPrims;
         
         // Display List var
         GLuint displayListIndex;
         
-        // VBO stuff
+		// Buffer control
+		// VAO
+		GLuint vaoID;
+		// VBO stuff
         GLuint vboID, indexVboID;
         
         //shared memory pointer for dynamic VBO's
@@ -135,6 +145,8 @@ namespace ijg {
         
     public:
 //     
+		
+
 		// experiment making this public
 		std::vector<float> packedFaces;
 		std::vector<ProtoFace3> faces;
@@ -164,6 +176,10 @@ namespace ijg {
         
         ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size,
                    const std::vector< ProtoColor4f > col4s, const std::string& textureImageURL, float textureScale);
+
+		// multi-texturing
+		ProtoGeom3(const Dim3f& size, const Col4f& col4, const std::vector<std::string>& textureImageURLs, float textureScale = 1); 
+		ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f& size, const Col4f& col4, const std::vector<std::string>& textureImageURLs, float textureScale = 1);
         
         
         
@@ -337,5 +353,6 @@ namespace ijg {
 
     
 }
+
 #define Geom3 ProtoGeom3
 #endif /* defined(PROTO_GEOM3_H) */

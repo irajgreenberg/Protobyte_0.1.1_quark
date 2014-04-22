@@ -99,7 +99,7 @@ void ProtoPlasm::initSFMLInit(){
     glFrontFace(GL_CCW); // default
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    //glDisable(GL_CULL_FACE);
+    glDisable(GL_CULL_FACE);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     //glShadeModel(GL_FLAT); // option
     glEnable(GL_COLOR_MATERIAL); // incorporates per vertex color with lights

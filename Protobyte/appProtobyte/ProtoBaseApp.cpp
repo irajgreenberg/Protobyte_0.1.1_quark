@@ -50,13 +50,19 @@ void ProtoBaseApp::_init(){
 	N = glm::transpose(glm::inverse(glm::mat3(MV)));
 
 	// projection matrix and MVP Matrix
-	float viewAngle = 45.0f;
+	// perspective
+	viewAngle = 45.0f;
+	aspect = float(width) / float(height);
+	// ortho
+	//trace("width = ", width);
+	//trace("height =", height);
+	left = -width/2;
+	right = width/2;
+	bottom = -height/2;
+	top = height/2;
 
-	//float aspect = getWidth()/getHeight();
-	float aspect = float(width) / float(height);
-	//float aspect = 800/1500;
-	float nearDist = .1f;
-	float farDist = 600.0f;
+	nearDist = .1f;
+	farDist = 600.0f;
 
 	P = glm::perspective(viewAngle, aspect, nearDist, farDist);
 	MVP = P * MV;
@@ -68,8 +74,6 @@ void ProtoBaseApp::_init(){
 	S = glm::mat4(1.0f);
 
 	_initUniforms();
-
-
 }
 
 void ProtoBaseApp::_initUniforms(){

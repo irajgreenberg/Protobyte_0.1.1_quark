@@ -40,7 +40,7 @@ void ProtoJuncusEffusus05::init() {
 	light1.setSpecular(Col4f(1, 1, 1, 1.0));
 	light1.on();
 
-	juncsCount = 15;// 9;// 36;
+	juncsCount = 32;// 9;// 36;
 	float ht = 2.25;
 	int segs = 8;
 	float step = ht / segs;
@@ -69,45 +69,45 @@ void ProtoJuncusEffusus05::init() {
 		int dice = int(random(12));
 		if (dice == 0)
 		{
-			skin = "white1.jpg";
+			skin = "aluminum_foil.jpg";
 		}
 		else if (dice == 1){
-			skin = "white2.jpg";
+			skin = "gold_foil2.jpg";
 		}
 		else if (dice == 2){
-			skin = "pink2.jpg";
+			skin = "metal_grate.jpg";
 		}
 		else if (dice == 3){
-			skin = "white4.jpg";
+			skin = "aluminum_foil.jpg";
 		}
 		else if (dice == 4){
-			skin = "white5.jpg";
+			skin = "gold_foil.jpg";
 		}
 		else if (dice == 5){
-			skin = "white6.jpg";
+			skin = "corroded_shipPlate.jpg";
 		}
 		else if (dice == 6){
-			skin = "pink2.jpg";
+			skin = "ship_plate2.jpg";
 		}
 		else if (dice == 7){
-			skin = "white8.jpg";
+			skin = "bronze_fans.jpg";
 		}
 		else if (dice == 8){
-			skin = "white9.jpg";
+			skin = "gold_foil2.jpg";
 		}
 		else if (dice == 9){
-			skin = "pink2.jpg";
+			skin = "metal_screwHeads.jpg";
 		}
 		else if (dice == 10){
-			skin = "white3.jpg";
+			skin = "brushed_metal.jpg";
 		}
 		else if (dice == 11){
-			skin = "white4.jpg";
+			skin = "metal_grate.jpg";
 		}
 		else {
-			skin = "pink2.jpg";
+			skin = "brushed_metal.jpg";
 		}
-		juncs.push_back(ProtoJuncusEffusus(Col4f(.7, .7, .6, 1), skin, "pink2.jpg", cps, ProtoJuncusEffusus::LOW));
+		juncs.push_back(ProtoJuncusEffusus(Col4f(.7, .7, .6, 1), skin, skin, cps, ProtoJuncusEffusus::MEDIUM));
 	}
 
 
@@ -141,39 +141,27 @@ void ProtoJuncusEffusus05::init() {
 }
 
 void ProtoJuncusEffusus05::run() {
-	setBackground(1, .85, .85);
+	setBackground(.82, .81, .82);
 
 	// save high resolution rendering
 	// currently only works with max 999 tiles
+	render(); 
+	
 	static int frameCounter = 0;
 	if (frameCounter++ < 1){
-		// save("juncs", 13);
+		 save("juncs", 13);
 	}
 
-	render();
+	
 
 }
 
 
 void ProtoJuncusEffusus05::render(int scaleFactor){
-	//push();
-	translate(1, 0, 0);
-	rotate(-getFrameCount(), 0, 1, 0); 
-	juncs.at(0).display(SURFACE, SURFACE, 2, 1);
-	//pop();
-
-	//push();
-	translate(1, 0, 0);
-	rotate(getFrameCount(), 0, 1, 0);
-	juncs.at(0).display(SURFACE, SURFACE, 2, 1);
-	//pop();
-
-	
-
 
 	push(); 
-	translate(-2, 0, 0);
-	rotate(getFrameCount(), 0, 1, 0);
+	translate(0, 0, 0);
+	rotate(getFrameCount()*.02, 0, 1, 0);
 	for (int i = 0; i < juncsCount; ++i){
 		if (i % 3 == 0){
 			juncs.at(i).display(SURFACE, SURFACE, 2, 1);

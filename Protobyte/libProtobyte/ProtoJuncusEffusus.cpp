@@ -67,7 +67,7 @@ void ProtoJuncusEffusus::init2(){
 	float theta = 0.0f;
 	//float tubuleRadius = 4.2;//8.73f;
 	float tubuleRadiusMin = .75;//8.73f;
-	float tubuleRadiusMax = 11.5; // 3.75;//8.73f;
+	float tubuleRadiusMax = 4.5; // 3.75;//8.73f;
 	float tubuleLen = 2.475;
 	int tubuleSegs = 9;
 	float tubuleStep = tubuleLen / tubuleSegs;
@@ -76,8 +76,8 @@ void ProtoJuncusEffusus::init2(){
 	int tubuleWrapInterpDetail = 3;
 	int tubuleWrapCSDetail = 5;
 
-	tubuleRadiusMin = random(.75, .95);
-	tubuleRadiusMax = random(1.85, 4.5);
+	tubuleRadiusMin = random(.05, .35);
+	tubuleRadiusMax = random(.4, 2.155);
 
 	switch (detail){
 	case DRAFT:
@@ -99,7 +99,7 @@ void ProtoJuncusEffusus::init2(){
 		tubuleInterpDetail = 4;
 		tubuleCSDetail = 12;
 		tubuleWrapInterpDetail = 3;
-		tubuleWrapCSDetail = 7;
+		tubuleWrapCSDetail = 8;
 		break;
 	case HIGH:
 		tubuleSegs = 12;
@@ -118,7 +118,7 @@ void ProtoJuncusEffusus::init2(){
 	}
 
 	// curvey
-	tubule = Tube(Spline3(cps, tubuleInterpDetail, false, 1), random(.06, .08), tubuleCSDetail, ProtoTransformFunction(ProtoTransformFunction::SINUSOIDAL, Tup2f(tubuleRadiusMin, tubuleRadiusMax), int(random(2, 20))), true, textureImageURL1);
+	tubule = Tube(Spline3(cps, tubuleInterpDetail, false, 1), random(.06, .08), tubuleCSDetail, ProtoTransformFunction(ProtoTransformFunction::SINUSOIDAL, Tup2f(tubuleRadiusMin, tubuleRadiusMax), int(random(2, 12))), true, textureImageURL1);
 	tubulePrimsOrig = tubule.getInterleavedPrims();
 
 	tubuleCrossSectionDetail = tubule.getCrossSectionDetail();
@@ -147,7 +147,7 @@ void ProtoJuncusEffusus::init2(){
 
 	//    
 	std::vector<Vec3f> pts;
-	float tubuleBuldgeMin = random(.175, .45), tubuleBuldgeMax = random(.65, 1.4);
+	float tubuleBuldgeMin = random(.085, .65), tubuleBuldgeMax = random(.85, 1.95);
 
 	for (int i = 0; i < tubule.getVertices().size() - 2; ++i){
 		pts.push_back(tubule.getVertices().at(i).pos);
@@ -178,7 +178,7 @@ void ProtoJuncusEffusus::init2(){
 	tubuleWrapCrossSectionDetail = tubuleWrap.getCrossSectionDetail();
 	tubuleWrapSpineSegments = tubuleWrapPrims.size() / STRIDE / tubuleWrapCrossSectionDetail;
 
-	tubuleWrap.setColor(Col4f(.3f, .25f, .2f, 1));
+	tubuleWrap.setColor(Col4f(1, 1, 1, 1));
 	tubuleWrap.textureOn();
 }
 
