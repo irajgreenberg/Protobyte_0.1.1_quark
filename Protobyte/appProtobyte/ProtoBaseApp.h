@@ -112,6 +112,8 @@ namespace ijg {
 
 		int frameCount;
 		float frameRate;
+		double mouseX;
+		double mouseY;
 
 		// background color
 		Col3f bgColor;
@@ -244,6 +246,10 @@ namespace ijg {
 		float getFrameRate() const;
 		void setFrameCount(float frameCount);
 		int getFrameCount() const;
+		void setMouseX(double mouseX);
+		double getMouseX() const;
+		void setMouseY(double mouseY);
+		double getMouseY() const;
 
 		// Add content to world
 		void add(std::unique_ptr<ProtoGeom3> geom);
@@ -336,12 +342,24 @@ namespace ijg {
 	inline void ProtoBaseApp::setFrameCount(float frameCount){
 		this->frameCount = frameCount;
 	}
+	inline void ProtoBaseApp::setMouseX(double mouseX){
+		this->mouseX = mouseX;
+	}
+	inline void ProtoBaseApp::setMouseY(double mouseY){
+		this->mouseY = mouseY;
+	}
 
 	inline float ProtoBaseApp::getFrameRate() const{
 		return frameRate;
 	}
 	inline int ProtoBaseApp::getFrameCount() const{
 		return frameCount;
+	}
+	inline double ProtoBaseApp::getMouseX() const{
+		return mouseX;
+	}
+	inline double ProtoBaseApp::getMouseY() const{
+		return mouseY;
 	}
 
 

@@ -63,6 +63,8 @@ namespace ijg {
     public:
         int frameCount;
         float frameRate;
+        double mouseX;
+        double mouseY;
         
         
         explicit ProtoPlasm(ProtoBaseApp* baseApp);

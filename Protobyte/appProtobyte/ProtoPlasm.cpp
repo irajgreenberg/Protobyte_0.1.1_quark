@@ -52,6 +52,8 @@ void ProtoPlasm::initSFMLInit(){
 
 	
 	
+	baseApp->setMouseX(0);
+	baseApp->setMouseY(0);
 	baseApp->setFrameCount(0);
 	baseApp->setFrameRate(60.0f);
 
@@ -266,6 +268,8 @@ void ProtoPlasm::initSFMLRun(){
         
         // Activate derived user class implementation.
 		baseApp->setFrameCount(frameCount);
+		baseApp->setMouseX(mouseX);
+		baseApp->setMouseY(mouseY);
 		//baseApp->runWorld();
 		baseApp->_run(); // called in base class
 		baseApp->run(); // called in derived class
@@ -279,6 +283,7 @@ void ProtoPlasm::initSFMLRun(){
         
         // end the current frame (internally swaps the front and back buffers)
         //window->display();
+		glfwGetCursorPos(window, &mouseX, &mouseY);
         glfwSwapBuffers(window);
         glfwPollEvents();
         
