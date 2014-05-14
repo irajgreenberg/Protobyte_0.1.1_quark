@@ -3,6 +3,8 @@
 #include "sample_prog01.h"
 #include "ProtoJuncusEffusus04.h"
 #include "ProtoJuncusEffusus05.h"
+#include "ProtoRootBall01.h"
+#include "ProtoRootBall02.h"
 #include <thread>
 
 namespace {
@@ -25,6 +27,6 @@ int main(int argc, char const** argv)
 	//std::thread t1(runOSC);
 	
 	
-	ijg::ProtoPlasm p(1200, 900, "sample_pro01", new sample_prog01());
+	ijg::ProtoPlasm p(1200, 900, "rootBall02", new ProtoRootBall02());
 	return EXIT_SUCCESS;
 }

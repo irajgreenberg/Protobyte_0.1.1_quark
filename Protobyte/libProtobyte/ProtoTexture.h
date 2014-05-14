@@ -19,6 +19,7 @@
  \ingroup common
  This class is templated to allow for varied single collection types
  This class is part of the group common (update)
+ Inspiration and assistance from: http://subversion.assembla.com/svn/184/src/LoadImage.cpp
  \sa NO LINK
  */
 
@@ -38,19 +39,22 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "ProtoVector3.h"
 #include <stdio.h> // for File input
 
 namespace ijg {
 
-    class ProtoTexture {
+    // NOTE to do: add multiple maps to each texture: diffuse, bump and gloss at least.
+	
+	class ProtoTexture {
     public:
 
         friend class ProtoGeom3;
         
         friend std::ostream& operator<<(std::ostream& output, const ProtoTexture& texture);
 
-        ProtoTexture();
-        ProtoTexture(const std::string& textureURL, GLenum image_format=GL_RGB, GLint internal_format=GL_RGB, GLint level=0, GLint border=0, GLuint textureID=0);
+        ProtoTexture(); // default
+        ProtoTexture(const std::string& textureURL, GLenum image_format=GL_RGB, GLint internal_format=GL_RGB, GLint level=0, GLint border=0, GLuint textureID=0); // initialized
     
 //        ProtoTexture(const std::string& textureURL, GLuint w, GLuint h, bool isWrap);
 //        ProtoTexture(unsigned char*& data, GLuint w, GLuint h, bool isWrap);
@@ -66,6 +70,7 @@ namespace ijg {
         std::string getTextureURL() const;
         void setTextureID(GLuint textureID);
         GLuint getTextureID() const;
+		
 
 
 
@@ -83,6 +88,13 @@ namespace ijg {
         GLuint textureID;
 
         bool init();
+
+		//FIBITMAP* normalMap;
+
+		// calculate normal map from height map
+		bool createNormalMap();
+
+		static bool createNormalMap(const std::string& textureURL, GLuint textureID);
     };
 
     inline void ProtoTexture::setH(GLuint h) {

@@ -61,6 +61,10 @@
 
 namespace ijg {
 
+	// forward declare & create namespace safe shortname
+	class ProtoShape3;
+	typedef ProtoShape3 Shape3;
+
     class ProtoShape3 {
     public:
         

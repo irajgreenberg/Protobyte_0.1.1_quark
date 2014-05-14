@@ -73,6 +73,7 @@ namespace ijg {
 
         ProtoDimension3();
         ProtoDimension3(T w, T h, T d);
+		ProtoDimension3(T sz);
 		ProtoDimension3(const ProtoDimension2<T>& dim2);
 
         void setW(T w);
@@ -111,6 +112,11 @@ namespace ijg {
     inline ProtoDimension3<T>::ProtoDimension3(T w, T h, T d) :
     w(w), h(h), d(d) {
     }
+
+	template <class T>
+	inline ProtoDimension3<T>::ProtoDimension3(T sz) :
+		w(sz), h(sz), d(sz) {
+	}
 
 	template <class T>
 	inline ProtoDimension3<T>::ProtoDimension3(const ProtoDimension2<T>& dim2) :

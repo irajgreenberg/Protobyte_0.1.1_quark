@@ -1,10 +1,10 @@
 /*!  \brief  ProtoShader.h: class for managing shaders
  ProtoShader.h
  Protobyte Library v02
- 
+
  Created by Ira on 7/23/13.
  Copyright (c) 2013 Ira Greenberg. All rights reserved.
- 
+
  Library Usage:
  This work is licensed under the Creative Commons
  Attribution-NonCommercial-ShareAlike 3.0 Unported License.
@@ -13,9 +13,9 @@
  or send a letter to Creative Commons,
  444 Castro Street, Suite 900,
  Mountain View, California, 94041, USA.
- 
+
  This notice must be retained any source distribution.
- 
+
  \ingroup common
  This class is templated to allow for varied single collection types
  This class is part of the group common (update)
@@ -41,39 +41,52 @@
 
 namespace ijg {
 
-    class ProtoShader {
-    public:
-        ProtoShader();
-        ProtoShader(const std::string& vShader, const std::string& fShader);
+
+
+	class ProtoShader {
+	public:
+		ProtoShader();
+		ProtoShader(const std::string& vShader, const std::string& fShader);
 		ProtoShader(const ProtoShader& shdr);
 		ProtoShader& operator=(const ProtoShader& shdr);
-        ~ProtoShader();
+		~ProtoShader();
 
-        void init();
+		void init();
 
-        void bind();
-        void unbind();
+		void bind();
+		void unbind();
 
-        GLuint getID();
-        GLuint shader_id;
+		GLuint getID();
+		GLuint shader_id;
 
 		// encapsulate passing shader loacations 
 		// for attribute and uniform vars
 		void addAttribute(std::string name);
 		void addUniform(std::string name);
 
+		const GLuint static getID_2();
+		static void setVertexShader(const std::string& vShaderURL);
+		static void setFragmentShader(const std::string& fShaderURL);
+		static void setGeometryShader(const std::string& gShaderURL);
 
-    private:
-        // must initialize these before using!!!
-        std::string vShader, fShader;
-        GLuint shader_vp;
-        GLuint shader_fp;
-        void printLog(GLuint program);
+		/******/#define setVertShader setVertexShader;
+		/******/#define setFragShader setFragmentShader;
+		/******/#define setGeomShader setGeometryShader;
+
+
+	private:
+		// must initialize these before using!!!
+		std::string vShader, fShader;
+		GLuint shader_vp;
+		GLuint shader_fp;
+		GLuint shader_gp;
+		void printLog(GLuint program);
 
 		// vector for attribute and uniform locations
 		std::vector<GLuint> attribLocs, uniformLocs;
+		static GLuint shader_id_2;
 
-    };
+	};
 
 	inline GLuint ProtoShader::getID() {
 		return shader_id;

@@ -33,6 +33,7 @@
 #include "libProtobyte/ProtoDimension2.h"
 #include "libProtobyte/ProtoDimension3.h"
 #include "libProtobyte/ProtoGroundPlane.h"
+#include "libProtobyte/ProtoTransformFunction.h"
 #include "libProtobyte/ProtoShader.h"
 #include "libProtobyte/ProtoWorld.h"
 #include "libProtobyte/ProtoColor3.h"
@@ -71,6 +72,10 @@
 #include <stack>
 
 namespace ijg {
+
+	// non-member functions
+
+
 	class Protoplasm; // forward declare
 	class ProtoBaseApp {
 
@@ -125,6 +130,8 @@ namespace ijg {
 		// light0 enabled by default
 		//std::shared_ptr<ProtoLight> light0, light1, light2, light3, light4, light5, light6, light7;
 
+		Col3f globalAmbient; 
+		
 		GLint glLights[8];
 
 		enum Light {
@@ -146,7 +153,7 @@ namespace ijg {
 
 		// shader
 		ProtoShader shader;
-		
+
 		//ProtoLight light0, light1, light2, light3, light4, light5, light6, light7;
 		//std::shared_ptr<ProtoLight> lights[8];
 
@@ -154,9 +161,9 @@ namespace ijg {
 		enum Matrix {
 			MODEL_VIEW,
 			PROJECTION
-		}; 
-		
-		float viewAngle, aspect, nearDist, farDist; 
+		};
+
+		float viewAngle, aspect, nearDist, farDist;
 
 		void setViewAngle(float viewAngle);
 		void setAspect(float aspect);
@@ -201,8 +208,8 @@ namespace ijg {
 		std::stack <glm::mat4> matrixStack;
 
 
-		
-		// Uniform Lighting location vars - replace above
+
+		// Uniform Lighting location vars
 		struct Light_U {
 			GLuint position;
 			GLuint diffuse;
@@ -210,7 +217,8 @@ namespace ijg {
 			GLuint specular;;
 		};
 		Light_U lights_U[8];
-		//END
+		
+		GLuint globalAmbient_U;
 
 		// Shadow Map
 		GLuint shadowMap_U;
@@ -268,7 +276,7 @@ namespace ijg {
 
 		// shaders stuff
 		void GLSLInfo(ProtoShader* shader);
-			
+
 
 		// LIGHTS
 		void lightsOn();
@@ -289,8 +297,22 @@ namespace ijg {
 		//void lookAt(const Vec3f& eye, const Vec3f& center, const Vec3f& up);
 		//void perspective(float viewAngle, float aspect, float nearDist, float farDist);
 
-		// exporting
-		void export(std::vector<Tup4v> vs, Format type);
+		
+		// exporting 
+		void export(std::vector<Tup4v> vs, Format type); // bucket of Vecs
+
+		// not using export option below yet
+		void export(std::vector<Shape3> shapes, Format type); // ProtoShapes
+		void export(std::vector<Geom3> geoms, Format type); // ProtoGeoms
+		void export(std::vector<Geom3> geoms, std::vector<Shape3> shapes, Format type); // geoms & shapes
+		void export(std::vector<Shape3> shapes, std::vector<Geom3> geoms, Format type); // shapes & geoms
+
+		template<typename T, typename U>
+		void export(T objType1, U objType2, Format type);
+
+		// pass multiple objs
+		//template<typename First, typename ... Rest>
+		//void export(Format type, First first, Rest ... rest);
 
 		// CAMERAS
 
@@ -315,7 +337,7 @@ namespace ijg {
 		void save(std::string name = "img", int scaleFactor = 1);
 		//void saveTiles(int rows, int columns);
 		bool stitchTiles(std::string url, int tiles);
-		
+
 
 
 
@@ -346,11 +368,17 @@ namespace ijg {
 
 
 	inline void ProtoBaseApp::setProjection(ProjectionType projType){
-		if (projType == PERSPECTIVE)
+		if (projType == PERSPECTIVE){
 			P = glm::perspective(viewAngle, aspect, nearDist, farDist);
-		else
+			//P = glm::frustum(left, right, bottom, top, nearDist, farDist);
+			//translate(0, 0, -600);
+			concat();
+		}
+		else {
 			//ortho (T const &left, T const &right, T const &bottom, T const &top, T const &zNear, T const &zFar)
 			P = glm::ortho(left, right, bottom, top, nearDist, farDist);
+			concat();
+		}
 	}
 
 	// perspective projection
@@ -386,13 +414,13 @@ namespace ijg {
 #define WIREFRAME ProtoGeom3::WIREFRAME
 #define SURFACE ProtoGeom3::SURFACE
 
-// remove this old stuff
-//#define pushMatrix glPushMatrix
-//#define popMatrix glPopMatrix
-//
-//#define translatef glTranslatef
-//#define rotatef glRotatef 
-//#define scalef glScalef 
+	// remove this old stuff
+	//#define pushMatrix glPushMatrix
+	//#define popMatrix glPopMatrix
+	//
+	//#define translatef glTranslatef
+	//#define rotatef glRotatef 
+	//#define scalef glScalef 
 
 #define light0 lights.at(0)
 #define light1 lights.at(1)

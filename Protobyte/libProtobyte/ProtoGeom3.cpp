@@ -103,6 +103,9 @@ void ProtoGeom3::init() {
     setShininess();
     setSpecularMaterialColor();
     setEmissionMaterialColor();
+
+	// diffuse, bump, more soon!
+	//setTextureUniforms();
     
     // initialize glew for Windows
 #if defined(_WIN32) || defined(__linux__)
@@ -205,12 +208,14 @@ void ProtoGeom3::createTexture(){
 		FreeImage_Initialise();
 #endif
 		// trace("Texture url =", url);
-		texture = ProtoTexture(url, GL_RGB, GL_RGB, 0, 0, textureID++);
+		diffuseMapTexture = ProtoTexture(url, GL_RGB, GL_RGB, 0, 0, textureID++);
 
 		//std::cout << "texture.getTextureID() = " << texture.getTextureID() << std::endl;
 
 	}
 }
+
+
 
 void ProtoGeom3::calcFaces() {
     if(faces.size()>0){
@@ -354,6 +359,24 @@ void ProtoGeom3::textureOn(){
 void ProtoGeom3::textureOff(){
      isTextureEnabled = false;
    
+}
+
+
+void ProtoGeom3::enableNormalMap(float depth){
+
+}
+
+void ProtoGeom3::disableNormalMap(){
+
+}
+
+// for STL output
+std::vector<Tup4v> ProtoGeom3::getGeomData(){
+	std::vector<Tup4v> vs;
+		for (int i = 0; i < faces.size(); ++i){
+			vs.push_back(Tup4v(getFaces().at(i).getNorm(), getFaces().at(i).v0, getFaces().at(i).v1, getFaces().at(i).v2));
+		}
+	return vs;
 }
 
 // Includes multiple display implementations
@@ -504,6 +527,21 @@ void ProtoGeom3::updateBuffer(){
 	int vertsDataSize = sizeof (float)*interleavedPrims.size();
 	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &interleavedPrims[0]); // upload the data
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+// set up surface maps -for advanced lighting
+void ProtoGeom3::setDiffuseMap(const std::string& normalImageURL){
+}
+
+void ProtoGeom3::setBumpMap(const std::string& normalImageURL){
+	ProtoTexture::createNormalMap(normalImageURL, textureID++);
+}
+
+void ProtoGeom3::setReflectionMap(const std::string& normalImageURL){
+}
+void ProtoGeom3::setRefractionMap(const std::string& normalImageURL){
+}
+void ProtoGeom3::setSpecularMap(const std::string& normalImageURL){
 }
 
 

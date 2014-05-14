@@ -50,7 +50,7 @@ void sample_prog01::init() {
 	}
 	block = ProtoBlock(Vec3(), Vec3(), Dim3f(width, 100, height), cols, "leather2.jpg");
 	plane = ProtoGroundPlane(Vec3f(), Vec3f(), Dim2f(width/2, height/2), Col4f(1, 1, 1, 1), 1, 1, "leather2.jpg");
-	setProjection(ORTHOGONAL);
+	//setProjection(ORTHOGONAL);
 	
 	//plane = ProtoGroundPlane(Vec3f(), Vec3f(), Dim2f(5, 3), Col4f(1, 1, 1, 1), 1, 1, "leather2.jpg");
 	//setProjection(PERSPECTIVE);
@@ -63,25 +63,22 @@ void sample_prog01::run() {
 
 
 void sample_prog01::render(int scaleFactor){
-	//setProjection(ORTHOGONAL);
-	translate(0, 0, 5);
+	
+	translate(0, 0, 0);
 	rotate(90, 1, 0, 0);
 	
 
 	push();
+	setProjection(PERSPECTIVE);
 	translate(-150, 0, 0);
-	setProjection(ORTHOGONAL);
 	plane.display();
 	pop();
 
 	push();
+	setProjection(ORTHOGONAL);
 	translate(150, 0, 0);
-	scale(.2, .2, .2);
-	setProjection(PERSPECTIVE);
 	plane.display();
 	pop();
-	/*scale(200, 200, 200);
-	block.display();*/
 	
 	
 	

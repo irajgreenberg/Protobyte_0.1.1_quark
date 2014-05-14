@@ -53,6 +53,12 @@ ProtoGroundPlane::ProtoGroundPlane(const Vec3f& pos, const Vec3f& rot, const Dim
 	init();
 }
 
+ProtoGroundPlane::ProtoGroundPlane(const Vec3f& pos, const Vec3f& rot, const Dim2f& size,
+	const Col4f& col4, int rows, int columns, const std::vector<std::string>& textureImageURLs, float textureScale) :
+	Geom3(pos, rot, Dim3f(size.w, 0, size.h), col4, textureImageURLs, textureScale), rows(rows), columns(columns)
+{
+	init();
+}
 void ProtoGroundPlane::calcVerts() {
 	verts.push_back(ProtoVertex3(Vec3f(-size.w / 2, 0, -size.d / 2), col4, Tup2f(0, 0))); // LB
 	verts.push_back(ProtoVertex3(Vec3f(-size.w / 2, 0, size.d / 2), col4, Tup2f(0, 1))); // LF

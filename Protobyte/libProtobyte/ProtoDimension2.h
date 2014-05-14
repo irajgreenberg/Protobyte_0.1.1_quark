@@ -70,6 +70,7 @@ namespace ijg {
         
         ProtoDimension2();
         ProtoDimension2(T w, T h);
+		ProtoDimension2(T sz);
         
         void setW(T w);
         void setH(T h);
@@ -105,6 +106,11 @@ namespace ijg {
     inline ProtoDimension2<T>::ProtoDimension2(T w, T h) :
     w(w), h(h) {
     }
+
+	template <class T>
+	inline ProtoDimension2<T>::ProtoDimension2(T sz) :
+		w(sz), h(sz) {
+	}
     
     // setters/getters
     

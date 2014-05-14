@@ -14,17 +14,26 @@
 
 namespace ijg {
 
-    class ProtoTransformFunction {
-    private:
-        unsigned char functionType;
-        float minValue, maxValue;
-        ProtoTuple2<Vec3f> vectorRange;
-        ProtoTuple2f scalerRange;
-       // bool isRandom;
-        short periodCount;
-        bool isVectorRange, isScalerRange;
+	class ProtoTransformFunction;
+	typedef ProtoTransformFunction  TransformFunction;
+	
+	
+	class ProtoTransformFunction{
+   
 
     public:
+
+		friend std::ostream& operator<<(std::ostream& out, const TransformFunction& func);
+
+		enum FunctionType {
+			//  Specifies Cross-section transform functions
+			LINEAR, 
+			LINEAR_INVERSE, 
+			SINUSOIDAL, 
+			SINUSOIDAL_INVERSE,
+			SINUSOIDAL_RANDOM 
+		};
+
 
         /*!
          * Default Constructor */
@@ -32,23 +41,34 @@ namespace ijg {
 
         /*!
          * Constructor */
-        ProtoTransformFunction(unsigned char functionType, /*bool isRandom = 0, */short periodCount = 1);
+		ProtoTransformFunction(FunctionType functionType, short periodCount = 1);
 
         /*!
          * Constructor */
-        ProtoTransformFunction(unsigned char functionType, ProtoTuple2v3f vectorRange, /*bool isRandom = 0, */short periodCount = 1);
+		ProtoTransformFunction(FunctionType functionType, ProtoTuple2v3f vectorRange, short periodCount = 1);
 
         /*!
          * Constructor */
-        ProtoTransformFunction(unsigned char functionType, ProtoTuple2f scalerRange, /*bool isRandom = 0, */short periodCount = 1);
+		ProtoTransformFunction(FunctionType functionType, ProtoTuple2f scalerRange, short periodCount = 1);
 
         /*!
          * Constructor */
-        ProtoTransformFunction(unsigned char functionType, float maxValue, /*bool isRandom = 0, */short periodCount = 1);
+		ProtoTransformFunction(FunctionType functionType, float maxValue, short periodCount = 1);
 
-
-
-        /*!
+		///*!
+		//* Destructor */
+		//~ProtoTransformFunction();
+		//
+		///*!
+		//* Copy Constructor */
+		//ProtoTransformFunction(const ProtoTransformFunction& transformFunction);
+		//
+		///*!
+		//* Assignment Operator */
+		//ProtoTransformFunction& operator=(const ProtoTransformFunction& transformFunction);
+        
+		
+		/*!
          * getters/setters */
 
         void setPeriodCount(short periodCount);
@@ -63,18 +83,22 @@ namespace ijg {
         float getMaxValue() const;
         void setMinValue(float minValue);
         float getMinValue() const;
-        void setFunctionType(unsigned char functionType);
-        unsigned char getFunctionType() const;
+		void setFunctionType(FunctionType functionType);
+		FunctionType getFunctionType() const;
 
         bool getIsVectorRange();
         bool getIsScalerRange();
 
-        //  Specifies Cross-section transform functions
-        static const unsigned char LINEAR = 0x00;
-        static const unsigned char LINEAR_INVERSE = 0x01;
-        static const unsigned char SINUSOIDAL = 0x10;
-        static const unsigned char SINUSOIDAL_INVERSE = 0x11;
-        //static const unsigned char SINUSOIDAL_TRANSFORM_RANDOM = 0x11;
+	private:
+		FunctionType functionType;
+		float minValue, maxValue;
+		ProtoTuple2<Vec3f> vectorRange;
+		ProtoTuple2f scalerRange;
+		// bool isRandom;
+		short periodCount;
+		bool isVectorRange, isScalerRange;
+
+
 
     };
 
@@ -126,11 +150,11 @@ namespace ijg {
         return minValue;
     }
 
-    inline void ProtoTransformFunction::setFunctionType(unsigned char functionType) {
+	inline void ProtoTransformFunction::setFunctionType(FunctionType functionType) {
         this->functionType = functionType;
     }
 
-    inline unsigned char ProtoTransformFunction::getFunctionType() const {
+	inline ProtoTransformFunction::FunctionType ProtoTransformFunction::getFunctionType() const {
         return functionType;
     }
 

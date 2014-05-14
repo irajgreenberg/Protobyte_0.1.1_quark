@@ -40,7 +40,10 @@ listener(listener){
 
 void ProtoBaseApp::_init(){
 	shader = ProtoShader("shader1.vert", "shader1.frag");
-
+	
+	// default global ambient
+	globalAmbient = Col3f(.25f, .19f, .27f);
+	
 	glViewport(0, 0, width, height);
 
 	// START standard transformation matrices: ModelView / Projection / Normal
@@ -51,7 +54,7 @@ void ProtoBaseApp::_init(){
 
 	// projection matrix and MVP Matrix
 	// perspective
-	viewAngle = 45.0f;
+	viewAngle = 65.0f;
 	aspect = float(width) / float(height);
 	// ortho
 	//trace("width = ", width);
@@ -62,7 +65,7 @@ void ProtoBaseApp::_init(){
 	top = height/2;
 
 	nearDist = .1f;
-	farDist = 600.0f;
+	farDist = 1500.0f;
 
 	P = glm::perspective(viewAngle, aspect, nearDist, farDist);
 	MVP = P * MV;
@@ -95,7 +98,8 @@ void ProtoBaseApp::_initUniforms(){
 		lights_U[i].specular = glGetUniformLocation(shader.getID(), spec.c_str());
 	}
 
-
+	globalAmbient_U = glGetUniformLocation(shader.getID(), "globalAmbientLight");
+	
 	//matrices
 	MV_U = glGetUniformLocation(shader.getID(), "modelViewMatrix");
 	MVP_U = glGetUniformLocation(shader.getID(), "modelViewProjectionMatrix");
@@ -109,12 +113,15 @@ void ProtoBaseApp::_initUniforms(){
 
 void ProtoBaseApp::_run(){
 	// entry point to draw thread
-	// reset trrnaformation matrix
+	// reset transformation matrix
 	//T = glm::mat4(1.0f);
 	//R = glm::mat4(1.0f);
 	//S = glm::mat4(1.0f);
 	M = glm::mat4(1.0f);
 
+	//global ambient
+	glUniform3fv(globalAmbient_U, 1, &globalAmbient.r);
+	
 	// update all 8 lights in shaders
 	for (int i = 0; i < 8; ++i){
 		glUniform3fv(lights_U[i].position, 1, &lights[i].getPosition().x);
@@ -427,6 +434,48 @@ void ProtoBaseApp::export(std::vector<Tup4v> vs, Format type){
 	myfile.close();
 	std::cout << "stl file successfully written" << std::endl;
 }
+
+//template<typename First, typename ... Rest>
+//void ProtoBaseApp::export(Format type, First first, Rest ... rest) {
+//#if defined (_WIN32) || defined(_WIN64)
+//	time_t now = time(0);
+//	tm ltm;
+//	localtime_s(&ltm, &now);
+//#else // os x uses localtime instead of localtime_s
+//	time_t now = time(0);
+//	tm* ltm = localtime(&now);
+//#endif
+//
+//	//trace("geomData.size() =", faces.size());
+//
+//	std::stringstream stream;
+//	stream << (ltm.tm_year + 1900) << "_" << (ltm.tm_mon + 1) << "_" << ltm.tm_mday << "_" << ltm.tm_hour << "_" << ltm.tm_min << "_" << ltm.tm_sec;
+//
+//	std::string url = ProtoUtility::getPathToOutput();
+//	std::string directory = url + "data" + "_" + stream.str();
+//	CreateDirectory(directory.c_str(), 0);
+//
+//	std::ofstream myfile;
+//	myfile.open(directory + "/geomdata" + stream.str() + ".stl");
+//
+//	myfile << "solid protobyte\n";
+//	for (int i = 0; i < vs.size() - 4; i++) {
+//		//trace("allFaces.at(i).v0_p->pos =", allFaces.at(i).getVert0_ptr()->pos);
+//		myfile << "\tfacet normal " <<
+//			vs.at(i).elem0.x << " " << vs.at(i).elem0.y << " " << vs.at(i).elem0.z << "\n" <<
+//			"\t\touter loop\n" <<
+//			"\t\t\tvertex " << vs.at(i).elem1.x << " " << vs.at(i).elem1.y << " " << vs.at(i).elem1.z << "\n" <<
+//			"\t\t\tvertex " << vs.at(i).elem2.x << " " << vs.at(i).elem2.y << " " << vs.at(i).elem2.z << "\n" <<
+//			"\t\t\tvertex " << vs.at(i).elem3.x << " " << vs.at(i).elem3.y << " " << vs.at(i).elem3.z << "\n" <<
+//			"\t\tendloop\n" <<
+//			"\tendfacet\n";
+//	}
+//	myfile << "endsolid protobyte\n";
+//
+//	myfile.close();
+//	std::cout << "stl file successfully written" << std::endl;
+//
+//}
 
 void ProtoBaseApp::save(std::string name, int scaleFactor){
 

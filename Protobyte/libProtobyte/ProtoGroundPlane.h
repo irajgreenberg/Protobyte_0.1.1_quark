@@ -40,10 +40,14 @@ namespace ijg {
         
 		ProtoGroundPlane(const Vec3f& pos, const Vec3f& rot, const Dim2f& size,
                 const Col4f& col4, int rows, int columns);
-        
-        
+
 		ProtoGroundPlane(const Vec3f& pos, const Vec3f& rot, const Dim2f& size,
 			const Col4f& col4, int rows, int columns, const std::string& textureImageURL, float textureScale = 1);
+
+		ProtoGroundPlane(const Vec3f& pos, const Vec3f& rot, const Dim2f& size,
+			const Col4f& col4, int rows, int columns, const std::vector<std::string>& textureImageURLs, float textureScale = 1);
+
+		
 
         void calcVerts();
         void calcInds();

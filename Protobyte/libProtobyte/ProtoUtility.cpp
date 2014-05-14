@@ -203,14 +203,16 @@ void ProtoUtility::load(const std::string& url, int w, int h, unsigned char* dat
 }
 
 std::vector<std::string> ProtoUtility::getFileNames(std::string dir){
-	WIN32_FIND_DATA ffd;
+	std::vector<std::string> fileNames;
+#if defined(_WIN32) || defined (_WIN64)
+    WIN32_FIND_DATA ffd;
 	LARGE_INTEGER filesize;
 	TCHAR szDir[MAX_PATH];
 	size_t length_of_arg;
 	HANDLE hFind = INVALID_HANDLE_VALUE;
 	DWORD dwError = 0;
 
-	std::vector<std::string> fileNames;
+	
 
 	// Prepare string for use with FindFile functions.  First, copy the
 	// string to a buffer, then append '\*' to the directory name.
@@ -245,6 +247,7 @@ std::vector<std::string> ProtoUtility::getFileNames(std::string dir){
 	} while (FindNextFile(hFind, &ffd) != 0);
 
 	FindClose(hFind);
+#endif
 
 	return fileNames;
 }

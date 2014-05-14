@@ -1,4 +1,4 @@
-/*!  \brief  ProtoJuncusEffusus05.h:
+/*!  \brief  ProtoRootBall01.h:
 Form study 3 for Zhulong Sattellite Exhibition: 4/2014
 Protobyte Library v02
 
@@ -22,8 +22,8 @@ This class is part of the group common (update)
 \sa NO LINK
 */
 
-#ifndef PROTOJUNCUS_EFFUSUS_05_H
-#define PROTOJUNCUS_EFFUSUS_05_H
+#ifndef PROTOROOTBALL_01_H
+#define PROTOROOTBALL_01_H
 
 #include <iostream>
 #include "appProtobyte/ProtoBaseApp.h"
@@ -31,21 +31,25 @@ This class is part of the group common (update)
 
 using namespace ijg;
 
-class ProtoJuncusEffusus05 : public ProtoBaseApp {
+class ProtoRootBall01 : public ProtoBaseApp {
 public:
 	void init();
 	void run();
 
 	GroundPlane ground;
 
+	
 	//ProtoShader shader;
 
 	void render(int scaleFactor = 1);
 	//void initUniforms();
 
 	ProtoJuncusEffusus junc01;
-	int juncsCount;
+	int rootCount;
 	std::vector<ProtoJuncusEffusus> juncs;
+	std::vector<ProtoTube> tubes;
+
+	ProtoSphere sphere;
 
 	int ROWS = 5;
 	int COLUMNS = 4;
@@ -57,4 +61,4 @@ private:
 	
 };
 
-#endif // PROTOJUNCUS_EFFUSUS_05_H
+#endif // PROTOROOTBALL_01_H

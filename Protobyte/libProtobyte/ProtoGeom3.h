@@ -72,7 +72,9 @@ namespace ijg {
 		std::vector<std::string> textureImageURLs; // multi-texturing
         
 		ProtoTexture bumpMap; //?
+		ProtoTexture normalMapTexture;
         ProtoTexture texture;
+		ProtoTexture diffuseMapTexture;
 		std::vector<ProtoTexture> textures;
         float textureScale;
         
@@ -84,6 +86,9 @@ namespace ijg {
         virtual void calcVertexNorms();
         virtual void calcPrimitives();
         virtual void createTexture();
+
+
+		
         
         
 
@@ -220,11 +225,22 @@ namespace ijg {
         void setTextureScale(float textureScale);
         float getTextureScale() const;
         
-        void setBumpMap(ProtoTexture bumpMap);
-        ProtoTexture getBumpMap() const;
+		// pass image url to be used as normal map
+		void setBumpMap(const std::string& normalImageURL);
+		void setDiffuseMap(const std::string& normalImageURL);
+		void setReflectionMap(const std::string& normalImageURL);
+		void setRefractionMap(const std::string& normalImageURL);
+		void setSpecularMap(const std::string& normalImageURL);
+
+
+
+		// normal map - created based on texture
+		void enableNormalMap(float depth = .5f);
+		void disableNormalMap();
         
         // stl exporter
         //        void exportSTL();
+		std::vector<Tup4v> getGeomData();
         
         // required by ProtobteRenderer
         GLuint getVboID() const;
@@ -236,7 +252,7 @@ namespace ijg {
         void setSpecularMaterialColor(const Col4f& specularMaterialColor = Col4f(1, 1, 1, 1));
         void setEmissionMaterialColor(const Col4f&  emissionMaterialColor= Col4f(0, 0, 0, 1));
         
-        // ensure unquie id for each texture per geom obj - this needs to be rethought eventually.
+        // ensure unique id for each texture per geom obj - this needs to be rethought eventually.
         static GLuint textureID;
         ProtoTexture getTexture()const;
         void textureOn();
@@ -305,14 +321,6 @@ namespace ijg {
     
     inline float ProtoGeom3::getTextureScale() const {
         return textureScale;
-    }
-    
-    inline void ProtoGeom3::setBumpMap(ProtoTexture bumpMap) {
-        this->bumpMap = bumpMap;
-    }
-    
-    inline ProtoTexture ProtoGeom3::getBumpMap() const {
-        return bumpMap;
     }
     
     inline GLuint ProtoGeom3::getVboID() const {

@@ -1,8 +1,7 @@
-/*!  \brief  ProtoJuncusEffusus05.h:
-Form study 3 for Zhulong Sattellite Exhibition: 4/2014
+/*!  \brief  ProtoRootBall02.h:
 Protobyte Library v02
 
-Created by Ira on 3/26/14.
+Created by Ira on 4/30/14.
 Copyright (c) 2014 Ira Greenberg. All rights reserved.
 
 Library Usage:
@@ -22,39 +21,28 @@ This class is part of the group common (update)
 \sa NO LINK
 */
 
-#ifndef PROTOJUNCUS_EFFUSUS_05_H
-#define PROTOJUNCUS_EFFUSUS_05_H
+#ifndef PROTOROOTBALL_02_H
+#define PROTOROOTBALL_02_H
 
 #include <iostream>
 #include "appProtobyte/ProtoBaseApp.h"
+#include "libProtobyte/ProtoRootBall.h"
 
 
 using namespace ijg;
 
-class ProtoJuncusEffusus05 : public ProtoBaseApp {
+class ProtoRootBall02 : public ProtoBaseApp {
 public:
 	void init();
 	void run();
 
-	GroundPlane ground;
-
-	//ProtoShader shader;
 
 	void render(int scaleFactor = 1);
-	//void initUniforms();
-
-	ProtoJuncusEffusus junc01;
-	int juncsCount;
-	std::vector<ProtoJuncusEffusus> juncs;
-
-	int ROWS = 5;
-	int COLUMNS = 4;
-	Vec3 locs[5*4];
-	float thetas[5 * 4];
-	int juncIDCounts[5 * 4];
+	RootBall rootBallCore, rootBall;
+	ProtoGroundPlane plane;
 
 private:
 	
 };
 
-#endif // PROTOJUNCUS_EFFUSUS_05_H
+#endif // PROTOROOTBALL_01_H

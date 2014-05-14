@@ -10,6 +10,8 @@ in vec3 normal;
 
 in vec4 shadowMapCoords;
 
+uniform vec3 globalAmbientLight;
+
 //Lighting uniforms
 struct Light {
 	vec3 position;
@@ -22,8 +24,9 @@ uniform Light lights[8];
 
 
 // active texture slot 0
-//layout (binding = 0) uniform sampler2D basic_texture;
-uniform sampler2D textureSampler;
+//layout (binding = 0) uniform sampler2D textureSampler;
+uniform sampler2D diffuseMap;
+uniform sampler2D bumpMap;
 uniform sampler2DShadow shadowMapTexture;  //shadowmap texture
 
 layout (location = 0) out vec4 fragColor;
@@ -44,15 +47,15 @@ void main(){
     vec3 emissive = vec3(0,0,0);
 
   // Compute the ambient term
-    //vec3 ambient = ambientColor * globalAmbient;
-	vec3 ambient = vec3(lights[0].ambient) * globalAmbient ;
+    //vec3 ambient = ambientColor * globalAmbientLight;
+	vec3 ambient = vec3(lights[0].ambient) * globalAmbientLight;
 
 	
   // Compute the diffuse term
   // Normalized vector toward the light source
 	vec3 L = normalize(lights[0].position - P);
     float diffuseLight = max(dot(N, L), 0);
-	vec4 tex = texture(textureSampler, textureCoords.st)*color;
+	vec4 tex = texture(bumpMap, textureCoords.st)*color;
 	//tex*=vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	vec3 diffuse = vec3(lights[0].diffuse) * vec3(tex) *  diffuseLight;
 

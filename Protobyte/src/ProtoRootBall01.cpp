@@ -1,8 +1,8 @@
-/*!  \brief  ProtoJuncusEffusus05.h:
-Form study 3 for Zhulong Sattellite Exhibition: 4/2014
+/*!  \brief  ProtoRootBall01.h:
+Root ball study
 Protobyte Library v02
 
-Created by Ira on 3/26/14.
+Created by Ira on 4/27/14.
 Copyright (c) 2014 Ira Greenberg. All rights reserved.
 
 Library Usage:
@@ -22,10 +22,13 @@ This class is part of the group common (update)
 \sa NO LINK
 */
 
-#include "ProtoJuncusEffusus05.h"
+#include "ProtoRootBall01.h"
 
-void ProtoJuncusEffusus05::init() {
-	globalAmbient = Col3f(.25f, .19f, .27f); // slight violet color
+#include <thread>
+
+
+void ProtoRootBall01::init() {
+	globalAmbient = Col3f(0, 0, 0); // slight violet color
 
 	// light0
 	light0.setPosition(Vec3f(0, 0, 1));
@@ -40,42 +43,51 @@ void ProtoJuncusEffusus05::init() {
 	light1.setSpecular(Col4f(1, 1, 1, 1.0));
 	light1.on();
 
-	juncsCount = 32;// 9;// 36;
-	float ht = 2.25;
-	int segs = 8;
-	float step = ht / segs;
+	rootCount = 1;// 22;// 9;// 36
+	int segs = 180;
 	float theta = 0;
 	float radius = .107;
-	float x, y, z;
-	float chi = 0;
+	Vec3f v(0,0,0);
+	float ballRadius = 2;
 
+	
 	// thanks to gamblin colors
-	for (int i = 0; i < juncsCount; ++i){
-		theta = TWO_PI / juncsCount * i;
-		y = -ht / 2;
+	for (int i = 0; i < rootCount; ++i){
+		theta = 0;
+		v = Vec3f(0, 0, 0);
+		Vec3f spd(0,0,0);
 		std::vector <Vec3> cps;
-		radius = .14;
-		chi = 0;
+		cps.push_back(v);
+
 		for (int j = 0; j < segs; ++j){
-			z = (cos(theta + sin(chi)*random(j))*radius + random(-.08, .08)*j) * (random(1, 3.5) / (j + 1));
-			y += step;
-			x = (sin(theta + sin(chi)*random(j))*radius + random(-.08, .08)*j) * (random(1, 3.5) / (j + 1));
-			cps.push_back(Vec3(x, y, z));
-			theta += TWO_PI / segs;
-			radius += .085;
-			chi += PI / 2;
+			//trace("Vec3f(x, y, z).mag() =", Vec3f(v.x, v.y, v.z).mag());
+				spd = Vec3(random(-.02, .02), random(-.02, .02), random(-.02, .02));
+				v += spd + Vec3f(sin(theta)*random(-.2, .2), -sin(theta)*random(-.2, .2), cos(theta)*random(-.2, .2));
+				//trace("v before shift =", v);
+				cps.push_back(Vec3(v.x, v.y, v.z));
+			if (v.mag() > ballRadius/2.5){
+				float shift = (ballRadius/2.5) / v.mag();
+				//trace("shift = ", shift);
+				v *= shift;
+				//trace("v after shift =", v);
+				//spd = Vec3f(random(TWO_PI), random(TWO_PI), random(TWO_PI));
+				spd *= -(1+random(-.02,.02));
+				//spd.normalize();
+			}
+			
+			theta += PI / 15.0f;
 		}
 		std::string skin;
 		int dice = int(random(12));
 		if (dice == 0)
 		{
-			skin = "aluminum_foil.jpg";
+			skin = "greenCrocSkin.jpg";
 		}
 		else if (dice == 1){
-			skin = "gold_foil2.jpg";
+			skin = "moss.jpg";
 		}
 		else if (dice == 2){
-			skin = "metal_grate.jpg";
+			skin = "cross_hatch.jpg";
 		}
 		else if (dice == 3){
 			skin = "aluminum_foil.jpg";
@@ -90,13 +102,13 @@ void ProtoJuncusEffusus05::init() {
 			skin = "ship_plate2.jpg";
 		}
 		else if (dice == 7){
-			skin = "bronze_fans.jpg";
+			skin = "pebbles.jpg";
 		}
 		else if (dice == 8){
 			skin = "gold_foil2.jpg";
 		}
 		else if (dice == 9){
-			skin = "metal_screwHeads.jpg";
+			skin = "leather2.jpg";
 		}
 		else if (dice == 10){
 			skin = "brushed_metal.jpg";
@@ -107,23 +119,39 @@ void ProtoJuncusEffusus05::init() {
 		else {
 			skin = "brushed_metal.jpg";
 		}
-		juncs.push_back(ProtoJuncusEffusus(Col4f(.7, .7, .6, 1), skin, skin, cps, ProtoJuncusEffusus::MEDIUM));
+		//juncs.push_back(ProtoJuncusEffusus(Col4f(.7, .7, .6, 1), skin, skin, cps, ProtoJuncusEffusus::LOW));
+
+		//ProtoTube(pos, rot, size, col4, path, radius, crossSectionDetail, transFuncObj, isClosed, textureImageURL)
+		Spline3 s(cps, 5, false, .5);
+		//const Vec3f& pos, const Vec3f& rot, const ProtoDimension3f& size, const ProtoColor4f& col4, const ProtoSpline3& path, float radius, int crossSectionDetail, bool isClosed
+		tubes.push_back(ProtoTube(Vec3f(), Vec3f(), Dim3f(1, 1, 1), Col4f(1, 1, 1, 1), s, .02, 9, ProtoTransformFunction(ProtoTransformFunction::SINUSOIDAL, ProtoTuple2f(random(.1, .75), random(.25, 6)), 50), false, skin));
+		tubes.at(i).textureOn();
+
 	}
 
 
 
 
 	// For exporting geometry to STL
+	// JuncusEffusus Roots
 	std::vector<Tup4v> vs;
-	for (int i = 0; i < juncs.size(); ++i){
+	/*for (int i = 0; i < juncs.size(); ++i){
 		bool isTubule = false;
 		if (i % 4 == 0)isTubule = false; else isTubule = true;
 		std::vector<Tup4v> temp = juncs.at(i).getGeomData(isTubule, true);
 		vs.insert(vs.end(), temp.begin(), temp.end());
 	}
+*/
+	// plain tube roots
+	for (int i = 0; i <tubes.size(); ++i){
+		bool isTubule = true;
+		//if (i % 4 == 0)isTubule = false; else isTubule = true;
+		std::vector<Tup4v> temp = tubes.at(i).getGeomData();
+		vs.insert(vs.end(), temp.begin(), temp.end());
+	}
 
 	// export geometry data to STL
-	//export(vs, STL);
+	export(vs, STL);
 
 
 	// Locations for page placement
@@ -138,18 +166,26 @@ void ProtoJuncusEffusus05::init() {
 			juncIDCounts[i*COLUMNS + j] = static_cast<int>(random(3, 24));
 		}
 	}
+
+
+	//sphere = ProtoSphere(Vec3f(), Vec3f(), Dim3f(2, 2, 2), Col4f(.7, .7, .7, 1), 12, 12);
 }
 
-void ProtoJuncusEffusus05::run() {
+void ProtoRootBall01::run() {
 	setBackground(.82, .81, .82);
 
 	// save high resolution rendering
 	// currently only works with max 999 tiles
-	render(); 
+	//
+	//std::thread t(&ProtoBaseApp::render);
+	//t.join();
+	render();
 	
 	static int frameCounter = 0;
 	if (frameCounter++ < 1){
-		 save("juncs", 13);
+		//save("roots", 13);
+		/*std::thread t(&this->save, "roots", 13);
+		t.join();*/
 	}
 
 	
@@ -157,18 +193,26 @@ void ProtoJuncusEffusus05::run() {
 }
 
 
-void ProtoJuncusEffusus05::render(int scaleFactor){
+void ProtoRootBall01::render(int scaleFactor){
 
 	push(); 
 	translate(0, 0, 0);
+	scale(3);
+//	sphere.display(WIREFRAME);
 	rotate(getFrameCount()*.02, 0, 1, 0);
-	for (int i = 0; i < juncsCount; ++i){
+
+	for (int i = 0; i < tubes.size(); ++i){
+		tubes.at(i).display();
+	}
+
+
+	/*for (int i = 0; i < juncs.size(); ++i){
 		if (i % 3 == 0){
 			juncs.at(i).display(SURFACE, SURFACE, 2, 1);
 		}
 		else {
 			juncs.at(i).display(SURFACE, SURFACE, 4, 1);
 		}
-	}
+	}*/
 	pop();
 }

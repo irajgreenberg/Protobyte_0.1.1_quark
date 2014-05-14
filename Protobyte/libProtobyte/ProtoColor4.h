@@ -42,6 +42,8 @@ namespace ijg {
         friend std::ostream& operator<<(std::ostream& output, const ProtoColor4<U>& col4);
 
         ProtoColor4();
+		ProtoColor4(T c);
+		ProtoColor4(T c, T a);
         ProtoColor4(T r, T g, T b, T a);
 
         void setR(T r);
@@ -63,6 +65,16 @@ namespace ijg {
     inline ProtoColor4<T>::ProtoColor4() :
     r(0), g(0), b(0), a(1) {
     }
+
+	template <class T>
+	inline ProtoColor4<T>::ProtoColor4(T c) :
+		r(c), g(c), b(c), a(1) {
+	}
+
+	template <class T>
+	inline ProtoColor4<T>::ProtoColor4(T c, T a) :
+		r(c), g(c), b(c), a(a) {
+	}
 
     template <class T>
     inline ProtoColor4<T>::ProtoColor4(T r, T g, T b, T a) :
