@@ -38,11 +38,7 @@ public:
 
 
 	void render(int scaleFactor = 1);
-	RootBall rootBallCore, rootBall;
-	ProtoGroundPlane plane;
-	Toroid toroid;
-
-	bool createShadowMap();
+	RootBall rootBall;
 
 private:
 	

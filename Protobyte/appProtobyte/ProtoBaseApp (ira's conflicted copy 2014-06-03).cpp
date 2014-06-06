@@ -39,9 +39,7 @@ listener(listener){
 }
 
 void ProtoBaseApp::_init(){
-	//shader = ProtoShader("shader1.vert", "shader1.frag");
-	//shader = ProtoShader("protoShader.vert", "protoShader.frag");
-	shader = ProtoShader("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
+	shader = ProtoShader("shader1.vert", "shader1.frag");
 	
 	// default global ambient
 	globalAmbient = Col3f(.25f, .19f, .27f);
@@ -90,9 +88,6 @@ void ProtoBaseApp::_initUniforms(){
 		std::string pos = "lights[" + std::to_string(i) + "].position";
 		lights_U[i].position = glGetUniformLocation(shader.getID(), pos.c_str());
 
-		std::string inten = "lights[" + std::to_string(i) + "].intensity";
-		lights_U[i].intensity = glGetUniformLocation(shader.getID(), inten.c_str());
-
 		std::string diff = "lights[" + std::to_string(i) + "].diffuse";
 		lights_U[i].diffuse = glGetUniformLocation(shader.getID(), diff.c_str());
 
@@ -130,7 +125,6 @@ void ProtoBaseApp::_run(){
 	// update all 8 lights in shaders
 	for (int i = 0; i < 8; ++i){
 		glUniform3fv(lights_U[i].position, 1, &lights[i].getPosition().x);
-		glUniform3fv(lights_U[i].intensity, 1, &lights[i].getIntensity().x);
 		glUniform4fv(lights_U[i].diffuse, 1, &lights[i].getDiffuse().r);
 		glUniform4fv(lights_U[i].ambient, 1, &lights[i].getAmbient().r);
 		glUniform4fv(lights_U[i].specular, 1, &lights[i].getSpecular().r);
@@ -440,48 +434,6 @@ void ProtoBaseApp::export(std::vector<Tup4v> vs, Format type){
 	myfile.close();
 	std::cout << "stl file successfully written" << std::endl;
 }
-
-//template<typename First, typename ... Rest>
-//void ProtoBaseApp::export(Format type, First first, Rest ... rest) {
-//#if defined (_WIN32) || defined(_WIN64)
-//	time_t now = time(0);
-//	tm ltm;
-//	localtime_s(&ltm, &now);
-//#else // os x uses localtime instead of localtime_s
-//	time_t now = time(0);
-//	tm* ltm = localtime(&now);
-//#endif
-//
-//	//trace("geomData.size() =", faces.size());
-//
-//	std::stringstream stream;
-//	stream << (ltm.tm_year + 1900) << "_" << (ltm.tm_mon + 1) << "_" << ltm.tm_mday << "_" << ltm.tm_hour << "_" << ltm.tm_min << "_" << ltm.tm_sec;
-//
-//	std::string url = ProtoUtility::getPathToOutput();
-//	std::string directory = url + "data" + "_" + stream.str();
-//	CreateDirectory(directory.c_str(), 0);
-//
-//	std::ofstream myfile;
-//	myfile.open(directory + "/geomdata" + stream.str() + ".stl");
-//
-//	myfile << "solid protobyte\n";
-//	for (int i = 0; i < vs.size() - 4; i++) {
-//		//trace("allFaces.at(i).v0_p->pos =", allFaces.at(i).getVert0_ptr()->pos);
-//		myfile << "\tfacet normal " <<
-//			vs.at(i).elem0.x << " " << vs.at(i).elem0.y << " " << vs.at(i).elem0.z << "\n" <<
-//			"\t\touter loop\n" <<
-//			"\t\t\tvertex " << vs.at(i).elem1.x << " " << vs.at(i).elem1.y << " " << vs.at(i).elem1.z << "\n" <<
-//			"\t\t\tvertex " << vs.at(i).elem2.x << " " << vs.at(i).elem2.y << " " << vs.at(i).elem2.z << "\n" <<
-//			"\t\t\tvertex " << vs.at(i).elem3.x << " " << vs.at(i).elem3.y << " " << vs.at(i).elem3.z << "\n" <<
-//			"\t\tendloop\n" <<
-//			"\tendfacet\n";
-//	}
-//	myfile << "endsolid protobyte\n";
-//
-//	myfile.close();
-//	std::cout << "stl file successfully written" << std::endl;
-//
-//}
 
 void ProtoBaseApp::save(std::string name, int scaleFactor){
 

@@ -1,4 +1,5 @@
 #version 430
+
 // best practices:
 // include version # up top
 // write your own uniforms
@@ -16,17 +17,23 @@ layout (location = 4) in vec3 vertexTangent;
 // max 8 lt srcs (fer now...)
 struct Light {
 	vec3 position;
-	vec4 diffuse;
-	vec4 ambient;
-	vec4 specular;
+	vec3 intensity;
+	//vec4 diffuse;
+	//vec4 ambient;
+	//vec4 specular;
 };
 
 // currently max 8 lts
 uniform Light lights[8];
 
+
 // for frag shader
+out vec3 position;
+//out vec3 normal;
 out vec4 color;
 out vec2 textureCoords;
+
+// for bump mapping
 out vec3 viewVec;
 out vec3 lightVec;
 
@@ -39,31 +46,32 @@ uniform mat4 lightModelViewProjectionMatrix;
 
 
 void main(){
-  
-  	color = vertexColor;
-	textureCoords = vertexTextureCoords;
-  
+  color = vertexColor;
+  textureCoords = vertexTextureCoords;
 
-  // matrix from eye space to tangent space
-  vec3 normal = normalize(normalMatrix * vertexNormal);
-  vec3 tangent = normalize(normalMatrix * vertexTangent);
-  vec3 biNormal = normalize(cross(normal, tangent));
-	
-// Create tangent space matrix
-	mat3 tangentSpaceMat = mat3(tangent.x, biNormal.x, normal.x,
-							tangent.y, biNormal.y, normal.y,
-							tangent.z, biNormal.z, normal.z);
+  vec3 norm = normalize(normalMatrix * vertexNormal);
+  vec3 tang = normalize(normalMatrix * vertexTangent);
+  vec3 binorm = normalize(cross(norm, tang)) * 1; // use -1 to reverse
 
-// position in eye space
- vec3 pos = vec3(modelViewMatrix * vec4(vertexPosition, 1.0));
+  mat3 toTangentSpace = mat3 (
+	tang.x, binorm.x, norm.x,
+	tang.y, binorm.y, norm.y,
+	tang.z, binorm.z, norm.z
+  );
 
-
- // transform lt and view vecs to tangent space
- lightVec = normalize(tangentSpaceMat * (lights[0].position.xyz - pos) );
- viewVec = tangentSpaceMat * normalize(-pos);
+/*  mat3 toTangentSpace = mat3 (
+	tang.x, tang.y, tang.z,
+	binorm.x, binorm.y, binorm.z,
+	norm.x, norm.y, norm.z
+  );*/
 
 
-// Position in clip space
+  position = vec3( modelViewMatrix * vec4(vertexPosition, 1.0) );
+  //normal = normalize(normalMatrix * vertexNormal); // don't relaly need anymore
+
+  lightVec = normalize( toTangentSpace * (lights[0].position.xyz - position) );
+  viewVec = toTangentSpace * normalize(-position);
+
   gl_Position = modelViewProjectionMatrix * vec4(vertexPosition, 1.0);
   
 }

@@ -39,6 +39,7 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include "ProtoShader.h"
 #include "ProtoVector2.h"
 #include "ProtoVector3.h"
 #include "ProtoVector4.h"
@@ -67,30 +68,35 @@ namespace ijg {
         friend class ProtoVertex3;
     
     protected:
+       
+		// called from cstr's
+		virtual void init();
         
-        std::string textureImageURL;
-		std::vector<std::string> textureImageURLs; // multi-texturing
-        
-		ProtoTexture bumpMap; //?
-		ProtoTexture normalMapTexture;
-        ProtoTexture texture;
-		ProtoTexture diffuseMapTexture;
-		std::vector<ProtoTexture> textures;
-        float textureScale;
-        
-		
-        virtual void init();
-        virtual void calcVerts() = 0;
+		// primitive pipeline CPU - > GPU
+		// Utilizes VBO's/VAO
+		virtual void calcVerts() = 0;
         virtual void calcInds() = 0;
         virtual void calcFaces(); // probably not necessary to override
         virtual void calcVertexNorms();
         virtual void calcPrimitives();
-        virtual void createTexture();
 
+		// textures
+		ProtoTexture diffuseMapTexture, bumpMapTexture, reflectionMapTexture, refractionMapTexture, specularMapTexture;
 
+		// by default, diffusion Map Texture - set at construction
+		std::string diffuseMapImage, bumpMapImage, reflectionMapImage, refractionMapImage, specularMapImage;
+
+		GLint diffuseMapLoc, bumpMapLoc;
+		std::vector<std::string> diffuseTextureImageURLs; // multi-texturing -> not sure I want this anymore
 		
-        
-        
+		float textureScale;
+		
+		// create Textures - accessed in Fragment Shader
+		virtual void createDiffuseMapTexture(const std::string& diffuseMapImage); // loc 0 (default)
+		virtual void createBumpMapTexture(const std::string& bumpMapImage); // loc 1 // dynamically build normal map
+		virtual void createReflectionMapTexture(const std::string& reflectioneMapImage); // loc 2
+		virtual void createRefractionMapTexture(const std::string& refractionMapImage); // loc 3
+		virtual void createSpecularMapTexture(const std::string& specularMapImage); // loc 4
 
         
        // std::vector<Vec2f> uvs;
@@ -101,7 +107,6 @@ namespace ijg {
        // std::vector<ProtoFace3> faces; //experiment making this public
         std::vector< ProtoTuple3<int> > inds;
 
-        
         //primitive guts
         std::vector<float> vertPrims;
         std::vector<unsigned int> indPrims;
@@ -134,10 +139,23 @@ namespace ijg {
         std::vector<ProtoGeomSet> geomSets;
         
         // material properties
-        // diffuse and ambient materials are controlled by glColor
-        GLfloat shininess[1]; // 0-128
-        GLfloat specularMaterialColor[4];
-        GLfloat emissionMaterialColor[4];
+		struct Material {
+			Col4f diffuse;
+			Col4f ambient;
+			Col4f specular;
+			Col4f emissive;
+			float shininess;
+
+			// cstrs
+			Material(){}
+			Material(const Col4f& diffuse, const Col4f& ambient, const Col4f& specular, const Col4f& emissive, float shininess):
+				diffuse(diffuse), ambient(ambient), specular(specular), emissive(emissive), shininess(shininess){}
+		};
+
+		Material materials;
+
+		// material uniform locations 
+		GLuint diffuse_loc_U, ambient_loc_U, specular_loc_U, emissive_loc_U, shininess_loc_U;
         
         
         bool isTextureEnabled;
@@ -146,6 +164,8 @@ namespace ijg {
 
 		// update buffers for GPU - need to do for all relevant fields
 		void updateColorBuffer();
+
+		/*std::string createFullShaderURL(const std::string& shaderName);*/
         
         
     public:
@@ -173,14 +193,14 @@ namespace ijg {
         
         
         // with textureImageURL
-        ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4, const std::string& textureImageURL);
+		ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4, const std::string& diffuseTextureImage);
         
-        ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const std::vector< ProtoColor4f > col4s, const std::string& textureImageURL);
+		ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const std::vector< ProtoColor4f > col4s, const std::string& diffuseTextureImage);
         
-        ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4, const std::string& textureImageURL, float textureScale);
+        ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4, const std::string& diffuseTextureImage, float textureScale);
         
         ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size,
-                   const std::vector< ProtoColor4f > col4s, const std::string& textureImageURL, float textureScale);
+			const std::vector< ProtoColor4f > col4s, const std::string& diffuseTextureImage, float textureScale);
 
 		// multi-texturing
 		ProtoGeom3(const Dim3f& size, const Col4f& col4, const std::vector<std::string>& textureImageURLs, float textureScale = 1); 
@@ -225,36 +245,48 @@ namespace ijg {
         void setTextureScale(float textureScale);
         float getTextureScale() const;
         
-		// pass image url to be used as normal map
-		void setBumpMap(const std::string& normalImageURL);
-		void setDiffuseMap(const std::string& normalImageURL);
-		void setReflectionMap(const std::string& normalImageURL);
-		void setRefractionMap(const std::string& normalImageURL);
-		void setSpecularMap(const std::string& normalImageURL);
+		// public interface for setting maps
+		void setBumpMap(const std::string& bumpMapImage);
+		void loadBumpMapTexture(const std::string& bumpMapImage); // loc 1 // pre-made normal map
+		void setDiffuseMap(const std::string& diffuseMapImage);
+		void setReflectionMap(const std::string& reflectionMapImage);
+		void setRefractionMap(const std::string& refractionMapImage);
+		void setSpecularMap(const std::string& specularMapImage);
 
-
-
-		// normal map - created based on texture
+		// normal map - created based on texture ---> probably lose this
 		void enableNormalMap(float depth = .5f);
 		void disableNormalMap();
         
         // stl exporter
-        //        void exportSTL();
+        // void exportSTL();
 		std::vector<Tup4v> getGeomData();
         
         // required by ProtobteRenderer
         GLuint getVboID() const;
         GLuint getIndexVboID() const;
         int getIndicesSize() const;
-        
-        // material setters
-        void setShininess(float shininess = 45);
-        void setSpecularMaterialColor(const Col4f& specularMaterialColor = Col4f(1, 1, 1, 1));
-        void setEmissionMaterialColor(const Col4f&  emissionMaterialColor= Col4f(0, 0, 0, 1));
+
+
+		// set/get materials
+		void setDiffuseMaterial(const Col4f& diffuseMaterial);
+		void setAmbientMaterial(const Col4f& ambientMaterial);
+		void setSpecularMaterial(const Col4f& specularMaterial);
+		void setEmissiveMaterial(const Col4f& emissiveMaterial);
+		void setShininess(float shininess);
+
+		const Col4f& getDiffuseMaterial() const;
+		const Col4f& getAmbientMaterial() const;
+		const Col4f& getSpecularMaterial() const;
+		const Col4f& getEmissiveMaterial() const;
+		float getShininess();
+
+		void setMaterials(const Material& materials);
+		const Material& getMaterials() const;
+		// END Materials
         
         // ensure unique id for each texture per geom obj - this needs to be rethought eventually.
         static GLuint textureID;
-        ProtoTexture getTexture()const;
+       // ProtoTexture getTexture()const;
         void textureOn();
         void textureOff();
         
@@ -336,28 +368,57 @@ namespace ijg {
     }
     
     // materials
-    inline void ProtoGeom3::setShininess(float shininess){
-        this->shininess[0]=shininess;
-    }
-    inline void ProtoGeom3::setSpecularMaterialColor(const Col4f& specularMaterialColor){
-        this->specularMaterialColor[0] = specularMaterialColor.getR();
-        this->specularMaterialColor[1] = specularMaterialColor.getG();
-        this->specularMaterialColor[2] = specularMaterialColor.getB();
-        this->specularMaterialColor[3] = specularMaterialColor.getA();
-        
-    }
-    inline void ProtoGeom3::setEmissionMaterialColor(const Col4f&  emissionMaterialColor){
-        this->emissionMaterialColor[0] = emissionMaterialColor.getR();
-        this->emissionMaterialColor[1] = emissionMaterialColor.getG();
-        this->emissionMaterialColor[2] = emissionMaterialColor.getB();
-        this->emissionMaterialColor[3] = emissionMaterialColor.getA();
-        
-    }
-    
-    inline ProtoTexture ProtoGeom3::getTexture()const{
-        return texture;
-    }
-    
+	inline void ProtoGeom3::setDiffuseMaterial(const Col4f& diffuseMaterial){
+		materials.diffuse = diffuseMaterial;
+		
+		diffuse_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "diffuseMaterial");
+	}
+
+	inline void ProtoGeom3::setAmbientMaterial(const Col4f& ambientMaterial){
+		materials.ambient = ambientMaterial;
+		
+		ambient_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "ambientMaterial");
+	}
+	inline void ProtoGeom3::setSpecularMaterial(const Col4f& specularMaterial){
+		materials.specular = specularMaterial;
+
+		specular_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "specularMaterial");
+	}
+
+	inline void ProtoGeom3::setEmissiveMaterial(const Col4f& emissiveMaterial){
+		materials.emissive = emissiveMaterial;
+
+		emissive_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "emissiveMaterial");
+	}
+
+	inline void ProtoGeom3::setShininess(float shininess){
+		materials.shininess = shininess;
+
+		shininess_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "shininess");
+	}
+
+	inline const Col4f& ProtoGeom3::getDiffuseMaterial() const{
+		return materials.diffuse;
+	}
+	inline const Col4f& ProtoGeom3::getAmbientMaterial() const{
+		return materials.ambient;
+	}
+	inline const Col4f& ProtoGeom3::getSpecularMaterial() const{
+		return materials.specular;
+	}
+	inline const Col4f& ProtoGeom3::getEmissiveMaterial() const{
+		return materials.emissive;
+	}
+	inline float ProtoGeom3::getShininess(){
+		return materials.shininess;
+	}
+
+	inline void ProtoGeom3::setMaterials(const Material& materials){
+		this->materials = materials;
+	}
+	inline const ProtoGeom3::Material& ProtoGeom3::getMaterials() const{
+		return materials;
+	}
 
     
 }

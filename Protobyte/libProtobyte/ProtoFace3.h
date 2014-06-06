@@ -41,6 +41,7 @@
 //#include <SFML/OpenGL.hpp>
 #include <vector>
 #include "ProtoVertex3.h"
+#include "ProtoVector2.h"
 #include "ProtoMatrix3.h"
 #include <cmath>
 #include <iostream>

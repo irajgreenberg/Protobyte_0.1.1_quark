@@ -34,6 +34,8 @@ namespace ijg {
     
     public:
         ProtoLight();
+		ProtoLight(const Vec3f& position, const Vec3f& intensity);
+		
 		ProtoLight(const ProtoColor4f& ambient);
         ProtoLight(const Vec3f& position, const ProtoColor4f& diffuse);
         ProtoLight(const Vec3f& position, const ProtoColor4f& diffuse, const ProtoColor4f& ambient, const ProtoColor4f& specular);
@@ -46,6 +48,9 @@ namespace ijg {
         
         void setPosition(const Vec3f& position);
         const Vec3f& getPosition() const;
+
+		void setIntensity(const Vec3f& intensity);
+		const Vec3f& getIntensity() const;
         
         void setDiffuse(const ProtoColor4f& diffuse);
         const ProtoColor4f& getDiffuse() const;
@@ -66,8 +71,12 @@ namespace ijg {
         
     private:
         Vec3f position;
+		Vec3f intensity; // new 5/21
         
-        // light properties
+        // Note: Perhaps remove this stuff eventually.
+		// Sort of too unconventional without enough
+		// benefit/purpose.
+		// light properties
         ProtoColor4f diffuse, ambient, specular;
         
         bool isOn;
@@ -84,7 +93,15 @@ namespace ijg {
     inline const Vec3f& ProtoLight::getPosition() const{
         return position;
     }
-    
+
+	inline void ProtoLight::setIntensity(const Vec3f& intensity){
+		this->intensity = intensity;
+	}
+
+	inline const Vec3f& ProtoLight::getIntensity() const{
+		return intensity;
+	}
+
     inline void ProtoLight::setDiffuse(const ProtoColor4f& diffuse){
         this->diffuse = diffuse;
     }

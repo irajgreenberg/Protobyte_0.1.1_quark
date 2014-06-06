@@ -31,6 +31,12 @@ position(Vec3f(-2, 2, 2)), diffuse(ProtoColor4f(.8, .5, .1, 1.0)), ambient(Proto
     init();
 }
 
+ProtoLight::ProtoLight(const Vec3f& position, const Vec3f& intensity) :
+position(position), intensity(intensity)
+{
+	init();
+}
+
 // cstr
 ProtoLight::ProtoLight(const ProtoColor4f& ambient) :
 position(Vec3f()), diffuse(Col4f()), ambient(ambient), specular(ProtoColor4f())

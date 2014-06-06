@@ -33,7 +33,6 @@
 #include "libProtobyte/ProtoDimension2.h"
 #include "libProtobyte/ProtoDimension3.h"
 #include "libProtobyte/ProtoGroundPlane.h"
-#include "libProtobyte/ProtoTransformFunction.h"
 #include "libProtobyte/ProtoShader.h"
 #include "libProtobyte/ProtoWorld.h"
 #include "libProtobyte/ProtoColor3.h"
@@ -212,7 +211,6 @@ namespace ijg {
 		// Uniform Lighting location vars
 		struct Light_U {
 			GLuint position;
-			GLuint intensity;
 			GLuint diffuse;
 			GLuint ambient;
 			GLuint specular;;
@@ -298,22 +296,8 @@ namespace ijg {
 		//void lookAt(const Vec3f& eye, const Vec3f& center, const Vec3f& up);
 		//void perspective(float viewAngle, float aspect, float nearDist, float farDist);
 
-		
-		// exporting 
-		void export(std::vector<Tup4v> vs, Format type); // bucket of Vecs
-
-		// not using export option below yet
-		void export(std::vector<Shape3> shapes, Format type); // ProtoShapes
-		void export(std::vector<Geom3> geoms, Format type); // ProtoGeoms
-		void export(std::vector<Geom3> geoms, std::vector<Shape3> shapes, Format type); // geoms & shapes
-		void export(std::vector<Shape3> shapes, std::vector<Geom3> geoms, Format type); // shapes & geoms
-
-		template<typename T, typename U>
-		void export(T objType1, U objType2, Format type);
-
-		// pass multiple objs
-		//template<typename First, typename ... Rest>
-		//void export(Format type, First first, Rest ... rest);
+		// exporting
+		void export(std::vector<Tup4v> vs, Format type);
 
 		// CAMERAS
 

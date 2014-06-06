@@ -108,12 +108,25 @@ Vec3f ProtoFace3::getTangentBM(){
 	Vec3f v0 = v1_p->pos - v0_p->pos;
 	Vec3f v1 = v2_p->pos - v0_p->pos;
 
-	float v0u = v1_p->getUV().elem0 - v0_p->getUV().elem0;
+	Vec2f uv0_p = Vec2f(v0_p->getUV().elem0, v0_p->getUV().elem1);
+	Vec2f uv1_p = Vec2f(v1_p->getUV().elem0, v1_p->getUV().elem1);
+	Vec2f uv2_p = Vec2f(v2_p->getUV().elem0, v2_p->getUV().elem1);
+
+	Vec2f uv0 = uv1_p - uv0_p;
+	Vec2f uv1 = uv2_p - uv0_p;
+
+
+	float r = 1.0f / (uv0.x * uv1.y - uv0.y *uv1.x);
+	Vec3f tangent = (v0 * uv1.y - v1 * uv0.y)*r;
+
+	return tangent;
+
+	/*float v0u = v1_p->getUV().elem0 - v0_p->getUV().elem0;
 	float v0v = v2_p->getUV().elem0 - v0_p->getUV().elem0;
 	float v1u = v1_p->getUV().elem1 - v0_p->getUV().elem1;
 	float v1v = v2_p->getUV().elem1 - v0_p->getUV().elem1;
 
-	float coef = 1 / (v0u * v1v - v1u * v0v);
+	float coef = 1.0 / (v0u * v1v - v0v * v0u);
 
 	tangentBM = Vec3f(	coef * ((v1.x * v1v) + (v2.x * -v0v)), 
 						coef * ((v1.y * v1v) + (v2.y * -v0v)), 
@@ -121,7 +134,7 @@ Vec3f ProtoFace3::getTangentBM(){
 
 	biTangent = norm.cross(tangentBM);
 
-	return tangentBM;
+	return tangentBM;*/
 }
 
 

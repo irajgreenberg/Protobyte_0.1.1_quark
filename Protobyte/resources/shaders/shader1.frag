@@ -1,18 +1,27 @@
-#version 400
+#version 430
 
 // no more gl_FragColor, so we need to declare ourself
 // great shader tutorials: http://antongerdelan.net/opengl/texturemaps.html
 
 in vec4 color;
 in vec2 textureCoords;
-in vec4 eyePosition;
-in vec3 normal;
+in vec3 viewVec;
+// in vec3 normal;
+in vec3 lightVec;
 
-in vec4 shadowMapCoords;
+// default active texture slot 0
+// glsl >= 4.2 can avoid setting uniform sampler location in GL
+// using binding approach below
+layout (binding = 0) uniform sampler2D diffuseMap; // 0
+layout (binding = 1) uniform sampler2D bumpMap; // 1
 
+//in vec4 shadowMapCoords;
+
+// Lights
 uniform vec3 globalAmbientLight;
 
-//Lighting uniforms
+// max 8 lt srcs (fer now...)
+// not 100% sure i Need this declared in both shaders
 struct Light {
 	vec3 position;
 	vec4 diffuse;
@@ -20,62 +29,54 @@ struct Light {
 	vec4 specular;
 };
 
+// currently max 8 lts
 uniform Light lights[8];
 
 
-// active texture slot 0
-//layout (binding = 0) uniform sampler2D textureSampler;
-uniform sampler2D diffuseMap;
-uniform sampler2D bumpMap;
-uniform sampler2DShadow shadowMapTexture;  //shadowmap texture
+
+struct MaterialProps{
+	vec3 ambientMaterial;
+	vec3 specularMaterial;
+	float shininess;
+};
+
+
+
+MaterialProps mats = MaterialProps(vec3(.2, .2, .2), vec3(.2, .2, .2), 128);
+	
+
 
 layout (location = 0) out vec4 fragColor;
 
 
+vec3 phongModel(vec3 norm, vec3 diffR) {
+	vec3 r = reflect(-lightVec, norm);
+	vec3 ambient = lights[0].ambient.xyz * mats.ambientMaterial;
+	float sDotN = max (dot(lightVec, norm), 0.0);
+	vec3 diffuse = lights[0].diffuse.xyz * diffR * sDotN;
+	vec3 spec = vec3(0.0);
+	if(sDotN > 0.0){
+	  spec = lights[0].specular.xyz * mats.specularMaterial * pow(max(dot(r, viewVec), 0.0 ), mats.shininess);
+	}
+	return ambient + diffuse + spec;
+}
+
+
+
 void main(){
-
-	const vec3 lightColor = vec3(1, 1, 1);
-    const vec3 globalAmbient = vec3(.3, .3, .3);
-
-  // Position in eye space
-    vec3 P = vec3(eyePosition);
-
-  // Normalize normal in eye space
-    vec3 N = normalize(normal);
-
-  // Compute the emissive term
-    vec3 emissive = vec3(0,0,0);
-
-  // Compute the ambient term
-    //vec3 ambient = ambientColor * globalAmbientLight;
-	vec3 ambient = vec3(lights[0].ambient) * globalAmbientLight;
+	
+	// look up normal from normal map
+	vec4 normal = texture(bumpMap, textureCoords)*color;
+	vec4 tex = texture(diffuseMap, textureCoords)*color;
 
 	
-  // Compute the diffuse term
-  // Normalized vector toward the light source
-	vec3 L = normalize(lights[0].position - P);
-    float diffuseLight = max(dot(N, L), 0);
-	vec4 tex = texture(bumpMap, textureCoords.st)*color;
-	//tex*=vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	vec3 diffuse = vec3(lights[0].diffuse) * vec3(tex) *  diffuseLight;
+	//fragColor = vec4(emissive + ambient + diffuse + specular, 1);
+	//fragColor = vec4(emissive + ambient + diffuse + specular, 1);
+	
+	fragColor = vec4(phongModel(normal.xyz, tex.rgb), 1.0);
+	//fragColor.a = color.a;
+	
 
-  // Compute the specular term
-    vec3 V = normalize(-P);      // Normalized vector toward the viewpoint
-    vec3 H = normalize(L + V);   // Normalized vector that is halfway between V and L
-    float specularLight = pow(max(dot(N, H),0), 128);
-    if(diffuseLight <= 0){ specularLight = 0; }
 
-	vec3 specular = vec3(lights[0].specular * lights[0].diffuse) * specularLight;
-
-  // Define the final vertex color
-
- // shadow mapping
-  if(shadowMapCoords.w > 1) {
-  //  float shadow = textureProj(shadowMapTexture, shadowMapCoords);
-    //darken the diffuse component apprpriately
-  //  diffuse = mix(diffuse, diffuse*shadow, 0.5); 
-  }
-
-  gl_FragColor = vec4(emissive + ambient + diffuse + specular, 1);
-  gl_FragColor.a = color.a;
+	//fragColor = color;
 }

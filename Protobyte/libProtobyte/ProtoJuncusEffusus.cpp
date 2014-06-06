@@ -130,7 +130,7 @@ void ProtoJuncusEffusus::init2(){
 
 	tubule.textureOn();
 	tubule.setTextureScale(.5);
-	tubule.setShininess(98);
+	//tubule.setShininess(98);
 	tubule.setColor(Col4f(1, 1, 1, 1));
 
 	// hack - review
@@ -224,7 +224,7 @@ void ProtoJuncusEffusus::init(){
 
 	tubule.textureOn();
 	tubule.setTextureScale(1.0);
-	tubule.setShininess(104);
+	//tubule.setShininess(104);
 	tubule.setColor(Col4f(1, 1, 1, 1));
 
 	// hack - review

@@ -20,6 +20,12 @@
  This class is templated to allow for varied single collection types
  This class is part of the group common (update)
  Inspiration and assistance from: http://subversion.assembla.com/svn/184/src/LoadImage.cpp
+
+ // FreeImage implementaiont from:
+ // Singleton Texture Manager class
+ // Written by Ben English
+ // benjamin.english@oit.edu
+
  \sa NO LINK
  */
 
@@ -47,14 +53,50 @@ namespace ijg {
     // NOTE to do: add multiple maps to each texture: diffuse, bump and gloss at least.
 	
 	class ProtoTexture {
-    public:
 
-        friend class ProtoGeom3;
+		friend class ProtoGeom3;
+
+	private:
+		// used by ProtoGeom3 only
+		enum TextureMapType{
+			DIFFUSE_MAP,
+			BUMP_MAP,
+			NORMAL_MAP,
+			REFLECTION_MAP,
+			REFRACTION_MAP,
+			SPECULAR_MAP
+		};
+
+		TextureMapType textureMapType;
+
+		std::string textureMapImage;
+		GLenum image_format;
+		GLint internal_format;
+		GLint level;
+		GLint border;
+
+		GLuint w;
+		GLuint h;
+		bool isWrap;
+		GLuint textureID;
+
+		bool init();
+
+		//FIBITMAP* normalMap;
+
+		// calculate normal map from height map
+		//bool createNormalMap();
+
+		//static bool createNormalMap(const std::string& textureURL, GLuint textureID); 
+	
+	public:
+
+        
         
         friend std::ostream& operator<<(std::ostream& output, const ProtoTexture& texture);
 
         ProtoTexture(); // default
-        ProtoTexture(const std::string& textureURL, GLenum image_format=GL_RGB, GLint internal_format=GL_RGB, GLint level=0, GLint border=0, GLuint textureID=0); // initialized
+		ProtoTexture(const std::string& textureMapImage, TextureMapType textureMapType, GLenum image_format = GL_RGB, GLint internal_format = GL_RGB, GLint level = 0, GLint border = 0); // initialized
     
 //        ProtoTexture(const std::string& textureURL, GLuint w, GLuint h, bool isWrap);
 //        ProtoTexture(unsigned char*& data, GLuint w, GLuint h, bool isWrap);
@@ -66,8 +108,8 @@ namespace ijg {
         GLuint getH() const;
         void setW(GLuint w);
         GLuint getW() const;
-        void setTextureURL(std::string textureURL);
-        std::string getTextureURL() const;
+        //void setTextureURL(std::string textureURL);
+        //std::string getTextureURL() const;
         void setTextureID(GLuint textureID);
         GLuint getTextureID() const;
 		
@@ -75,26 +117,7 @@ namespace ijg {
 
 
 
-    private:
-        std::string textureURL;
-        GLenum image_format;
-        GLint internal_format;
-        GLint level;
-        GLint border;
-        
-        GLuint w;
-        GLuint h;
-        bool isWrap;
-        GLuint textureID;
-
-        bool init();
-
-		//FIBITMAP* normalMap;
-
-		// calculate normal map from height map
-		bool createNormalMap();
-
-		static bool createNormalMap(const std::string& textureURL, GLuint textureID);
+   
     };
 
     inline void ProtoTexture::setH(GLuint h) {
@@ -113,13 +136,13 @@ namespace ijg {
         return w;
     }
 
-    inline void ProtoTexture::setTextureURL(std::string textureURL) {
-        this->textureURL = textureURL;
-    }
+    //inline void ProtoTexture::setTextureURL(std::string textureURL) {
+    //    this->textureURL = textureURL;
+    //}
 
-    inline std::string ProtoTexture::getTextureURL() const {
-        return textureURL;
-    }
+    //inline std::string ProtoTexture::getTextureURL() const {
+    //    return textureURL;
+    //}
 
     inline void ProtoTexture::setTextureID(GLuint textureID) {
         this->textureID = textureID;

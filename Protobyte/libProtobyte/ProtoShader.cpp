@@ -29,6 +29,10 @@
 
 using namespace ijg;
 
+
+// initialize static shaderID
+GLuint ProtoShader::shader_id_2 = 0;
+
 ProtoShader::ProtoShader() {
 	//trace("In Shader default CSTR");
 }
@@ -103,6 +107,7 @@ void ProtoShader::init() {
         shader_vp = 0;
         shader_fp = 0;
         shader_id = 0;
+		
     
     const GLchar* vShaderCode = vShaderCodeStr.c_str();
     const GLchar* fShaderCode = fShaderCodeStr.c_str();
@@ -154,6 +159,7 @@ void ProtoShader::init() {
     
     
     shader_id = glCreateProgram();
+	ProtoShader::shader_id_2 = shader_id; // capture id value
     
     glAttachShader(shader_id, shader_vp);
     glAttachShader(shader_id, shader_fp);

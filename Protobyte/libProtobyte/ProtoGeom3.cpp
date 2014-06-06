@@ -37,45 +37,45 @@ ProtoGeom3::ProtoGeom3() {
 
 
 ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4) :
-ProtoShape3(pos, rot, size, col4), textureImageURL("white_tile.jpg") {
-	textureImageURLs.push_back(textureImageURL);
+ProtoShape3(pos, rot, size, col4), diffuseMapImage("white_tile.jpg") {
+	diffuseTextureImageURLs.push_back(diffuseMapImage);
 }
 
 ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const std::vector< ProtoColor4f > col4s) :
-ProtoShape3(pos, rot, size, col4s), textureImageURL("white_tile.jpg") {
-	textureImageURLs.push_back(textureImageURL);
+ProtoShape3(pos, rot, size, col4s), diffuseMapImage("white_tile.jpg") {
+	diffuseTextureImageURLs.push_back(diffuseMapImage);
 }
 
 
 // with textures
-ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4, const std::string& textureImageURL) :
-ProtoShape3(pos, rot, size, col4), textureImageURL(textureImageURL) {
-	textureImageURLs.push_back(textureImageURL);
+ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4, const std::string& diffuseMapImage) :
+ProtoShape3(pos, rot, size, col4), diffuseMapImage(diffuseMapImage) {
+	diffuseTextureImageURLs.push_back(diffuseMapImage);
 }
 
-ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const std::vector< ProtoColor4f > col4s, const std::string& textureImageURL) :
-ProtoShape3(pos, rot, size, col4s), textureImageURL(textureImageURL) {
-	textureImageURLs.push_back(textureImageURL);
+ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const std::vector< ProtoColor4f > col4s, const std::string& diffuseMapImage) :
+ProtoShape3(pos, rot, size, col4s), diffuseMapImage(diffuseMapImage) {
+	diffuseTextureImageURLs.push_back(diffuseMapImage);
 }
 
-ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4, const std::string& textureImageURL, float textureScale) :
-ProtoShape3(pos, rot, size, col4), textureImageURL(textureImageURL), textureScale(textureScale) {
-	textureImageURLs.push_back(textureImageURL);
+ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4, const std::string& diffuseMapImage, float textureScale) :
+ProtoShape3(pos, rot, size, col4), diffuseMapImage(diffuseMapImage), textureScale(textureScale) {
+	diffuseTextureImageURLs.push_back(diffuseMapImage);
 }
 
 ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size,
-					   const std::vector< ProtoColor4f > col4s, const std::string& textureImageURL, float textureScale) :
-ProtoShape3(pos, rot, size, col4s), textureImageURL(textureImageURL), textureScale(textureScale) {
-	textureImageURLs.push_back(textureImageURL);
+	const std::vector< ProtoColor4f > col4s, const std::string& diffuseMapImage, float textureScale) :
+	ProtoShape3(pos, rot, size, col4s), diffuseMapImage(diffuseMapImage), textureScale(textureScale) {
+	diffuseTextureImageURLs.push_back(diffuseMapImage);
 }
 
 
 // multi-texturing
-ProtoGeom3::ProtoGeom3(const Dim3f& size, const Col4f& col4, const std::vector<std::string>& textureImageURLs, float textureScale):
-ProtoShape3(Vec3f(), Vec3f(), size, col4), textureImageURLs(textureImageURLs), textureScale(textureScale){
+ProtoGeom3::ProtoGeom3(const Dim3f& size, const Col4f& col4, const std::vector<std::string>& diffuseTextureImageURLs, float textureScale) :
+ProtoShape3(Vec3f(), Vec3f(), size, col4), diffuseTextureImageURLs(diffuseTextureImageURLs), textureScale(textureScale){
 }
-ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f& size, const Col4f& col4, const std::vector<std::string>& textureImageURLs, float textureScale):
-ProtoShape3(pos, rot, size, col4s), textureImageURLs(textureImageURLs), textureScale(textureScale){
+ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f& size, const Col4f& col4, const std::vector<std::string>& diffuseTextureImageURLs, float textureScale) :
+ProtoShape3(pos, rot, size, col4s), diffuseTextureImageURLs(diffuseTextureImageURLs), textureScale(textureScale){
 }
 
 
@@ -91,18 +91,22 @@ ProtoGeom3::~ProtoGeom3() {
 
 
 void ProtoGeom3::init() {
-	createTexture();
+	createDiffuseMapTexture(diffuseMapImage); // set default diffuse color texture
     calcVerts();
 	calcInds();
 	calcFaces();
 	calcVertexNorms();
 	calcPrimitives();
     
-    // set object material default settings
-    // mid shiny, white specular highlights, no emission
-    setShininess();
-    setSpecularMaterialColor();
-    setEmissionMaterialColor();
+    // set default material settings
+	materials = Material(Col4f(.7f, .7f, .7f, 1.0f), Col4f(.125f, .125f, .125f, 1.0f), Col4f(.2, .2, .2, 1.0f), Col4f(.0f, .0f, .0f, 1.0f), 75);
+
+	// set material memory locations for GPU
+	diffuse_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "diffuseMaterial"); 
+	ambient_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "ambientMaterial");
+	specular_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "specularMaterial");
+	emissive_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "emissiveMaterial");
+	shininess_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "shininess");
 
 	// diffuse, bump, more soon!
 	//setTextureUniforms();
@@ -151,7 +155,7 @@ void ProtoGeom3::init() {
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, STRIDE * sizeof (GLfloat), BUFFER_OFFSET(12)); // norm
 	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, STRIDE * sizeof (GLfloat), BUFFER_OFFSET(24)); // col
 	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, STRIDE * sizeof (GLfloat), BUFFER_OFFSET(40)); // uv
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, STRIDE * sizeof (GLfloat), BUFFER_OFFSET(48)); // texture
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, STRIDE * sizeof (GLfloat), BUFFER_OFFSET(48)); // tangent
 
 	// Disable VAO
 	glEnableVertexAttribArray(0);   
@@ -162,59 +166,46 @@ void ProtoGeom3::init() {
     isTextureEnabled = true;
 }
 
-void ProtoGeom3::createTexture(){
-	// only buld texture if an image url was passed in
-	if (textureImageURL != ""){
 
-		// 1. ensure path is to resources directory
-		char cCurrentPath[FILENAME_MAX];
 
-#if defined (__APPLE__)
-		if (!GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
-		{
-			std::cout << "error loading from relative directory" << std::endl;
-			//return errno;
-		}
-#elif defined(_WIN32) || (_WIN64)
-		//char full[_MAX_PATH];
-		if (_fullpath(cCurrentPath, "", FILENAME_MAX) != NULL) {
-			printf("");
-		}
-		else {
-			printf("Invalid path\n");
-		}
-
-#endif
-
-		// NOTE - make workspace project relative instead of using default derivedData path in Library
-		//std::cout << "cCurrentPath = " << cCurrentPath << std::endl;
-		cCurrentPath[sizeof(cCurrentPath)-1] = '\0'; /* not really required */
-		std::string cp = cCurrentPath; //cast char[] to string
-#if defined(_WIN32) || (_WIN64)
-		// need to escape backslashes with themselves, ick
-		std::string pathExtension = "\\..\\..\\Protobyte\\resources\\imgs\\";
-#else
-		// osx/posix use "normal" directory dividers
-		std::string pathExtension = "/Protobyte/resources/imgs/";
-
-#endif
-
-		std::string url = cp + pathExtension + textureImageURL;
-		// trace("url =", url);
-		// trace("image URL = ", url);
-		// 2. create texture
-		// call this ONLY when linking with FreeImage as a static library
-#ifdef FREEIMAGE_LIB
-		FreeImage_Initialise();
-#endif
-		// trace("Texture url =", url);
-		diffuseMapTexture = ProtoTexture(url, GL_RGB, GL_RGB, 0, 0, textureID++);
-
-		//std::cout << "texture.getTextureID() = " << texture.getTextureID() << std::endl;
-
-	}
+// public interface for texture generation
+void ProtoGeom3::setDiffuseMap(const std::string& diffuseMapImage){
+	createDiffuseMapTexture(diffuseMapImage);
+}
+void ProtoGeom3::setBumpMap(const std::string& bumpMapImage){
+	createBumpMapTexture(bumpMapImage);
+}
+void ProtoGeom3::setReflectionMap(const std::string& reflectionMapImage){
+}
+void ProtoGeom3::setRefractionMap(const std::string& refractionMapImage){
+}
+void ProtoGeom3::setSpecularMap(const std::string& specularMapImage){
 }
 
+// begin internal texture implementation
+void ProtoGeom3::createDiffuseMapTexture(const std::string& diffuseMapImage){// create default texture for diffuseMap
+	diffuseMapTexture = ProtoTexture(diffuseMapImage, ProtoTexture::DIFFUSE_MAP, GL_RGB, GL_RGB, 0, 0);
+	diffuseMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "diffuseMap");
+	glUniform1i(diffuseMapLoc, 0); // bind to sampler location 0 // not needed glsl >=4.2
+} 
+
+void ProtoGeom3::createBumpMapTexture(const std::string& bumpMapImage){
+	bumpMapTexture = ProtoTexture(bumpMapImage, ProtoTexture::BUMP_MAP, GL_RGB, GL_RGB, 0, 0);
+	bumpMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "bumpMap");
+	glUniform1i(bumpMapLoc, 1); // bind to sampler location 1 // not needed glsl >=4.2
+} 
+
+void ProtoGeom3::loadBumpMapTexture(const std::string& bumpMapImage){
+	bumpMapTexture = ProtoTexture(bumpMapImage, ProtoTexture::NORMAL_MAP, GL_RGB, GL_RGB, 0, 0);
+	bumpMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "bumpMap");
+	glUniform1i(bumpMapLoc, 1); // bind to sampler location 0 // not needed glsl >=4.2
+}
+void ProtoGeom3::createReflectionMapTexture(const std::string& reflectionMapImage){
+}// loc 2
+void ProtoGeom3::createRefractionMapTexture(const std::string& refractionMapImage){
+}// loc 3
+void ProtoGeom3::createSpecularMapTexture(const std::string& specularMapImage){
+}// loc 4
 
 
 void ProtoGeom3::calcFaces() {
@@ -227,8 +218,6 @@ void ProtoGeom3::calcFaces() {
                                    &verts.at(inds.at(i).elem2)));
 	}
 }
-
-
 
 
 // calculates vertex normals and tangents (for bump mapping)
@@ -386,17 +375,34 @@ std::vector<Tup4v> ProtoGeom3::getGeomData(){
  and primitive processing*/
 void ProtoGeom3::display(RenderMode render, float pointSize) {
 
+	// update material values in GPU
+	glUniform4fv(diffuse_loc_U, 1, &materials.diffuse.r);
+	glUniform4fv(ambient_loc_U, 1, &materials.ambient.r);
+	glUniform4fv(specular_loc_U, 1, &materials.specular.r);
+	glUniform4fv(emissive_loc_U, 1, &materials.emissive.r);
+	glUniform1f(shininess_loc_U, materials.shininess);
+	
+	
+	
+	// not sure i need/want this here
+	//glActiveTexture(GL_TEXTURE0); 
+	//glUniform1i(diffuseMapLoc, 0); // bind to sampler location 0
+	//
+	//glActiveTexture(GL_TEXTURE1);
+	//glUniform1i(bumpMapLoc, 1); // bind to sampler location 1
+	
 	//glActiveTexture(GL_TEXTURE0);
 	//glActiveTexture(GL_TEXTURE1);
-	if (isTextureEnabled) {
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D,texture.textureID);
-    } else {
-        glDisable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, 0);
-    }
+	//if (isTextureEnabled) {
+ //       glEnable(GL_TEXTURE_2D);
+ //       glBindTexture(GL_TEXTURE_2D,texture.textureID);
+ //   } else {
+ //       glDisable(GL_TEXTURE_2D);
+	//	glBindTexture(GL_TEXTURE_2D, 0);
+ //   }
     
-    
+	//glUniform1i(glGetUniformLocation(ProtoShader::getID_2(), "diffuseMap"), 0);
+	//glUniform1i(glGetUniformLocation(ProtoShader::getID_2(), "bumpMap"), 1);
     // glBindTexture(GL_TEXTURE_2D,texture.textureID); // added to conditional above
     
 	switch (render) {
@@ -529,20 +535,7 @@ void ProtoGeom3::updateBuffer(){
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-// set up surface maps -for advanced lighting
-void ProtoGeom3::setDiffuseMap(const std::string& normalImageURL){
-}
 
-void ProtoGeom3::setBumpMap(const std::string& normalImageURL){
-	ProtoTexture::createNormalMap(normalImageURL, textureID++);
-}
-
-void ProtoGeom3::setReflectionMap(const std::string& normalImageURL){
-}
-void ProtoGeom3::setRefractionMap(const std::string& normalImageURL){
-}
-void ProtoGeom3::setSpecularMap(const std::string& normalImageURL){
-}
 
 
 

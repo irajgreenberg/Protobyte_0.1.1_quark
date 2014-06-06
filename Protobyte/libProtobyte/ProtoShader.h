@@ -84,9 +84,18 @@ namespace ijg {
 
 		// vector for attribute and uniform locations
 		std::vector<GLuint> attribLocs, uniformLocs;
+
+		// used for access in Geom3 class
+		// Shader object is essentially a singleton, so the id will remain unchanged throughout program
 		static GLuint shader_id_2;
 
 	};
+
+
+	inline const GLuint ProtoShader::getID_2() {
+		return shader_id_2;
+	}
+
 
 	inline GLuint ProtoShader::getID() {
 		return shader_id;
