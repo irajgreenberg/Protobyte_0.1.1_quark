@@ -186,18 +186,21 @@ void ProtoGeom3::setSpecularMap(const std::string& specularMapImage){
 void ProtoGeom3::createDiffuseMapTexture(const std::string& diffuseMapImage){// create default texture for diffuseMap
 	diffuseMapTexture = ProtoTexture(diffuseMapImage, ProtoTexture::DIFFUSE_MAP, GL_RGB, GL_RGB, 0, 0);
 	diffuseMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "diffuseMap");
+	
 	glUniform1i(diffuseMapLoc, 0); // bind to sampler location 0 // not needed glsl >=4.2
 } 
 
 void ProtoGeom3::createBumpMapTexture(const std::string& bumpMapImage){
 	bumpMapTexture = ProtoTexture(bumpMapImage, ProtoTexture::BUMP_MAP, GL_RGB, GL_RGB, 0, 0);
 	bumpMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "bumpMap");
+	
 	glUniform1i(bumpMapLoc, 1); // bind to sampler location 1 // not needed glsl >=4.2
 } 
 
 void ProtoGeom3::loadBumpMapTexture(const std::string& bumpMapImage){
 	bumpMapTexture = ProtoTexture(bumpMapImage, ProtoTexture::NORMAL_MAP, GL_RGB, GL_RGB, 0, 0);
 	bumpMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "bumpMap");
+	
 	glUniform1i(bumpMapLoc, 1); // bind to sampler location 0 // not needed glsl >=4.2
 }
 void ProtoGeom3::createReflectionMapTexture(const std::string& reflectionMapImage){
@@ -375,6 +378,15 @@ std::vector<Tup4v> ProtoGeom3::getGeomData(){
  and primitive processing*/
 void ProtoGeom3::display(RenderMode render, float pointSize) {
 
+	GLuint d = diffuseMapTexture.getTextureID();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, d);
+
+	GLuint b = bumpMapTexture.getTextureID();
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, b);
+
+	
 	// update material values in GPU
 	glUniform4fv(diffuse_loc_U, 1, &materials.diffuse.r);
 	glUniform4fv(ambient_loc_U, 1, &materials.ambient.r);
@@ -382,29 +394,7 @@ void ProtoGeom3::display(RenderMode render, float pointSize) {
 	glUniform4fv(emissive_loc_U, 1, &materials.emissive.r);
 	glUniform1f(shininess_loc_U, materials.shininess);
 	
-	
-	
-	// not sure i need/want this here
-	//glActiveTexture(GL_TEXTURE0); 
-	//glUniform1i(diffuseMapLoc, 0); // bind to sampler location 0
-	//
-	//glActiveTexture(GL_TEXTURE1);
-	//glUniform1i(bumpMapLoc, 1); // bind to sampler location 1
-	
-	//glActiveTexture(GL_TEXTURE0);
-	//glActiveTexture(GL_TEXTURE1);
-	//if (isTextureEnabled) {
- //       glEnable(GL_TEXTURE_2D);
- //       glBindTexture(GL_TEXTURE_2D,texture.textureID);
- //   } else {
- //       glDisable(GL_TEXTURE_2D);
-	//	glBindTexture(GL_TEXTURE_2D, 0);
- //   }
-    
-	//glUniform1i(glGetUniformLocation(ProtoShader::getID_2(), "diffuseMap"), 0);
-	//glUniform1i(glGetUniformLocation(ProtoShader::getID_2(), "bumpMap"), 1);
-    // glBindTexture(GL_TEXTURE_2D,texture.textureID); // added to conditional above
-    
+
 	switch (render) {
         case POINTS:
             //glDisable(GL_CULL_FACE);

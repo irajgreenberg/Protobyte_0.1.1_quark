@@ -47,7 +47,7 @@ void ProtoRootBall02::init() {
 
 	//170, 150
 	// set Materials for composite objects - or setup as multiple inheritance/interface
-	rootBallCore = RootBall(Vec3f(), Vec3f(), Dim3f(2.55f), Col4f(.9f), 1, 30, .2, Tup2f(.5, 2.25), "leather2.jpg", 8);
+	rootBallCore = RootBall(Vec3f(), Vec3f(), Dim3f(2.55f), Col4f(.9f), 1, 30, .2, Tup2f(.5, 2.25), "shipPlate_yellow.jpg", 8);
 	TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(.2f, .75f), 3); // local, so can't be sent as reference
 	rootBallCore.setTransformFunction(t1);
 
@@ -65,18 +65,18 @@ void ProtoRootBall02::init() {
 	//vs.insert(vs.end(), temp2.begin(), temp2.end());
 	//export(vs, STL);
 
-	plane = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(1, 1, 1, 1), 1, 1, "brown_tile.jpg", .5);
+	plane = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(1, 1, 1, 1), 1, 1, "leather2.jpg", .5);
 	//plane.textureOn();
-	plane.setBumpMap("brown_tile.jpg");
+	plane.setBumpMap("leather2.jpg");
 	//plane.loadBumpMapTexture("shipPlate_normal.jpg");
-	plane.setTextureScale(.9);
+	plane.setTextureScale(1.9);
 	//plane.setAmbientMaterial(Col4f(.02, .02, .02, 1.0));
 	plane.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
 	plane.setShininess(50);
 	//trace("GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS =", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
 	toroid = Toroid(Vec3f(), Vec3f(), Dim3f(3, 3, 3), Col4f(.5, .5, .5, 1), 24, 24, 3, 1.2, "pebbles.jpg", 2.5);
-	toroid.setTextureScale(3.9);
+	toroid.setTextureScale(2.9);
 	//toroid.setShininess(1);
 	////toroid.loadBumpMapTexture("pebbles_normal.jpg");
 	toroid.setBumpMap("pebbles.jpg");
