@@ -81,6 +81,18 @@ void ProtoRootBall02::init() {
 	////toroid.loadBumpMapTexture("pebbles_normal.jpg");
 	toroid.setBumpMap("pebbles.jpg");
 
+	std::string texs[] = { "pebbles.jpg", "gold_foil2.jpg", "vascular.jpg", "greenCrocSkin.jpg", "pink2.jpg", "metal_screwHeads.jpg", "woodPlank.jpg", "metal_blue.jpg", "shipPlate_yellow.jpg", "reptile2_invert.jpg", "corroded_metal.jpg", "giraffe.jpg", "shipPlate.jpg", "metal_grate.jpg" };
+
+	for (int i = 0; i < W*H; ++i){
+		int sub = int(random(14));
+		toroids[i] = Toroid(Vec3f(), Vec3f(random(45), random(45), random(45)), Dim3f(3, 3, 3), Col4f(.5, .5, .5, 1), 24, 24, 3, 1.2, texs[sub], 2.5);
+		toroids[i].setBumpMap(texs[sub]);
+		toroids[i].setTextureScale(random(.25, 8.5));
+	}
+		
+		
+	
+
 	//createShadowMap();
 
 	
@@ -183,7 +195,7 @@ void ProtoRootBall02::render(int scaleFactor){
 	{
 		scale(.6);
 		rotate(-getFrameCount()*.75, .65, 1, .425);
-		toroid.display();
+		//toroid.display();
 		//push();
 		//{
 		//	scale(7.6);
@@ -193,6 +205,21 @@ void ProtoRootBall02::render(int scaleFactor){
 		//pop();
 	}
 	pop();
+
+	float width = 8;
+	float height = 5;
+	float colSpan = width / (W-1);
+	float rowSpan = height / (H-1);
+	for (int i = 0; i < W; ++i){
+		for (int j = 0; j < H; ++j){
+			push();
+			translate(colSpan*i - width / 2, rowSpan*j - height / 2, 0);
+			scale(.2);
+			rotate(-getFrameCount()*.75, toroids[i*H + j].getRotation().x, toroids[i*H + j].getRotation().y, toroids[i*H + j].getRotation().z);
+			toroids[i*H+j].display();
+			pop();
+		}
+	}
 
 }
 
