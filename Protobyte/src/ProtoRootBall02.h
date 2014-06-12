@@ -45,8 +45,6 @@ public:
 	static const int H = 4;
 	Toroid toroids[W*H];
 
-	bool createShadowMap();
-
 private:
 	
 };

@@ -42,10 +42,14 @@ void ProtoBaseApp::_init(){
 	//shader = ProtoShader("shader1.vert", "shader1.frag");
 	//shader = ProtoShader("protoShader.vert", "protoShader.frag");
 	shader = ProtoShader("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
-	
+
 	// default global ambient
-	globalAmbient = Col3f(.25f, .19f, .27f);
-	
+	globalAmbient = Col3f(.15f, .09f, .17f);
+
+	// default inital light
+	light0.setPosition(Vec3f(-5, 5, 5));
+	light0.setIntensity(Vec3f(1, 1, 1));
+
 	glViewport(0, 0, width, height);
 
 	// START standard transformation matrices: ModelView / Projection / Normal
@@ -61,10 +65,10 @@ void ProtoBaseApp::_init(){
 	// ortho
 	//trace("width = ", width);
 	//trace("height =", height);
-	left = -width/2;
-	right = width/2;
-	bottom = -height/2;
-	top = height/2;
+	left = -width / 2;
+	right = width / 2;
+	bottom = -height / 2;
+	top = height / 2;
 
 	nearDist = .1f;
 	farDist = 1500.0f;
@@ -77,6 +81,12 @@ void ProtoBaseApp::_init(){
 	T = glm::mat4(1.0f);
 	R = glm::mat4(1.0f);
 	S = glm::mat4(1.0f);
+
+	// START light transformation matrices for shadows
+
+	//L_MV = glm::lookAt();
+	//L_P, L_B, L_BP, L_MVP;
+
 
 	_initUniforms();
 }
@@ -93,6 +103,7 @@ void ProtoBaseApp::_initUniforms(){
 		std::string inten = "lights[" + std::to_string(i) + "].intensity";
 		lights_U[i].intensity = glGetUniformLocation(shader.getID(), inten.c_str());
 
+		// eventually get rid of these probably
 		std::string diff = "lights[" + std::to_string(i) + "].diffuse";
 		lights_U[i].diffuse = glGetUniformLocation(shader.getID(), diff.c_str());
 
@@ -104,14 +115,14 @@ void ProtoBaseApp::_initUniforms(){
 	}
 
 	globalAmbient_U = glGetUniformLocation(shader.getID(), "globalAmbientLight");
-	
+
 	//matrices
 	MV_U = glGetUniformLocation(shader.getID(), "modelViewMatrix");
 	MVP_U = glGetUniformLocation(shader.getID(), "modelViewProjectionMatrix");
 	N_U = glGetUniformLocation(shader.getID(), "normalMatrix");
 
 	// shadow map
-	shadowMapTex = glGetUniformLocation(shader.getID(), "shaderMapTexture");
+	shadowTexture = glGetUniformLocation(shader.getID(), "shaderMapTexture");
 	L_MVP_U = glGetUniformLocation(shader.getID(), "lightModelViewProjectionMatrix");
 
 }
@@ -126,7 +137,7 @@ void ProtoBaseApp::_run(){
 
 	//global ambient
 	glUniform3fv(globalAmbient_U, 1, &globalAmbient.r);
-	
+
 	// update all 8 lights in shaders
 	for (int i = 0; i < 8; ++i){
 		glUniform3fv(lights_U[i].position, 1, &lights[i].getPosition().x);
@@ -395,7 +406,31 @@ void ProtoBaseApp::ellipse(float x, float y, float r, Registration reg){
 }
 
 
+bool ProtoBaseApp::createShadowMap(){
+	// shadow map
+	GLfloat border[] = { 1.0f, .0f, .0f, .0f };
 
+	// Depth texture. Slower than a depth buffer, but you can sample it later in your shader 
+	glGenFramebuffers(1, &shadowBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowBuffer);
+
+	glGenTextures(1, &shadowTexture);
+	glBindTexture(GL_TEXTURE_2D, shadowTexture);
+	const int DEPTH_TEX_WIDTH = 1024, DEPTH_TEX_HEIGHT = 1024;
+	glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT32, DEPTH_TEX_WIDTH, DEPTH_TEX_HEIGHT);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, shadowTexture, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		return false;
+}
 
 //void ProtoBaseApp::render(int scaleFactor){}; // "should be" overridden in derived classes
 

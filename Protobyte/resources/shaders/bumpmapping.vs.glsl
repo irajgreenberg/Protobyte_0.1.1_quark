@@ -24,8 +24,19 @@ uniform mat3 normalMatrix;
 uniform mat4 modelViewProjectionMatrix;
 uniform mat4 lightModelViewProjectionMatrix;
 
+// switch with passed in lights
+uniform vec3 light_pos = vec3(-10, -10, 10);
 
-uniform vec3 light_pos = vec3(0.0, 0.0, 100.0);
+// Lights
+// max 8 lt srcs (fer now...)
+struct Light {
+	vec3 position;
+	vec3 intensity;
+	//vec4 diffuse;
+	//vec4 ambient;
+	//vec4 specular;
+};
+uniform Light lights[8];
 
 void main(void)
 {
@@ -43,7 +54,7 @@ void main(void)
 
     // The light vector (L) is the vector from the point of interest to
     // the light. Calculate that and multiply it by the TBN matrix.
-    vec3 L = light_pos - P.xyz;
+    vec3 L = lights[0].position - P.xyz;
     vs_out.lightDir = normalize(vec3(dot(L, T), dot(L, B), dot(L, N)));
 
     // The view vector is the vector from the point of interest to the

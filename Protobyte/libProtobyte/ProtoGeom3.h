@@ -393,8 +393,6 @@ namespace ijg {
 
 	inline void ProtoGeom3::setShininess(float shininess){
 		materials.shininess = shininess;
-
-		shininess_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "shininess");
 	}
 
 	inline const Col4f& ProtoGeom3::getDiffuseMaterial() const{

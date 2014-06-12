@@ -203,7 +203,9 @@ namespace ijg {
 		GLuint M_U, V_U, MV_U, P_U, MVP_U, N_U;
 		GLuint T_U, R_U, S_U;
 		GLuint L_MVP_U; // only for Light perspective
-		GLuint shadowMapTex; // id for shadermap texture
+
+		// shadow mapping texture id's
+		GLuint shadowBuffer, shadowTexture; 
 
 		std::stack <glm::mat4> matrixStack;
 
@@ -234,6 +236,8 @@ namespace ijg {
 		// pure virtual funcs require override
 		virtual void init() = 0;
 		virtual void run() = 0;
+
+		virtual bool ProtoBaseApp::createShadowMap();
 
 		// mouse/key events
 		virtual void keyPressed();

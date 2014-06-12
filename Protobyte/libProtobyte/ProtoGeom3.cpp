@@ -99,7 +99,7 @@ void ProtoGeom3::init() {
 	calcPrimitives();
     
     // set default material settings
-	materials = Material(Col4f(.7f, .7f, .7f, 1.0f), Col4f(.125f, .125f, .125f, 1.0f), Col4f(.2, .2, .2, 1.0f), Col4f(.0f, .0f, .0f, 1.0f), 75);
+	materials = Material(Col4f(.7f, .7f, .7f, 1.0f), Col4f(.125f, .125f, .125f, 1.0f), Col4f(.2, .2, .2, 1.0f), Col4f(.0f, .0f, .0f, 1.0f), 8);
 
 	// set material memory locations for GPU
 	diffuse_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "diffuseMaterial"); 
