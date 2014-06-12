@@ -11,7 +11,7 @@ out VS_OUT
 {
     vec2 texcoord;
     vec3 eyeDir;
-    vec3 lightDir;
+    vec3 lightDir[8];
     vec3 normal;
 } vs_out;
 
@@ -54,8 +54,10 @@ void main(void)
 
     // The light vector (L) is the vector from the point of interest to
     // the light. Calculate that and multiply it by the TBN matrix.
-    vec3 L = lights[0].position - P.xyz;
-    vs_out.lightDir = normalize(vec3(dot(L, T), dot(L, B), dot(L, N)));
+    for(int i=0; i<8; ++i){
+		vec3 L = lights[i].position - P.xyz;
+		vs_out.lightDir[i] = normalize(vec3(dot(L, T), dot(L, B), dot(L, N)));
+	}
 
     // The view vector is the vector from the point of interest to the
     // viewer, which in view space is simply the negative of the position.

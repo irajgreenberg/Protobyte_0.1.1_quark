@@ -56,7 +56,7 @@ void ProtoRootBall02::init() {
 	plane.setTextureScale(1.9);
 	//plane.setAmbientMaterial(Col4f(.02, .02, .02, 1.0));
 	plane.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
-	plane.setShininess(100);
+	plane.setShininess(25);
 	//trace("GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS =", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
 
@@ -68,9 +68,9 @@ void ProtoRootBall02::init() {
 		toroids[i].setBumpMap(texs[sub]);
 		//toroids[i].setBumpMap("grime.jpg");
 		toroids[i].setDiffuseMaterial(Col4f(.65, .75, 1, 1.0));
-		toroids[i].setSpecularMaterial(Col4f(1, .5, .5, 1.0));
+		toroids[i].setSpecularMaterial(Col4f(1, 1, 1, 1.0));
 		toroids[i].setTextureScale(random(.25, 8.5));
-		toroids[i].setShininess(int(random(5, 10)));
+		toroids[i].setShininess(int(random(15, 40)));
 	}
 
 

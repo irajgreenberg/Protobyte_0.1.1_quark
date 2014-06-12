@@ -47,8 +47,29 @@ void ProtoBaseApp::_init(){
 	globalAmbient = Col3f(.15f, .09f, .17f);
 
 	// default inital light
-	light0.setPosition(Vec3f(-5, 5, 5));
-	light0.setIntensity(Vec3f(1, 1, 1));
+	light0.setPosition(Vec3f(-15, -10, 5));
+	light0.setIntensity(Vec3f(.4, .4, 1));
+
+	light1.setPosition(Vec3f(15, 10, -5));
+	light1.setIntensity(Vec3f(.4, 1, .4));
+
+	light2.setPosition(Vec3f(0, 0, 1));
+	light2.setIntensity(Vec3f(1, .3, .3));
+
+	light3.setPosition(Vec3f(1, 1, 1));
+	light3.setIntensity(Vec3f(.7, .7, .7));
+
+	light4.setPosition(Vec3f(0, 0, 1));
+	light4.setIntensity(Vec3f(0, 0, 0));
+
+	light5.setPosition(Vec3f(0, 0, 1));
+	light6.setIntensity(Vec3f(0, 0, 0));
+
+	light6.setPosition(Vec3f(0, 0, 1));
+	light6.setIntensity(Vec3f(0, 0, 0));
+
+	light7.setPosition(Vec3f(0, 0, 1));
+	light7.setIntensity(Vec3f(0, 0, 0));
 
 	glViewport(0, 0, width, height);
 
