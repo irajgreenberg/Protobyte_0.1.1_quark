@@ -1,4 +1,4 @@
-#version 420 core
+#version 430 core
 
 layout (location = 0) in vec3 vertexPosition;
 layout (location = 1) in vec3 vertexNormal;
@@ -16,9 +16,11 @@ out VS_OUT
 } vs_out;
 
 // shadow coords
-out vec4 shadowCoord;
+uniform mat4 shadowModelViewBiasProjectionMatrix;
+out vec4 shadowMapCoords; //shadow coordinates;		
 
 // coord transforms
+uniform mat4 modelMatrix;
 uniform mat4 modelViewMatrix;
 uniform mat3 normalMatrix;
 uniform mat4 modelViewProjectionMatrix;
@@ -52,6 +54,10 @@ void main(void)
     // vectors.
     vec3 B = cross(N, T);
 
+    // shadowmap 
+	//shadowMapCoords = shadowModelViewBiasProjectionMatrix*(modelMatrix*vec4(vertexPosition, 1.0));
+	shadowMapCoords = shadowModelViewBiasProjectionMatrix*vec4(vertexPosition, 1.0);
+   
     // The light vector (L) is the vector from the point of interest to
     // the light. Calculate that and multiply it by the TBN matrix.
     for(int i=0; i<8; ++i){

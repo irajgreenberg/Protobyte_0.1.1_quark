@@ -32,6 +32,7 @@
 #include "libProtobyte/ProtoOSC.h"
 #include "libProtobyte/ProtoDimension2.h"
 #include "libProtobyte/ProtoDimension3.h"
+#include "libProtobyte/ProtoPlane.h"
 #include "libProtobyte/ProtoGroundPlane.h"
 #include "libProtobyte/ProtoTransformFunction.h"
 #include "libProtobyte/ProtoShader.h"
@@ -194,7 +195,10 @@ namespace ijg {
 		glm::mat4 T, R, S;
 
 		// Uniform Shadow Map Matrices
-		glm::mat4 L_V, L_MV, L_P, L_B, L_BP, L_MVP;
+		glm::mat4 L_V, L_MV, L_P, L_B, L_BP, L_MVBP;
+
+		//glm::mat4 L_MVS[8];
+		//glm::mat4 shadM[8];
 
 		// Uniform Normal Matrix
 		glm::mat3 N;
@@ -202,10 +206,16 @@ namespace ijg {
 		// flags for shader locations
 		GLuint M_U, V_U, MV_U, P_U, MVP_U, N_U;
 		GLuint T_U, R_U, S_U;
-		GLuint L_MVP_U; // only for Light perspective
+		GLuint L_MVBP_U; // only for Light perspective
+		GLuint shaderPassFlag_U;
 
+		// Uniform Shadow Map
+		GLuint shadowMap_U;
+		
 		// shadow mapping texture id's
-		GLuint shadowBuffer, shadowTexture; 
+		GLuint shadowBufferID, shadowTextureID;
+
+		const int SHADOWMAP_WIDTH = 2048, SHADOWMAP_HEIGHT = 2048;
 
 		std::stack <glm::mat4> matrixStack;
 
@@ -223,8 +233,7 @@ namespace ijg {
 		
 		GLuint globalAmbient_U;
 
-		// Shadow Map
-		GLuint shadowMap_U;
+	
 
 		// OSC obj 
 		ProtoOSC listener;
@@ -270,6 +279,9 @@ namespace ijg {
 		void setBackground(float c);
 		void setBackground(const Col3f& col);
 		void setBackground(const ProtoColor4<float>& col);
+
+		bool areShadowsOn;
+		void setShadowsOn(bool areShadowsOn);
 
 		// get window properties **READ ONLY**
 		int getWidth()const;
@@ -412,6 +424,10 @@ namespace ijg {
 	}
 	inline void  ProtoBaseApp::setTop(float top){
 		this->top = top;
+	}
+
+	inline void ProtoBaseApp::setShadowsOn(bool areShadowsOn) {
+		this->areShadowsOn = areShadowsOn;
 	}
 
 

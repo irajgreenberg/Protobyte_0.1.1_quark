@@ -1,13 +1,20 @@
-#version 420 core
+#version 430 core
 
 out vec4 color;
 
-// Color and normal maps
+// Texture maps
+//layout (binding = 0) uniform sampler2D shadowMap;
 //layout (binding = 0) uniform sampler2D diffuseMap;
 //layout (binding = 1) uniform sampler2D bumpMap;
 
+// Texture maps
+uniform bool shadowPassFlag;
+uniform sampler2DShadow shadowMap;
 uniform sampler2D diffuseMap;
 uniform sampler2D bumpMap;
+
+in vec4 shadowMapCoords;
+
 
 // max 8 lt srcs (fer now...)
 struct Light {
@@ -40,11 +47,19 @@ in VS_OUT
     vec3 normal;
 } fs_in;
 
+
+
 void main(void)
 {
-    vec3 diffuse = vec3(0);
-	vec3 specular = vec3(0);
+
+	// check for shadow pass
+	if(shadowPassFlag){
+		return;
+	}
 	
+	vec3 diffuse = vec3(0);
+	vec3 specular = vec3(0);
+
 	for(int i=0; i<8; ++i){
 		// Normalize our incomming view and light direction vectors.
 		vec3 V = normalize(fs_in.eyeDir);
@@ -72,6 +87,20 @@ void main(void)
 		specular += max(pow(dot(R, V), shininess), 0.0) * vec3(specularMaterial) * lights[i].intensity;
 		// Uncomment this to turn off specular highlights
 		// specular = vec3(0.0);
+	}
+
+	
+	
+	
+	// shadow map
+	if(shadowMapCoords.w>1) 
+	{
+		//check the shadow map texture to see if the fragment is in shadow
+		float shadow = textureProj(shadowMap, shadowMapCoords);
+		//darken the diffuse component apprpriately
+
+
+		diffuse = mix(diffuse, diffuse*shadow, 0.5); 
 	}
 
     // Final color is diffuse + specular

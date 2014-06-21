@@ -15,35 +15,33 @@ Mountain View, California, 94041, USA.
 
 This notice must be retained any source distribution.
 // thanks to: http://designdivala.deviantart.com/art/Green-Croc-texture-268499409
-static const int W = 4;
-	static const int H = 4;
-	static const int D = 4;
-	Toroid toroids[W*H*D];
+
 \ingroup common
 This class is part of the group common (update)
 \sa NO LINK
 */
 
-#ifndef PROTOROOTBALL_02_H
-#define PROTOROOTBALL_02_H
+#ifndef __ROOT_BALL_STUDY_01_H__
+#define __ROOT_BALL_STUDY_01_H__
 
 #include <iostream>
 #include "appProtobyte/ProtoBaseApp.h"
-#include "libProtobyte/ProtoRootBall.h"
 
 
 using namespace ijg;
 
-class ProtoRootBall02 : public ProtoBaseApp {
+class rootBallStudy01 : public ProtoBaseApp {
 public:
 	void init();
 	void run();
 
 
 	void render(int scaleFactor = 1);
-	RootBall rootBallCore, rootBall;
+
+
 	ProtoGroundPlane plane, ground;
-	Toroid toroid;
+	const static int TUBE_COUNT = 12;
+	Tube tubes[TUBE_COUNT];
 	static const int W = 4;
 	static const int H = 4;
 	static const int D = 4;
@@ -53,4 +51,4 @@ private:
 	
 };
 
-#endif // PROTOROOTBALL_01_H
+#endif // __ROOT_BALL_STUDY_01_H__
