@@ -48,7 +48,7 @@ void ProtoBaseApp::_init(){
 	
 	// camera at 11
 	// default inital light
-	light0.setPosition(Vec3f(-3, 2, 9));
+	light0.setPosition(Vec3f(-5, 5, 6));
 	//light0.setPosition(Vec3f(-14.2, 2.5, 8));
 	light0.setIntensity(Vec3f(1, .85, 1));
 
@@ -117,7 +117,7 @@ void ProtoBaseApp::_init(){
 
 	// START Shadow Map Matrices
 	L_MV = glm::lookAt(glm::vec3(light0.getPosition().x, light0.getPosition().y, light0.getPosition().z), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-	L_P = glm::perspective(85.0f, 1.0f, .10f, 325.0f);
+	L_P = glm::perspective(75.0f, 1.0f, .10f, 325.0f);
 	//L_P = glm::perspective(50.0f, 1.0f, .10f, 325.0f);
 	//L_P = glm::ortho<float>(0.0f, 10, 10, 0.0f, 0.1f, 100.0f);
 	//L_B = glm::scale(glm::translate(glm::mat4(1), glm::vec3(.5, .5, .5)), glm::vec3(.5, .5, .5));

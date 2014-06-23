@@ -47,23 +47,23 @@ ProtoGroundPlane::ProtoGroundPlane(const Vec3f& pos, const Vec3f& rot, const Dim
 
 
 ProtoGroundPlane::ProtoGroundPlane(const Vec3f& pos, const Vec3f& rot, const Dim2f& size,
-	const Col4f& col4, int rows, int columns, const std::string& textureImageURL, float textureScale):
+	const Col4f& col4, int rows, int columns, const std::string& textureImageURL, const Vec2f& textureScale) :
 	Geom3(pos, rot, Dim3f(size.w, 0, size.h), col4, textureImageURL, textureScale), rows(rows), columns(columns)
 {
 	init();
 }
 
 ProtoGroundPlane::ProtoGroundPlane(const Vec3f& pos, const Vec3f& rot, const Dim2f& size,
-	const Col4f& col4, int rows, int columns, const std::vector<std::string>& textureImageURLs, float textureScale) :
+	const Col4f& col4, int rows, int columns, const std::vector<std::string>& textureImageURLs, const Vec2f& textureScale) :
 	Geom3(pos, rot, Dim3f(size.w, 0, size.h), col4, textureImageURLs, textureScale), rows(rows), columns(columns)
 {
 	init();
 }
 void ProtoGroundPlane::calcVerts() {
 	verts.push_back(ProtoVertex3(Vec3f(-size.w / 2, 0, -size.d / 2), col4, Tup2f(0, 0))); // LB
-	verts.push_back(ProtoVertex3(Vec3f(-size.w / 2, 0, size.d / 2), col4, Tup2f(0, 1.0f / textureScale))); // LF
-	verts.push_back(ProtoVertex3(Vec3f(size.w / 2, 0, size.d / 2), col4, Tup2f(1.0f / textureScale, 1.0f / textureScale))); // RF
-	verts.push_back(ProtoVertex3(Vec3f(size.w / 2, 0, -size.d / 2), col4, Tup2f(1.0f / textureScale, 0))); // RB
+	verts.push_back(ProtoVertex3(Vec3f(-size.w / 2, 0, size.d / 2), col4, Tup2f(0, 1.0f / textureScale.y))); // LF
+	verts.push_back(ProtoVertex3(Vec3f(size.w / 2, 0, size.d / 2), col4, Tup2f(1.0f / textureScale.x, 1.0f / textureScale.y))); // RF
+	verts.push_back(ProtoVertex3(Vec3f(size.w / 2, 0, -size.d / 2), col4, Tup2f(1.0f / textureScale.x, 0))); // RB
 	
 }
 

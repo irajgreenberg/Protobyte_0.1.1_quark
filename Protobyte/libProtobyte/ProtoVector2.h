@@ -125,6 +125,7 @@ namespace ijg {
 		ProtoVector2(RandFlag randFlagVal = EXPLICIT);
 		ProtoVector2(T xMax, T yMax, RandFlag randFlagVal = EXPLICIT);
 		ProtoVector2(T xMin, T xMax, T yMin, T yMax);
+		ProtoVector2(T xy, RandFlag randFlagVal = EXPLICIT); // convenience single arg x==y
 
 		/*****************************************************/
 		/*              Member Overloaded Ops                */
@@ -209,6 +210,17 @@ namespace ijg {
 		y = random(yMin, yMax);
 	}
 
+	template <class T>
+	inline ProtoVector2<T>::ProtoVector2(T xy, RandFlag randFlagVal = EXPLICIT){
+		if (randFlagVal == RANDOMIZED){
+			x = random(xy);
+			y = x;
+		}
+		else {
+			x = y = xy;
+		}
+
+	}
 
 	/*****************************************************/
 	/*              Member Overloaded Ops                */

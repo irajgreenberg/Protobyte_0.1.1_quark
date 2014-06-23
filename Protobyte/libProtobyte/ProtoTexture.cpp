@@ -291,7 +291,7 @@ bool ProtoTexture::init() {
 			// get grayscale values(aka height map)
 			unsigned width = FreeImage_GetWidth(dib);
 			unsigned height = FreeImage_GetHeight(dib);
-			float* greyVals = new float[width*height]; // rmember to clean up
+			float* greyVals = new float[width*height]; // rmember to clean up (near line 400)
 
 			//manual conversion to greyscale
 			for (int i = 0; i < height; ++i){

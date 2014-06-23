@@ -43,7 +43,7 @@ namespace ijg {
          * Constructor
          * with texture
          */
-        ProtoTube(const ProtoSpline3& path, float radius, int crossSectionDetail, bool isClosed, const std::string& textureImageURL);
+        ProtoTube(const ProtoSpline3& path, float radius, int crossSectionDetail, bool isClosed, const std::string& textureImageURL, const Vec2f& textureScale = Vec2f(1, 1));
 
         /*!
          * Constructor 
@@ -55,7 +55,7 @@ namespace ijg {
          * Constructor
          * with TransformFunction object & texture
          */
-        ProtoTube(const ProtoSpline3& path, float radius, int crossSectionDetail, const ProtoTransformFunction& transFuncObj, bool isClosed, const std::string& textureImageURL);
+		ProtoTube(const ProtoSpline3& path, float radius, int crossSectionDetail, const ProtoTransformFunction& transFuncObj, bool isClosed, const std::string& textureImageURL, const Vec2f& textureScale = Vec2f(1, 1));
 
         /*!
          * Constructor 
@@ -97,7 +97,7 @@ namespace ijg {
         /*!
          * Constructor
          * All with TransformFunction obj*/
-        ProtoTube(const Vec3f& pos, const Vec3f& rot, const ProtoDimension3f& size, const ProtoColor4f& col4, const ProtoSpline3& path, float radius, int crossSectionDetail, const ProtoTransformFunction& transFuncObj, bool isClosed, const std::string& textureImageURL);
+		ProtoTube(const Vec3f& pos, const Vec3f& rot, const ProtoDimension3f& size, const ProtoColor4f& col4, const ProtoSpline3& path, float radius, int crossSectionDetail, const ProtoTransformFunction& transFuncObj, bool isClosed, const std::string& textureImageURL, const Vec2f& textureScale = Vec2f(1, 1));
 
         /*!
          * Constructor 

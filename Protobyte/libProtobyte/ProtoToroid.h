@@ -40,7 +40,7 @@ namespace ijg {
         ProtoToroid(const Vec3f& pos, const Vec3f& rot, const ProtoDimension3<float>& size, const ProtoColor4<float>& col4,
                 int ringCount, int ringDetail, float ringRadius, float ringThickness);
         ProtoToroid(const Vec3f& pos, const Vec3f& rot, const ProtoDimension3<float>& size, const ProtoColor4<float>& col4,
-                    int ringCount, int ringDetail, float ringRadius, float ringThickness, const std::string& textureImageURL, float textureScale = 1.0f);
+                    int ringCount, int ringDetail, float ringRadius, float ringThickness, const std::string& textureImageURL, const Vec2f& textureScale = Vec2f(1,1));
 
 
         // get/sets inlined below class

@@ -143,6 +143,22 @@ ProtoDimension3<float>& ProtoCurve3::getDimension() {
 }
 
 /**
+* Get ProtoCurve3 total length
+* @return float
+*/
+float ProtoCurve3::getCurveLength() const {
+	float len;
+
+	for (int i = 0; i<verts.size()-1; i++){
+		Vec3 temp1 = verts.at(i);
+		Vec3 temp2 = verts.at(i + 1);
+		Vec3 segLen = temp2 - temp1;
+		len += segLen.mag();
+	}
+	return len;
+}
+
+/**
  * Get vertex radius.
  * 
  * @return double value

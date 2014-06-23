@@ -40,7 +40,7 @@ public:
 
 
 	ProtoGroundPlane plane, ground;
-	const static int TUBE_COUNT = 12;
+	const static int TUBE_COUNT = 15;
 	Tube tubes[TUBE_COUNT];
 	static const int W = 4;
 	static const int H = 4;

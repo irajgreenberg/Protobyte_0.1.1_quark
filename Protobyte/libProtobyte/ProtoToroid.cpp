@@ -35,7 +35,7 @@ ProtoGeom3(pos, rot, size, col4), ringCount(ringCount), ringDetail(ringDetail), 
 }
 
 ProtoToroid::ProtoToroid(const Vec3f& pos, const Vec3f& rot, const ProtoDimension3<float>& size, const ProtoColor4<float>& col4,
-	int ringCount, int ringDetail, float ringRadius, float ringThickness, const std::string& textureImageURL, float textureScale) :
+	int ringCount, int ringDetail, float ringRadius, float ringThickness, const std::string& textureImageURL, const Vec2f& textureScale) :
 ProtoGeom3(pos, rot, size, col4, textureImageURL, textureScale), ringCount(ringCount), ringDetail(ringDetail), ringRadius(ringRadius), ringThickness(ringThickness) {
     init();
 }
@@ -62,7 +62,7 @@ void ProtoToroid::calcVerts() {
 			// fill vertices with floats
 			// Note:: invert scale to make API more intuitive
 			verts.push_back(ProtoVertex3(Vec3f(x, y, z),
-				ProtoColor4f(col4.getR(), col4.getG(), col4.getB(), col4.getA()), ProtoTuple2f(v / ringThickness*(1/textureScale), u / ringRadius*(1/textureScale))));
+				ProtoColor4f(col4.getR(), col4.getG(), col4.getB(), col4.getA()), ProtoTuple2f(v / ringThickness*(1/textureScale.y), u / ringRadius*(1/textureScale.x))));
 
 			theta += float(PI * 2 / ringDetail);
 		}

@@ -10,22 +10,22 @@ void rootBallStudy01::init() {
 	TransformFunction t2 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(.14f, .22f), 80); // local, so can't be sent as reference
 	
 	// wall
-	plane = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(1, 1, 1, 1), 1, 1, "leather2.jpg", 1);
+	plane = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(1, 1, 1, 1), 1, 1, "leather2.jpg");
 	//plane.textureOn();
 	plane.setBumpMap("leather2.jpg");
 	//plane.loadBumpMapTexture("shipPlate_normal.jpg");
-	plane.setTextureScale(.5);
+	plane.setTextureScale(Vec2f(.5));
 	//plane.setAmbientMaterial(Col4f(.02, .02, .02, 1.0));
 	plane.setSpecularMaterial(Col4f(1, .9, 1, 1.0));
 	plane.setShininess(4);
 	//trace("GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS =", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
 	// ground
-	ground = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(1, 1, 1, 1), 1, 1, "metal_screwHeads.jpg", 1);
+	ground = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(1, 1, 1, 1), 1, 1, "metal_screwHeads.jpg");
 	//plane.textureOn();
 	ground.setBumpMap("metal_screwHeads.jpg");
 	//plane.loadBumpMapTexture("shipPlate_normal.jpg");
-	ground.setTextureScale(.05);
+	ground.setTextureScale(Vec2f(.05));
 	//plane.setAmbientMaterial(Col4f(.02, .02, .02, 1.0));
 	ground.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
 	ground.setShininess(3);
@@ -44,9 +44,9 @@ void rootBallStudy01::init() {
 	
 	for (int i = 0; i < TUBE_COUNT; ++i){
 		int sub = int(random(14));
-		tubes[i] = Tube(Spline3(vecs, 5, false, 1), .2, 12, ProtoTransformFunction(ProtoTransformFunction::SINUSOIDAL, Tup2f(random(.2, .75), random(.75, 1.5)), int(random(2, 12))), true, texs[sub]);
+		tubes[i] = Tube(Spline3(vecs, 5, false, 1), .2, 4, ProtoTransformFunction(ProtoTransformFunction::SINUSOIDAL, Tup2f(random(.2, .75), random(.75, 1.5)), int(random(2, 12))), true, texs[sub], Vec2f(1, .05));
 		tubes[i].setBumpMap(texs[sub]);
-		tubes[i].setTextureScale(3);
+		//tubes[i].setTextureScale(Vec2f(1, .25));
 		tubes[i].setSpecularMaterial(Col4f(1, 1, 1, 1.0));
 		tubes[i].setShininess(4);
 	}
@@ -58,12 +58,12 @@ void rootBallStudy01::init() {
 
 		for (int i = 0; i < W*H*D; ++i){
 			int sub = int(random(14));
-			toroids[i] = Toroid(Vec3f(), Vec3f(random(45), random(45), random(45)), Dim3f(3, 3, 3), Col4f(.5, .5, .5, 1), 12, 12, 3, 1.2, texs[sub], 2.5);
+			toroids[i] = Toroid(Vec3f(), Vec3f(random(45), random(45), random(45)), Dim3f(3, 3, 3), Col4f(.5, .5, .5, 1), 12, 12, 3, 1.2, texs[sub], Vec2f(2.5, 2.5));
 			toroids[i].setBumpMap(texs[sub]);
 			//toroids[i].setBumpMap("grime.jpg");
 			toroids[i].setDiffuseMaterial(Col4f(.65, .75, 1, 1.0));
 			toroids[i].setSpecularMaterial(Col4f(1, 1, 1, 1.0));
-			toroids[i].setTextureScale(random(.25, 8.5));
+			toroids[i].setTextureScale(Vec2f(random(.25, 8.5)));
 			toroids[i].setShininess(int(random(15, 40)));
 		}
 
@@ -139,7 +139,7 @@ void rootBallStudy01::render(int scaleFactor){
 		push();
 		translate(cos(theta)*6.2, -8, sin(theta)*6.2);
 		scale(3);
-		rotate(getFrameCount()*.12, 0, 1, 0);
+		rotate(getFrameCount()*.5, 0, 1, 0);
 		tubes[i].display();
 		pop();
 		theta += TWO_PI / TUBE_COUNT;
@@ -213,7 +213,7 @@ void rootBallStudy01::render(int scaleFactor){
 		push();
 		translate(cos(theta)*6.2, -8, sin(theta)*6.2);
 		scale(3);
-		rotate(getFrameCount()*.12, 0, 1, 0);
+		rotate(getFrameCount()*.5, 0, 1, 0);
 		tubes[i].display();
 		pop();
 		theta += TWO_PI / TUBE_COUNT;

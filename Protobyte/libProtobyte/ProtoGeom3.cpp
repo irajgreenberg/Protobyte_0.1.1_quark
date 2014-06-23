@@ -48,33 +48,33 @@ ProtoShape3(pos, rot, size, col4s), diffuseMapImage("white_tile.jpg") {
 
 
 // with textures
-ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4, const std::string& diffuseMapImage) :
-ProtoShape3(pos, rot, size, col4), diffuseMapImage(diffuseMapImage) {
-	diffuseTextureImageURLs.push_back(diffuseMapImage);
-}
+//ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4, const std::string& diffuseMapImage) :
+//ProtoShape3(pos, rot, size, col4), diffuseMapImage(diffuseMapImage) {
+//	diffuseTextureImageURLs.push_back(diffuseMapImage);
+//}
 
-ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const std::vector< ProtoColor4f > col4s, const std::string& diffuseMapImage) :
-ProtoShape3(pos, rot, size, col4s), diffuseMapImage(diffuseMapImage) {
-	diffuseTextureImageURLs.push_back(diffuseMapImage);
-}
+//ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const std::vector< ProtoColor4f > col4s, const std::string& diffuseMapImage) :
+//ProtoShape3(pos, rot, size, col4s), diffuseMapImage(diffuseMapImage) {
+//	diffuseTextureImageURLs.push_back(diffuseMapImage);
+//}
 
-ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4, const std::string& diffuseMapImage, float textureScale) :
+ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4, const std::string& diffuseMapImage, const Vec2f& textureScale) :
 ProtoShape3(pos, rot, size, col4), diffuseMapImage(diffuseMapImage), textureScale(textureScale) {
 	diffuseTextureImageURLs.push_back(diffuseMapImage);
 }
 
 ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size,
-	const std::vector< ProtoColor4f > col4s, const std::string& diffuseMapImage, float textureScale) :
+	const std::vector< ProtoColor4f > col4s, const std::string& diffuseMapImage, const Vec2f& textureScale) :
 	ProtoShape3(pos, rot, size, col4s), diffuseMapImage(diffuseMapImage), textureScale(textureScale) {
 	diffuseTextureImageURLs.push_back(diffuseMapImage);
 }
 
 
 // multi-texturing
-ProtoGeom3::ProtoGeom3(const Dim3f& size, const Col4f& col4, const std::vector<std::string>& diffuseTextureImageURLs, float textureScale) :
+ProtoGeom3::ProtoGeom3(const Dim3f& size, const Col4f& col4, const std::vector<std::string>& diffuseTextureImageURLs, const Vec2f& textureScale) :
 ProtoShape3(Vec3f(), Vec3f(), size, col4), diffuseTextureImageURLs(diffuseTextureImageURLs), textureScale(textureScale){
 }
-ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f& size, const Col4f& col4, const std::vector<std::string>& diffuseTextureImageURLs, float textureScale) :
+ProtoGeom3::ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f& size, const Col4f& col4, const std::vector<std::string>& diffuseTextureImageURLs, const Vec2f& textureScale) :
 ProtoShape3(pos, rot, size, col4s), diffuseTextureImageURLs(diffuseTextureImageURLs), textureScale(textureScale){
 }
 
@@ -501,10 +501,11 @@ void ProtoGeom3::updateColorBuffer(){
 }
 
 void ProtoGeom3::updateTextureBuffer(){
+	//trace("textureScale =", textureScale);
 	glBindBuffer(GL_ARRAY_BUFFER, vboID);
 	for (int i = 0; i < interleavedPrims.size(); i += STRIDE) {// transform verts
-		interleavedPrims.at(i + 10) *= 1.0/textureScale;
-		interleavedPrims.at(i + 11) *= 1.0/textureScale;
+		interleavedPrims.at(i + 10) *= 1.0/textureScale.x;
+		interleavedPrims.at(i + 11) *= 1.0/textureScale.y;
         
 	}
 	int vertsDataSize = sizeof (float)*interleavedPrims.size();
@@ -513,10 +514,11 @@ void ProtoGeom3::updateTextureBuffer(){
 }
 
 void ProtoGeom3::updateBuffer(){
+	
 	glBindBuffer(GL_ARRAY_BUFFER, vboID);
 	for (int i = 0; i < interleavedPrims.size(); i += STRIDE) {// transform verts
-		interleavedPrims.at(i + 10) *= 1.0/textureScale;
-		interleavedPrims.at(i + 11) *= 1.0/textureScale;
+		interleavedPrims.at(i + 10) *= 1.0/textureScale.x;
+		interleavedPrims.at(i + 11) *= 1.0/textureScale.y;
 		//interleavedPrims.at(i + 12) *= 1.0/textureScale;
 
 	}

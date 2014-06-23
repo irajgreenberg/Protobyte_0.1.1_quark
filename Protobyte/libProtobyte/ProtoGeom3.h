@@ -89,7 +89,8 @@ namespace ijg {
 		GLint diffuseMapLoc, bumpMapLoc;
 		std::vector<std::string> diffuseTextureImageURLs; // multi-texturing -> not sure I want this anymore
 		
-		float textureScale;
+		//float textureScale;
+		Vec2f textureScale;
 		
 		// create Textures - accessed in Fragment Shader
 		virtual void createDiffuseMapTexture(const std::string& diffuseMapImage); // loc 0 (default)
@@ -193,18 +194,18 @@ namespace ijg {
         
         
         // with textureImageURL
-		ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4, const std::string& diffuseTextureImage);
+		//ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4, const std::string& diffuseTextureImage);
         
-		ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const std::vector< ProtoColor4f > col4s, const std::string& diffuseTextureImage);
+		//ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const std::vector< ProtoColor4f > col4s, const std::string& diffuseTextureImage);
         
-        ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4, const std::string& diffuseTextureImage, float textureScale);
+		ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size, const ProtoColor4f col4, const std::string& diffuseTextureImage, const Vec2f& textureScale = Vec2f(1, 1));
         
         ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f size,
-			const std::vector< ProtoColor4f > col4s, const std::string& diffuseTextureImage, float textureScale);
+			const std::vector< ProtoColor4f > col4s, const std::string& diffuseTextureImage, const Vec2f& textureScale = Vec2f(1, 1));
 
 		// multi-texturing
-		ProtoGeom3(const Dim3f& size, const Col4f& col4, const std::vector<std::string>& textureImageURLs, float textureScale = 1); 
-		ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f& size, const Col4f& col4, const std::vector<std::string>& textureImageURLs, float textureScale = 1);
+		ProtoGeom3(const Dim3f& size, const Col4f& col4, const std::vector<std::string>& textureImageURLs, const Vec2f& textureScale = Vec2f(1, 1));
+		ProtoGeom3(const Vec3f& pos, const Vec3f& rot, const Dim3f& size, const Col4f& col4, const std::vector<std::string>& textureImageURLs, const Vec2f& textureScale = Vec2f(1, 1));
         
         
         
@@ -242,8 +243,8 @@ namespace ijg {
         
         virtual void sortFaces();
         
-        void setTextureScale(float textureScale);
-        float getTextureScale() const;
+		void setTextureScale(const Vec2f& textureScale);
+		Vec2f getTextureScale() const;
         
 		// public interface for setting maps
 		void setBumpMap(const std::string& bumpMapImage);
@@ -346,12 +347,12 @@ namespace ijg {
         return interleavedPrims;
     }
     
-    inline void ProtoGeom3::setTextureScale(float textureScale) {
+	inline void ProtoGeom3::setTextureScale(const Vec2f& textureScale) {
         this->textureScale = textureScale;
 		updateTextureBuffer();
     }
     
-    inline float ProtoGeom3::getTextureScale() const {
+    inline Vec2f ProtoGeom3::getTextureScale() const {
         return textureScale;
     }
     

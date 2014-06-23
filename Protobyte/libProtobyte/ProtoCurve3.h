@@ -106,6 +106,11 @@ namespace ijg {
 		 */
 		ProtoDimension3<float> dim;
 
+		/**
+		* Bounding box of entire curve
+		*/
+		float getCurveLength() const;
+
 
 	public:
 		// constructors

@@ -43,7 +43,7 @@ namespace ijg {
         /*!
          * Constructor */
         ProtoBlock(const Vec3f& pos, const Vec3f& rot, const ProtoDimension3f& size,
-                const ProtoColor4<float>& col4, const std::string& textureImageURL, float textureScale=1);
+			const ProtoColor4<float>& col4, const std::string& textureImageURL, const Vec2f& textureScale = Vec2f(1,1));
 
 		/*!
 		* Constructor */
@@ -52,7 +52,7 @@ namespace ijg {
 		/*!
 		* Constructor */
 		ProtoBlock(const Vec3f& pos, const Vec3f& rot, const ProtoDimension3f& size,
-			const std::vector<Col4f>& cols4, const std::string& textureImageURL, float textureScale=1);
+			const std::vector<Col4f>& cols4, const std::string& textureImageURL, const Vec2f& textureScale = Vec2f(1, 1));
 
 
 

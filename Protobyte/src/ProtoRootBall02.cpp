@@ -50,22 +50,22 @@ void ProtoRootBall02::init() {
 	//export(vs, STL);
 
 	// wall
-	plane = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(1, 1, 1, 1), 1, 1, "leather2.jpg", 1);
+	plane = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(1, 1, 1, 1), 1, 1, "leather2.jpg");
 	//plane.textureOn();
 	plane.setBumpMap("leather2.jpg");
 	//plane.loadBumpMapTexture("shipPlate_normal.jpg");
-	plane.setTextureScale(.5);
+	plane.setTextureScale(Vec2f(.5));
 	//plane.setAmbientMaterial(Col4f(.02, .02, .02, 1.0));
 	plane.setSpecularMaterial(Col4f(1, .9, 1, 1.0));
 	plane.setShininess(4);
 	//trace("GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS =", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
 	// ground
-	ground = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(1, 1, 1, 1), 1, 1, "pink2.jpg", 1);
+	ground = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(1, 1, 1, 1), 1, 1, "pink2.jpg");
 	//plane.textureOn();
 	ground.setBumpMap("pink2.jpg");
 	//plane.loadBumpMapTexture("shipPlate_normal.jpg");
-	ground.setTextureScale(.25);
+	ground.setTextureScale(Vec2f(.25));
 	//plane.setAmbientMaterial(Col4f(.02, .02, .02, 1.0));
 	ground.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
 	ground.setShininess(3);
@@ -76,12 +76,12 @@ void ProtoRootBall02::init() {
 
 	for (int i = 0; i < W*H*D; ++i){
 		int sub = int(random(14));
-		toroids[i] = Toroid(Vec3f(), Vec3f(random(45), random(45), random(45)), Dim3f(3, 3, 3), Col4f(.5, .5, .5, 1), 12, 12, 3, 1.2, texs[sub], 2.5);
+		toroids[i] = Toroid(Vec3f(), Vec3f(random(45), random(45), random(45)), Dim3f(3, 3, 3), Col4f(.5, .5, .5, 1), 12, 12, 3, 1.2, texs[sub]);
 		toroids[i].setBumpMap(texs[sub]);
 		//toroids[i].setBumpMap("grime.jpg");
 		toroids[i].setDiffuseMaterial(Col4f(.65, .75, 1, 1.0));
 		toroids[i].setSpecularMaterial(Col4f(1, 1, 1, 1.0));
-		toroids[i].setTextureScale(random(.25, 8.5));
+		toroids[i].setTextureScale(Vec2f(random(.25, 8.5)));
 		toroids[i].setShininess(int(random(15, 40)));
 	}
 
