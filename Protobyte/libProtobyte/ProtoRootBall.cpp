@@ -36,7 +36,7 @@ ProtoRootBall::ProtoRootBall(const Vec3f& pos, const Vec3f& rot, const Dim3f& si
 
 // single texture, single color
 ProtoRootBall::ProtoRootBall(const Vec3f& pos, const Vec3f& rot, const Dim3f& size,
-	const ProtoColor4f& col4, int rootCount, int rootSegments, float turbulence, const Tup2f& rootRadii, const std::string& textureURL, int textureScale) :
+	const ProtoColor4f& col4, int rootCount, int rootSegments, float turbulence, const Tup2f& rootRadii, const std::string& textureURL, const Vec2f& textureScale) :
 	ProtoShape3(pos, rot, size, col4), rootCount(rootCount), rootSegments(rootSegments), turbulence(turbulence), rootRadii(rootRadii) {
 
 	for (int i = 0; i < rootCount; ++i){
@@ -50,7 +50,7 @@ ProtoRootBall::ProtoRootBall(const Vec3f& pos, const Vec3f& rot, const Dim3f& si
 
 // single texture, multi-colors
 ProtoRootBall::ProtoRootBall(const Vec3f& pos, const Vec3f& rot, const Dim3f& size,
-	const std::vector<ProtoColor4f>& col4s, int rootCount, int rootSegments, float turbulence, const Tup2f& rootRadii, const std::string& textureURL, int textureScale) :
+	const std::vector<ProtoColor4f>& col4s, int rootCount, int rootSegments, float turbulence, const Tup2f& rootRadii, const std::string& textureURL, const Vec2f& textureScale) :
 	ProtoShape3(pos, rot, size, col4s), rootCount(rootCount), rootSegments(rootSegments), turbulence(turbulence), rootRadii(rootRadii) {
 
 	// 1 texture passed in
@@ -70,7 +70,7 @@ ProtoRootBall::ProtoRootBall(const Vec3f& pos, const Vec3f& rot, const Dim3f& si
 
 // multi-textures, multi-colors
 ProtoRootBall::ProtoRootBall(const Vec3f& pos, const Vec3f& rot, const Dim3f& size,
-	const std::vector<ProtoColor4f>& col4s, int rootCount, int rootSegments, float turbulence, const Tup2f& rootRadii, const std::vector<std::string>& textureURLs, int textureScale) :
+	const std::vector<ProtoColor4f>& col4s, int rootCount, int rootSegments, float turbulence, const Tup2f& rootRadii, const std::vector<std::string>& textureURLs, const Vec2f& textureScale) :
 	ProtoShape3(pos, rot, size, col4s), rootCount(rootCount), rootSegments(rootSegments), turbulence(turbulence), rootRadii(rootRadii), textureURLs(textureURLs) {
 
 	// multiple textures | single texture scale
@@ -89,7 +89,7 @@ ProtoRootBall::ProtoRootBall(const Vec3f& pos, const Vec3f& rot, const Dim3f& si
 
 // multi-textures, multi-colors, multi-texture scales
 ProtoRootBall::ProtoRootBall(const Vec3f& pos, const Vec3f& rot, const Dim3f& size,
-	const std::vector<ProtoColor4f>& col4s, int rootCount, int rootSegments, float turbulence, const Tup2f& rootRadii, const std::vector<std::string>& textureURLs, std::vector<int> textureScales) :
+	const std::vector<ProtoColor4f>& col4s, int rootCount, int rootSegments, float turbulence, const Tup2f& rootRadii, const std::vector<std::string>& textureURLs, std::vector<Vec2f> textureScales) :
 	ProtoShape3(pos, rot, size, col4s), rootCount(rootCount), rootSegments(rootSegments), turbulence(turbulence), rootRadii(rootRadii), textureURLs(textureURLs), textureScales(textureScales) {
 
 	init();
@@ -160,13 +160,16 @@ void ProtoRootBall::update(){
 			theta += PI / 15.0f;
 		}
 
-		rootSplines.push_back(Spline3(cps, 7, false, .5));
+		rootSplines.push_back(Spline3(cps, 3, false, .5));
 		
 		//const Vec3f& pos, const Vec3f& rot, const ProtoDimension3f& size, const ProtoColor4f& col4, const ProtoSpline3& path, float radius, int crossSectionDetail, bool isClosed
 		//trace("2 transform =", transform);
-		roots.push_back(ProtoTube(Vec3f(), Vec3f(), Dim3f(1), col4s.at(i), rootSplines.at(i), .09, 12, transform, true, textureURLs.at(i)));
-		roots.at(i).textureOn();
-		roots.at(i).setTextureScale(textureScales.at(i));
+		roots.push_back(ProtoTube(Vec3f(), Vec3f(), Dim3f(1), col4s.at(i), rootSplines.at(i), .09, 6, transform, true, textureURLs.at(i), Vec2f(1, .02)));
+		roots.at(i).setShininess(int(random(1, 7)));
+		roots.at(i).setBumpMap(textureURLs.at(i));
+		roots.at(i).setSpecularMaterial(Col4f(1, .9, 1, 1.0));
+		//roots.at(i).textureOn();
+		//roots.at(i).setTextureScale(textureScales.at(i));
 	}
 }
 

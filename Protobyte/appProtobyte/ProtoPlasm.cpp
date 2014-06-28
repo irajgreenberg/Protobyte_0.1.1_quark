@@ -18,8 +18,8 @@ baseApp(baseApp), appWidth(1920), appHeight(1080), appTitle("Protobyte App")
     //world = std::unique_ptr<ProtoWorld>(new ProtoWorld(appWidth, appHeight));
     
     // init app and call init() and run() to activate functions in user defined BaseApp derived class
-    initSFMLInit();
-    initSFMLRun();
+    initGLFW();
+    runGLFW();
 }
 
 ProtoPlasm:: ProtoPlasm(int appWidth, int appHeight, std::string appTitle, ProtoBaseApp* baseApp):
@@ -30,12 +30,12 @@ appWidth(appWidth), appHeight(appHeight), appTitle(appTitle), baseApp(baseApp){
     baseApp->setSize(Dim2i(appWidth, appHeight));    
     
     // Create GL context and call init() and run() to activate functions in user defined BaseApp derived class
-    initSFMLInit();
-    initSFMLRun();
+    initGLFW();
+    runGLFW();
 }
 
 
-void ProtoPlasm::initSFMLInit(){
+void ProtoPlasm::initGLFW(){
 
 //#if defined(_WIN32) || defined (_WIN64) 
 //	glewExperimental = TRUE;
@@ -237,11 +237,18 @@ void ProtoPlasm::initSFMLInit(){
     
     // Activate init function in user derived class.n.
 	baseApp->_init(); // base class
-	baseApp->init(); // derived class
+	//baseApp->init(); // derived class
 }
 
+
+//void framebuffer_size_callback(GLFWwindow* window, int width, int height){
+//	//glViewport(0, 0, width, height);
+//	std::cout << "here" << std::endl;
+//	baseApp->_setViewPort(width, height);
+//}
+
 // activate animation thread and run() function in user defined BaseApp derived class
-void ProtoPlasm::initSFMLRun(){
+void ProtoPlasm::runGLFW(){
     
     // Activate derived user class implementations of events:
     /*
@@ -268,7 +275,7 @@ void ProtoPlasm::initSFMLRun(){
 		baseApp->setFrameCount(frameCount);
 		//baseApp->runWorld();
 		baseApp->_run(); // called in base class
-		baseApp->run(); // called in derived class
+		//baseApp->run(); // called in derived class
 
         
         // handle GLFW events
@@ -281,6 +288,9 @@ void ProtoPlasm::initSFMLRun(){
         //window->display();
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+		// test for window context resizing
+		//glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
         
         frameCount++;
     }

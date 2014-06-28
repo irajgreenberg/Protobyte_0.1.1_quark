@@ -375,7 +375,7 @@ void ProtoTube::calcVerts() {
 
 	// prepare verts vector
 	verts.clear();
-	verts.resize(frenetFrameLength * crossSectionDetail + 2);
+	//verts.resize(frenetFrameLength * crossSectionDetail + 2);
 
 	// top and bottom vec to enable tube caps
 	Vec3f topCapVec, bottomCapVec;
@@ -400,7 +400,7 @@ void ProtoTube::calcVerts() {
 	for (int i = 0; i < frenetFrameLength; i++) {
 
 		// calculate cross-section vertices
-		float theta = PI / 4;
+		float theta = 0;
 		float theta2 = 0;
 
 		// only calculate if necessary
@@ -417,6 +417,7 @@ void ProtoTube::calcVerts() {
 
 		vProtoSplineVecs.push_back(vecs.at(i));
 
+		// calculating double end points for seam UV coords (0  ->  1)
 		for (int j = 0; j < crossSectionDetail; j++) {
 
 			// customize tube based on transform function
@@ -428,18 +429,12 @@ void ProtoTube::calcVerts() {
 					//step_xyz.y = (transFuncObj.getVectorRange().elem1.y - transFuncObj.getVectorRange().elem0.y) / frenetFrameLength;
 					x = cos(theta) * radii.at(i) * (transFuncObj.getVectorRange().elem0.x + step_xyz.x * i + random(-perturbation.x, perturbation.x));
 					y = sin(theta) * radii.at(i) * (transFuncObj.getVectorRange().elem0.y + step_xyz.y * i + random(-perturbation.y, perturbation.y));
-					//u = theta / TWO_PI;
-					//v = (y + size.h / 2.0f) / size.h;
-
 					break;
 				case ProtoTransformFunction::LINEAR_INVERSE:
 					//step_xyz.x = (transFuncObj.getVectorRange().elem1.x - transFuncObj.getVectorRange().elem0.x) / frenetFrameLength;
 					//step_xyz.y = (transFuncObj.getVectorRange().elem1.y - transFuncObj.getVectorRange().elem0.y) / frenetFrameLength;
 					x = cos(theta) * radii.at(i) * (transFuncObj.getVectorRange().elem1.x - step_xyz.x * i + random(-perturbation.x, perturbation.x));
 					y = sin(theta) * radii.at(i) * (transFuncObj.getVectorRange().elem1.y - step_xyz.y * i + random(-perturbation.y, perturbation.y));
-					//u = theta / TWO_PI;
-					//v = (y + size.h / 2.0f) / size.h;
-
 					break;
 				case ProtoTransformFunction::SINUSOIDAL:
 					//step = fabs(sin(phi) * (transFuncObj.getScalerRange().elem1 - transFuncObj.getScalerRange().elem0));
@@ -448,10 +443,6 @@ void ProtoTube::calcVerts() {
 					//std::cout << "phi = " << phi << std::endl;
 					x = cos(theta) * radii.at(i) * (transFuncObj.getVectorRange().elem0.x + step_xyz.x + ijg::random(-perturbation.x, perturbation.x));
 					y = sin(theta) * radii.at(i) * (transFuncObj.getVectorRange().elem0.y + step_xyz.y + ijg::random(-perturbation.y, perturbation.y));
-					//u = theta / TWO_PI;
-					//v = (y + size.h / 2.0f) / size.h;
-
-
 					break;
 				case ProtoTransformFunction::SINUSOIDAL_INVERSE:
 					//step = fabs(sin(phi) * (transFuncObj.getScalerRange().elem1 - transFuncObj.getScalerRange().elem0));
@@ -460,9 +451,6 @@ void ProtoTube::calcVerts() {
 					//std::cout << "phi = " << phi << std::endl;
 					x = cos(theta) * radii.at(i) * (transFuncObj.getVectorRange().elem0.x + step_xyz.x + ijg::random(-perturbation.x, perturbation.x));
 					y = sin(theta) * radii.at(i) * (transFuncObj.getVectorRange().elem0.y + step_xyz.y + ijg::random(-perturbation.y, perturbation.y));
-					//u = theta / TWO_PI;
-					//v = (y + size.h / 2.0f) / size.h;
-
 					break;
 					//                    case TransformFunction::SINUSOIDAL_TRANSFORM_RANDOM:
 					//                        x = cos(theta) * radii.at(i) * (transFuncObj.getVectorRange().elem0.x + randomStep_x);
@@ -476,10 +464,6 @@ void ProtoTube::calcVerts() {
 			else {
 				x = cos(theta) * (radii.at(i) + ijg::random(-perturbation.x, perturbation.x));
 				y = sin(theta) * (radii.at(i) + ijg::random(-perturbation.y, perturbation.y));
-				//u = theta / TWO_PI;
-				//v = (y + size.h / 2.0f) / size.h;
-
-
 			}
 
 			// calculate cross section shape
@@ -490,7 +474,7 @@ void ProtoTube::calcVerts() {
 
 
 			float z = ijg::random(-perturbation.z, perturbation.z);
-			theta += PI * 2 / crossSectionDetail;
+			theta += TWO_PI / (crossSectionDetail);
 
 			if (i == 0 && j == 0) {
 				//trace("vecs.at(0) =", vecs.at(0));
@@ -511,17 +495,17 @@ void ProtoTube::calcVerts() {
 			//trace("Vec3f(px, py, pz) = " , Vec3f(px, py, pz));
 			//verts.at(i * crossSectionDetail + j) = ProtoVertex3(Vec3f(px, py, pz), col4s.at(i));
 
-			float tubeHt = (vecs.at(vecs.size() - 1).y - vecs.at(i + 1).y) * 1; //*1 ??
 	
 			// set uv coords
 			u = theta2 / (TWO_PI*(1.0f / textureScale.x));
-			//trace("u =", u);
 			v = (float(i * crossSectionDetail + j) / float(crossSectionDetail*frenetFrameLength))*(1.0f / textureScale.y);
+			//trace("u =", u);
+			//trace(" theta2*180/PI =", theta2 * 180 / PI);
 
-			verts.at(i * crossSectionDetail + j) = ProtoVertex3(Vec3f(px, py, pz), col4s.at(i), ProtoTuple2f(u, v));
+			verts.push_back(ProtoVertex3(Vec3f(px, py, pz), col4s.at(i), ProtoTuple2f(u, v)));
 			//trace("v = ", (i * float(crossSectionDetail) + j) / float(crossSectionDetail*frenetFrameLength) );
 			theta2 += TWO_PI / (crossSectionDetail);
-			//trace("u =", u, ", v =", (py+tubeHt/2.0)/tubeHt);
+
 			//verts.at(i * crossSectionDetail + j) = ProtoVertex3(Vec3f(px, py, pz), col4s.at(i), ProtoTuple2f(px/size.w, py/size.h));
 			//std::cout << "Vec3f(px, py, pz).at(" << i << ") = " << Vec3f(px, py, pz) << std::endl;
 
@@ -547,8 +531,8 @@ void ProtoTube::calcVerts() {
 	bottomCapVec /= crossSectionDetail;
 
 	// add cap centroids to verts.
-	verts.at(verts.size() - 2) = ProtoVertex3(topCapVec, col4s.at(0));
-	verts.at(verts.size() - 1) = ProtoVertex3(bottomCapVec, col4s.at(frenetFrameLength - 1));
+	verts.push_back(ProtoVertex3(topCapVec, col4s.at(0)));
+	verts.push_back(ProtoVertex3(bottomCapVec, col4s.at(frenetFrameLength - 1)));
 
 
 
@@ -596,7 +580,7 @@ void ProtoTube::calcInds() {
 
 
 			if (i < frenetFrameLength - 1) {
-				if (j < crossSectionDetail - 1) {
+				if (j < crossSectionDetail-1) {
 
 					// top cap
 					if (i == 0 && isClosed) {
@@ -607,7 +591,7 @@ void ProtoTube::calcInds() {
 					inds.push_back(ProtoTuple3<int>(i0, i2, i3));
 					inds.push_back(ProtoTuple3<int>(i0, i3, i1));
 				}
-				// close tube seam
+				//// close tube seam
 				else {
 
 					// top cap
@@ -623,7 +607,7 @@ void ProtoTube::calcInds() {
 			}
 			else if (i == frenetFrameLength - 1 && isClosed) {
 				// close bottom cap
-				if (j < crossSectionDetail - 1) {
+				if (j < crossSectionDetail-1) {
 					inds.push_back(ProtoTuple3<int>(i0, i2, static_cast<int>(verts.size()) - 1));
 				}
 				else {

@@ -38,6 +38,9 @@ uniform vec4 specularMaterial;
 uniform vec4 emissiveMaterial;
 uniform float shininess;
 
+//uniform bool isShadowEnabled;
+
+
 
 in VS_OUT
 {

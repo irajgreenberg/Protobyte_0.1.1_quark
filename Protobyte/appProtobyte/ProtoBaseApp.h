@@ -17,6 +17,8 @@
 
 //
 
+#include <thread>
+#include <mutex>
 #include <memory>
 
 // include GLM
@@ -100,6 +102,7 @@ namespace ijg {
 		void _init();
 		void _initUniforms();
 		void _run();
+		//void setViewport(int width, int height);
 		// void concat(); moved down for testing
 
 	protected:
@@ -214,8 +217,11 @@ namespace ijg {
 		
 		// shadow mapping texture id's
 		GLuint shadowBufferID, shadowTextureID;
+		
+		// flag for shadowing
+		bool areShadowsEnabled;
 
-		const int SHADOWMAP_WIDTH = 2048, SHADOWMAP_HEIGHT = 2048;
+		const int SHADOWMAP_WIDTH = 4096, SHADOWMAP_HEIGHT = 4096;
 
 		std::stack <glm::mat4> matrixStack;
 
@@ -243,8 +249,12 @@ namespace ijg {
 		 **********   FUNCTIONS   ***********
 		 ***********************************/
 		// pure virtual funcs require override
-		virtual void init() = 0;
-		virtual void run() = 0;
+		//virtual void init() = 0;
+		//virtual void run() = 0;
+
+		// switched from pure virtual above to enable thread to call member functions
+		virtual void init(){}
+		virtual void run(){}
 
 		virtual bool ProtoBaseApp::createShadowMap();
 
@@ -282,6 +292,8 @@ namespace ijg {
 
 		bool areShadowsOn;
 		void setShadowsOn(bool areShadowsOn);
+		void shadowsOn();
+		void shadowOff();
 
 		// get window properties **READ ONLY**
 		int getWidth()const;
@@ -350,8 +362,10 @@ namespace ijg {
 
 
 		// saving stuff
-		virtual void render(int scaleFactor = 1) = 0; // evntually maybe make pure virtual (ehhh, maybe not)
+		virtual void render(int x=0, int y=0, int scaleFactor = 1); // eventually maybe make pure virtual (ehhh, maybe not)
 		void save(std::string name = "img", int scaleFactor = 1);
+		void threadSave(std::string name, int scaleFactor); // thread safe save with mutex locking
+		std::mutex mtx;
 		//void saveTiles(int rows, int columns);
 		bool stitchTiles(std::string url, int tiles);
 
@@ -426,8 +440,16 @@ namespace ijg {
 		this->top = top;
 	}
 
-	inline void ProtoBaseApp::setShadowsOn(bool areShadowsOn) {
+	inline void ProtoBaseApp::setShadowsOn(bool areShadowsOn) { //not used I believe
 		this->areShadowsOn = areShadowsOn;
+	}
+
+	inline void ProtoBaseApp::shadowsOn(){
+		areShadowsEnabled = true;
+	}
+
+	inline void ProtoBaseApp::shadowOff(){
+		areShadowsEnabled = false;
 	}
 
 
@@ -453,5 +475,9 @@ namespace ijg {
 #define light7 lights.at(7)
 
 }
+
+//inline void ProtoBaseApp::setViewport(int width, int height){
+//	glViewport(0, 0, width, height);
+//}
 
 #endif /* defined(PROTO_BASEAPP_H) */

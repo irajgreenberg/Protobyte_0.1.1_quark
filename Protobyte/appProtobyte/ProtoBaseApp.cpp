@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Ira Greenberg. All rights reserved.
 //
 
+
 #include "ProtoBaseApp.h"
 
 using namespace ijg;
@@ -39,6 +40,7 @@ listener(listener){
 }
 
 void ProtoBaseApp::_init(){
+	areShadowsEnabled = true;
 	//shader = ProtoShader("shader1.vert", "shader1.frag");
 	//shader = ProtoShader("protoShader.vert", "protoShader.frag");
 	shader = ProtoShader("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
@@ -48,12 +50,13 @@ void ProtoBaseApp::_init(){
 	
 	// camera at 11
 	// default inital light
-	light0.setPosition(Vec3f(-5, 5, 6));
+	//light0.setPosition(Vec3f(-1.9, .9, 8));
+	light0.setPosition(Vec3f(0, 1, 4));
 	//light0.setPosition(Vec3f(-14.2, 2.5, 8));
 	light0.setIntensity(Vec3f(1, .85, 1));
 
-	light1.setPosition(Vec3f(1, 6, -2));
-	light1.setIntensity(Vec3f(.3, .3, .3));
+	light1.setPosition(Vec3f(0, 6, 2));
+	light1.setIntensity(Vec3f(.8, .8, .8));
 
 	light2.setPosition(Vec3f(-.3, .3, 1));
 	light2.setIntensity(Vec3f(0, 0, 0));
@@ -77,7 +80,7 @@ void ProtoBaseApp::_init(){
 
 	// START standard transformation matrices: ModelView / Projection / Normal
 	M = glm::mat4(1.0f); // set to identity
-	V = glm::lookAt(glm::vec3(0.0, 0.0, 25.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	V = glm::lookAt(glm::vec3(0.0, 0.0, 15), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 	MV = V * M;
 	N = glm::transpose(glm::inverse(glm::mat3(MV)));
 
@@ -117,9 +120,12 @@ void ProtoBaseApp::_init(){
 
 	// START Shadow Map Matrices
 	L_MV = glm::lookAt(glm::vec3(light0.getPosition().x, light0.getPosition().y, light0.getPosition().z), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-	L_P = glm::perspective(75.0f, 1.0f, .10f, 325.0f);
+	//L_P = glm::perspective(45.0f, 1.0f, .10f, 1000.0f);
+
+	L_P = glm::frustum(-.1f, .1f, -.1f, .1f, .1f, 2000.0f);
+
+
 	//L_P = glm::perspective(50.0f, 1.0f, .10f, 325.0f);
-	//L_P = glm::ortho<float>(0.0f, 10, 10, 0.0f, 0.1f, 100.0f);
 	//L_B = glm::scale(glm::translate(glm::mat4(1), glm::vec3(.5, .5, .5)), glm::vec3(.5, .5, .5));
 
 	//L_B = glm::mat4(1.0);
@@ -147,6 +153,8 @@ void ProtoBaseApp::_init(){
 	createShadowMap();
 
 	_initUniforms();
+
+	init();
 }
 
 bool ProtoBaseApp::createShadowMap(){
@@ -237,8 +245,6 @@ void ProtoBaseApp::_initUniforms(){
 
 void ProtoBaseApp::_run(){
 	
-	
-
 
 	//global ambient
 	glUniform3fv(globalAmbient_U, 1, &globalAmbient.r);
@@ -255,7 +261,7 @@ void ProtoBaseApp::_run(){
 	// I thought I needed this to reset matrix each frame?
 	M = glm::mat4(1.0f);
 		
-	V = glm::lookAt(glm::vec3(0.0, 0.0, 11.5f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	V = glm::lookAt(glm::vec3(0.0, 0.0, 16.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 	//M = T * R * S;
 	MV = V * M;
 	MVP = P * MV;
@@ -278,11 +284,159 @@ void ProtoBaseApp::_run(){
 	glUniformMatrix4fv(MVP_U, 1, GL_FALSE, &MVP[0][0]);
 	glUniformMatrix3fv(N_U, 1, GL_FALSE, &N[0][0]);
 
+	render();
+	
+	//// if shadowing is enabled do double pass with shadow map framebuffer
+	//if (areShadowsEnabled){
+	//	//trace("shadows enabled");
+	//	// bind shadow map framebuffer
+	//	glBindFramebuffer(GL_FRAMEBUFFER, shadowBufferID);
+	//	//clear depth buffer
+	//	glClear(GL_DEPTH_BUFFER_BIT);
+	//	//set viewport to the shadow map view size
+	//	//glViewport(-i*width, -j*height, scaleFactor * width, scaleFactor * height);
+	//	glViewport(0, 0, SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT);
+	//	//glViewport(-2 * SHADOWMAP_WIDTH, -2 * SHADOWMAP_WIDTH, 6 * SHADOWMAP_WIDTH, 6 * SHADOWMAP_HEIGHT);
 
+	//	// enable front face culling for shadowing
+	//	glCullFace(GL_FRONT);
 
+	//	// enables shadow blending in fragment shader
+	//	glUniform1i(shaderPassFlag_U, 1); // controls render pass in shader
+	//	
+	//	// render shadow in firdt pass
+	//	run();
+	//	
+	//	// reset default framebuffer
+	//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//	// not sure what this does
+	//	glDrawBuffer(GL_BACK_LEFT);
+	//	
+	//	// reset default view
+	//	////glViewport(-i*width, -j*height, scaleFactor * width, scaleFactor * height);
+	//	glViewport(0, 0, getWidth(), getHeight());
+	//	//glViewport(-2 * width, -2 * height, 6 * width, 6 * height);
+
+	//	// rest backface culling
+	//	glCullFace(GL_BACK);
+	//	//glDisable(GL_CULL_FACE);
+
+	//	// disable shadoing blending in fragment shader
+	//	glUniform1i(shaderPassFlag_U, 0); // controls render pass in shader
+	//	//glUniform1i(shadowMap_U, 0);
+
+	//	// render scene in second pass
+	//	run();
+	//}
+	//else {
+	//	//trace("shadows not enabled");
+	//	//glClear(GL_DEPTH_BUFFER_BIT); 
+	//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//	glUniform1i(shaderPassFlag_U, 0); // controls render pass in shader
+	//	
+	//	// no shadowing use default run
+	//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//	// not sure what this does
+	//	//glDrawBuffer(GL_BACK_LEFT);
+
+	//	// reset default view
+	//	////glViewport(-i*width, -j*height, scaleFactor * width, scaleFactor * height);
+	//	glViewport(0, 0, getWidth(), getHeight());
+	//	//glViewport(-2 * width, -2 * height, 6 * width, 6 * height);
+
+	//	// rest backface culling
+	//	glCullFace(GL_BACK);
+	//	//glDisable(GL_CULL_FACE);
+
+	//	// disable shadoing blending in fragment shader
+	//	//glUniform1i(shaderPassFlag_U, 0); // controls render pass in shader
+	//	//glUniform1i(shadowMap_U, 0);
+
+	//	// render scene in second pass
+	//	run();
+	//}
 
 }
 
+void ProtoBaseApp::render(int x, int y, int scaleFactor) {
+	// if shadowing is enabled do double pass with shadow map framebuffer
+	if (areShadowsEnabled){
+		//trace("shadows enabled");
+		// bind shadow map framebuffer
+		glBindFramebuffer(GL_FRAMEBUFFER, shadowBufferID);
+		//clear depth buffer
+		glClear(GL_DEPTH_BUFFER_BIT);
+		//set viewport to the shadow map view size
+		//glViewport(-i*width, -j*height, scaleFactor * width, scaleFactor * height);
+		//glViewport(-i*width, -j*height, scaleFactor * width, scaleFactor * height);
+		glViewport(0, 0, SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT);
+		//glViewport(x*SHADOWMAP_WIDTH, y*SHADOWMAP_HEIGHT, scaleFactor * SHADOWMAP_WIDTH, scaleFactor *  SHADOWMAP_HEIGHT);
+		//glViewport(-2 * SHADOWMAP_WIDTH, -2 * SHADOWMAP_WIDTH, 6 * SHADOWMAP_WIDTH, 6 * SHADOWMAP_HEIGHT);
+
+		// enable front face culling for shadowing
+		glCullFace(GL_FRONT);
+
+		// enables shadow blending in fragment shader
+		glUniform1i(shaderPassFlag_U, 1); // controls render pass in shader
+
+		// render shadow in firdt pass
+		run();
+
+		// reset default framebuffer
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// not sure what this does
+		glDrawBuffer(GL_BACK_LEFT);
+
+		// reset default view
+		////glViewport(-i*width, -j*height, scaleFactor * width, scaleFactor * height);
+		glViewport(x*width, y*height, scaleFactor * width, scaleFactor * height);
+		//glViewport(-2 * width, -2 * height, 6 * width, 6 * height);
+
+		// rest backface culling
+		glCullFace(GL_BACK);
+		//glDisable(GL_CULL_FACE);
+
+		// disable shadoing blending in fragment shader
+		glUniform1i(shaderPassFlag_U, 0); // controls render pass in shader
+		//glUniform1i(shadowMap_U, 0);
+
+		// render scene in second pass
+		run();
+	}
+	else {
+		//trace("shadows not enabled");
+		//glClear(GL_DEPTH_BUFFER_BIT); 
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glUniform1i(shaderPassFlag_U, 0); // controls render pass in shader
+
+		// no shadowing use default run
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// not sure what this does
+		//glDrawBuffer(GL_BACK_LEFT);
+
+		// reset default view
+		////glViewport(-i*width, -j*height, scaleFactor * width, scaleFactor * height);
+		//glViewport(0, 0, getWidth(), getHeight());
+		glViewport(x*width, y*height, scaleFactor * width, scaleFactor * height);
+		//glViewport(-2 * width, -2 * height, 6 * width, 6 * height);
+
+		// rest backface culling
+		glCullFace(GL_BACK);
+		//glDisable(GL_CULL_FACE);
+
+		// disable shadoing blending in fragment shader
+		//glUniform1i(shaderPassFlag_U, 0); // controls render pass in shader
+		//glUniform1i(shadowMap_U, 0);
+
+		// render scene in second pass
+		run();
+	}
+
+}
 
 // gen funcs
 // overloaded background
@@ -617,6 +771,12 @@ void ProtoBaseApp::export(std::vector<Tup4v> vs, Format type){
 //}
 
 void ProtoBaseApp::save(std::string name, int scaleFactor){
+	
+
+	//ProtoBaseApp pba;
+	//std::thread t(&ProtoBaseApp::threadSave, &pba, name, scaleFactor);
+	//t.join();
+
 
 
 #if defined (_WIN32) || defined(_WIN64)
@@ -639,6 +799,8 @@ void ProtoBaseApp::save(std::string name, int scaleFactor){
 	CreateDirectory(directory.c_str(), 0);
 
 
+	/*trace("width =", width);
+	trace("height =", height);*/
 	for (int i = 0; i < scaleFactor; ++i){
 		for (int j = 0; j < scaleFactor; ++j){
 			//trace("in drawToFrameBuffer");
@@ -646,8 +808,8 @@ void ProtoBaseApp::save(std::string name, int scaleFactor){
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 			//From: http://stackoverflow.com/questions/12157646/how-to-render-offscreen-on-opengl
 
-			glViewport(-i*width, -j*height, scaleFactor * width, scaleFactor * height);
-			this->render();
+			//glViewport(-i*width, -j*height, scaleFactor * width, scaleFactor * height);
+			render(-i, -j, scaleFactor);
 
 			//after drawing
 			std::vector<uint8_t> data(width * height * 3);
@@ -711,8 +873,112 @@ void ProtoBaseApp::save(std::string name, int scaleFactor){
 	bool isOk = stitchTiles(directory, scaleFactor);
 }
 
+//void ProtoBaseApp::threadSave(std::string name, int scaleFactor){
+//	//mtx.lock();
+//#if defined (_WIN32) || defined(_WIN64)
+//	time_t now = time(0);
+//	tm ltm;
+//	localtime_s(&ltm, &now);
+//#else // os x uses localtime instead of localtime_s
+//	time_t now = time(0);
+//	tm* ltm = localtime(&now);
+//#endif
+//
+//	// thanks: http://stackoverflow.com/questions/191757/c-concatenate-string-and-int, DannyT
+//	std::stringstream stream;
+//	stream << (ltm.tm_year + 1900) << "_" << (ltm.tm_mon + 1) << "_" << ltm.tm_mday << "_" << ltm.tm_hour << "_" << ltm.tm_min << "_" << ltm.tm_sec;
+//
+//
+//
+//	std::string url = ProtoUtility::getPathToOutput();
+//	std::string directory = url + name + "_" + stream.str();
+//	CreateDirectory(directory.c_str(), 0);
+//
+//
+//	for (int i = 0; i < scaleFactor; ++i){
+//		for (int j = 0; j < scaleFactor; ++j){
+//			
+//			//trace("in drawToFrameBuffer");
+//			//glClearColor(0, 0, 0, 1.0f);
+//			trace("width = ", width);
+//			trace("height = ", height);
+//			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+//			//From: http://stackoverflow.com/questions/12157646/how-to-render-offscreen-on-opengl
+//
+//			glViewport(-i*width, -j*height, scaleFactor * width, scaleFactor * height);
+//			//this->render();
+//			render();
+//
+//			//after drawing
+//			std::vector<uint8_t> data(width * height * 3);
+//			mtx.lock(); 
+//			glReadPixels(0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, &data[0]);
+//			mtx.unlock();
+//
+//
+//
+//#if defined (_WIN32) || defined(_WIN64)
+//			time_t now = time(0);
+//			tm ltm;
+//			localtime_s(&ltm, &now);
+//#else // os x uses localtime instead of localtime_s
+//			time_t now = time(0);
+//			tm* ltm = localtime(&now);
+//#endif
+//
+//
+//			// FROM http://stackoverflow.com/questions/5844858/how-to-take-screenshot-in-opengl
+//			// Convert to FreeImage format & save to file
+//			FIBITMAP* image = FreeImage_ConvertFromRawBits(&data[0], width, height, 3 * width, 24, 0xFF0000, 0x00FF00, 0x0000FF, false);
+//
+//
+//			// thanks: http://stackoverflow.com/questions/191757/c-concatenate-string-and-int, DannyT
+//			//std::stringstream stream;
+//#if defined (_WIN32) || defined(_WIN64)
+//			// stream << (ltm.tm_year + 1900) << "_" << (ltm.tm_mon + 1) << "_" << ltm.tm_mday << "_" << ltm.tm_hour << "_" << ltm.tm_min << "_" << ltm.tm_sec;
+//			// c++ 11 conversion form num to string
+//			//std::string url = "\\Users\\Ira\\Desktop\\ProtoJucnusEffusus01_stills\\" + name + "_" + std::to_string(i*scaleFactor+j) + ".jpg";
+//
+//			// ensure no single digit nums, for easy sorting
+//			std::string imgNum;
+//
+//			if (i*scaleFactor + j < 10){
+//				imgNum = "00" + std::to_string(i*scaleFactor + j);
+//			}
+//			else if (i*scaleFactor + j < 100){
+//				imgNum = "0" + std::to_string(i*scaleFactor + j);
+//			}
+//			else {
+//				imgNum = std::to_string(i*scaleFactor + j);
+//			}
+//
+//			std::string tileURL = directory + "\\" + name + "_" + imgNum + ".jpg";
+//#else
+//			// stream << (ltm->tm_year + 1900) << "_" << (ltm->tm_mon + 1) << "_" << ltm->tm_mday << "_" << ltm->tm_hour << "_" << ltm->tm_min << "_" << ltm->tm_sec;
+//			// c++ 11 conversion form num to string
+//			std::string url = "/Users/33993405/Desktop/ProtoJucnusEffusus01_stills/" + namme + "_" + std::to_string(i*scaleFactor + j) + ".jpg";
+//#endif
+//
+//			FreeImage_Save(FIF_JPEG, image, tileURL.c_str(), 0);
+//
+//			// Free resources
+//			FreeImage_Unload(image);
+//
+//
+//			// Return to onscreen rendering:
+//			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+//			
+//		}
+//	}
+//
+//	//trace("ProtoUtility::getPath() =", ProtoUtility::getPath());
+//	bool isOk = stitchTiles(directory, scaleFactor);
+//
+//	//mtx.unlock();
+//}
+
 bool ProtoBaseApp::stitchTiles(std::string url, int tiles){
-	trace(" url =", url);
+	//trace(" url =", url);
 	url += "\\";
 	std::vector<std::string> fileNames = ProtoUtility::getFileNames(url);
 	for (size_t i = 0; i < fileNames.size(); ++i){
@@ -723,7 +989,7 @@ bool ProtoBaseApp::stitchTiles(std::string url, int tiles){
 	// 1. grab all file names in directory and store in store in vector
 	// 2. sort by name
 	// 3. grab images by names
-	// 4. copy and paste tiles into compostie image
+	// 4. copy and paste tiles into composite image
 	// 5. save image back to disk.
 
 	FIBITMAP *compositeImg = FreeImage_Allocate(width*tiles, height*tiles, 24, 0xFF0000, 0x00FF00, 0x0000FF);

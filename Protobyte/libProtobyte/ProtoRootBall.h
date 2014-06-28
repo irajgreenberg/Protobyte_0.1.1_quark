@@ -42,7 +42,7 @@ namespace ijg {
 		int rootSegments;
 		Tup2f rootRadii;
 		std::vector<std::string> textureURLs;
-		std::vector<int> textureScales;
+		std::vector<Vec2f> textureScales;
 		std::vector<Tube> roots;
 
 		// unparameterized in cstr's
@@ -66,19 +66,19 @@ namespace ijg {
 		
 		// texture
 		ProtoRootBall(const Vec3f& pos, const Vec3f& rot, const Dim3f& size,
-			const ProtoColor4f& col4, int rootCount, int rootSegments, float turbulence, const Tup2f& rootRadii, const std::string& textureURL, int textureScale);
+			const ProtoColor4f& col4, int rootCount, int rootSegments, float turbulence, const Tup2f& rootRadii, const std::string& textureURL, const Vec2f& textureScale);
 
 		// texture, multi-colors
 		ProtoRootBall(const Vec3f& pos, const Vec3f& rot, const Dim3f& size,
-			const std::vector<ProtoColor4f>& col4s, int rootCount, int rootSegments, float turbulence, const Tup2f& rootRadii, const std::string& textureURL, int textureScale);
+			const std::vector<ProtoColor4f>& col4s, int rootCount, int rootSegments, float turbulence, const Tup2f& rootRadii, const std::string& textureURL, const Vec2f& textureScale);
 
 		// multi-textures, multi-colors
 		ProtoRootBall(const Vec3f& pos, const Vec3f& rot, const Dim3f& size,
-			const std::vector<ProtoColor4f>& col4s, int rootCount, int rootSegments, float turbulence, const Tup2f& rootRadii, const std::vector<std::string>& textureURLs, int textureScale);
+			const std::vector<ProtoColor4f>& col4s, int rootCount, int rootSegments, float turbulence, const Tup2f& rootRadii, const std::vector<std::string>& textureURLs, const Vec2f& textureScale);
 
 		// multi-textures, multi-colors, multi-texture scales
 		ProtoRootBall(const Vec3f& pos, const Vec3f& rot, const Dim3f& size,
-			const std::vector<ProtoColor4f>& col4s, int rootCount, int rootSegments, float turbulence, const Tup2f& rootRadii, const std::vector<std::string>& textureURLs, std::vector<int> textureScales);
+			const std::vector<ProtoColor4f>& col4s, int rootCount, int rootSegments, float turbulence, const Tup2f& rootRadii, const std::vector<std::string>& textureURLs, std::vector<Vec2f> textureScales);
 
 		void display(Geom3::RenderMode render = SURFACE, float pointSize = .5);
 		// getters / setters
@@ -101,12 +101,12 @@ namespace ijg {
 		const std::string& getTextureURL() const; 
 		const std::vector<std::string>& getTextureURLs() const;
 
-		void setTextureScale(int textureScale); // set 1st tex scl
-		void setTextureScales(int textureScale); // set all tex scls
-		void setTextureScales(const std::vector<int>& textureScales);
+		void setTextureScale(const Vec2f& textureScale); // set 1st tex scl
+		void setTextureScales(const Vec2f& textureScale); // set all tex scls
+		void setTextureScales(const std::vector<Vec2f>& textureScales);
 		
-		int getTextureScale() const; 
-		const std::vector<int>& getTextureScales() const;
+		Vec2f getTextureScale() const;
+		const std::vector<Vec2f>& getTextureScales() const;
 
 		void setTransformFunction(const TransformFunction& transform);
 		const TransformFunction& getTransformFunction() const;
@@ -184,30 +184,30 @@ namespace ijg {
 		return textureURLs;
 	}
 
-	inline void ProtoRootBall::setTextureScale(int textureScale){
+	inline void ProtoRootBall::setTextureScale(const Vec2f& textureScale){
 		for (int i = 0; i < rootCount; ++i){
 			if (i == 0)
 				textureScales.push_back(textureScale);
 			else 
-				textureScales.push_back(1);
+				textureScales.push_back(Vec2f(1));
 		}
 	}
 
-	inline void ProtoRootBall::setTextureScales(int textureScale){
+	inline void ProtoRootBall::setTextureScales(const Vec2f& textureScale){
 		for (int i = 0; i < rootCount; ++i){
 				textureScales.push_back(textureScale);
 		}
 	}
 
-	inline void ProtoRootBall::setTextureScales(const std::vector<int>& textureScales){
+	inline void ProtoRootBall::setTextureScales(const std::vector<Vec2f>& textureScales){
 		this->textureScales = textureScales;
 	}
 
-	inline int ProtoRootBall::getTextureScale() const{
+	inline Vec2f ProtoRootBall::getTextureScale() const{
 		return textureScales.at(0);
 	}
 
-	inline const std::vector<int>& ProtoRootBall::getTextureScales() const{
+	inline const std::vector<Vec2f>& ProtoRootBall::getTextureScales() const{
 		return textureScales;
 	}
 

@@ -26,6 +26,7 @@ This class is part of the group common (update)
 
 #include <iostream>
 #include "appProtobyte/ProtoBaseApp.h"
+#include "libProtobyte/ProtoRootBall.h"
 
 
 using namespace ijg;
@@ -36,16 +37,17 @@ public:
 	void run();
 
 
-	void render(int scaleFactor = 1);
-
-
 	ProtoGroundPlane plane, ground;
-	const static int TUBE_COUNT = 15;
+	const static int TUBE_COUNT = 4;
 	Tube tubes[TUBE_COUNT];
 	static const int W = 4;
 	static const int H = 4;
 	static const int D = 4;
 	Toroid toroids[W*H*D];
+
+	
+	const static int ROOTBALL_COUNT = 56;
+	ProtoRootBall rootBalls[ROOTBALL_COUNT];
 
 private:
 	

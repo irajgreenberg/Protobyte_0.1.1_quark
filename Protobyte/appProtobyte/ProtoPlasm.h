@@ -61,6 +61,8 @@ namespace ijg {
     class ProtoPlasm {
         
     public:
+		//friend void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+
         int frameCount;
         float frameRate;
         
@@ -72,8 +74,8 @@ namespace ijg {
         
     private:
         
-        void initSFMLInit();
-        void initSFMLRun();
+		void initGLFW();
+        void runGLFW();
         
         // cross-platform SFML Window
         //sf::Window* window;
@@ -88,6 +90,8 @@ namespace ijg {
         int appWidth;
         int appHeight;
         std::string appTitle;
+
+		
     };
 
    
