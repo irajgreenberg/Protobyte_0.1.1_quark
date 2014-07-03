@@ -249,12 +249,13 @@ namespace ijg {
 		 **********   FUNCTIONS   ***********
 		 ***********************************/
 		// pure virtual funcs require override
-		//virtual void init() = 0;
-		//virtual void run() = 0;
+		virtual void init() = 0;
+		virtual void run() = 0;
+		virtual void display() = 0;
 
 		// switched from pure virtual above to enable thread to call member functions
-		virtual void init(){}
-		virtual void run(){}
+	/*	virtual void init(){}
+		virtual void run(){}*/
 
 		virtual bool ProtoBaseApp::createShadowMap();
 

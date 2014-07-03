@@ -160,14 +160,14 @@ void ProtoRootBall::update(){
 			theta += PI / 15.0f;
 		}
 
-		rootSplines.push_back(Spline3(cps, 3, false, .5));
+		rootSplines.push_back(Spline3(cps, 4, false, .5));
 		
 		//const Vec3f& pos, const Vec3f& rot, const ProtoDimension3f& size, const ProtoColor4f& col4, const ProtoSpline3& path, float radius, int crossSectionDetail, bool isClosed
 		//trace("2 transform =", transform);
-		roots.push_back(ProtoTube(Vec3f(), Vec3f(), Dim3f(1), col4s.at(i), rootSplines.at(i), .09, 6, transform, true, textureURLs.at(i), Vec2f(1, .02)));
-		roots.at(i).setShininess(int(random(1, 7)));
+		roots.push_back(ProtoTube(Vec3f(), Vec3f(), Dim3f(1), col4s.at(i), rootSplines.at(i), .09, 12, transform, true, textureURLs.at(i), Vec2f(1, .01)));
+		roots.at(i).setShininess(int(random(6, 30)));
 		roots.at(i).setBumpMap(textureURLs.at(i));
-		roots.at(i).setSpecularMaterial(Col4f(1, .9, 1, 1.0));
+		roots.at(i).setSpecularMaterial(Col4f(.8, .7, 1, 1.0));
 		//roots.at(i).textureOn();
 		//roots.at(i).setTextureScale(textureScales.at(i));
 	}

@@ -35,10 +35,11 @@ class rootBallStudy01 : public ProtoBaseApp {
 public:
 	void init();
 	void run();
+	void display();
 
 
 	ProtoGroundPlane plane, ground;
-	const static int TUBE_COUNT = 4;
+	const static int TUBE_COUNT = 12;
 	Tube tubes[TUBE_COUNT];
 	static const int W = 4;
 	static const int H = 4;
@@ -46,7 +47,7 @@ public:
 	Toroid toroids[W*H*D];
 
 	
-	const static int ROOTBALL_COUNT = 56;
+	const static int ROOTBALL_COUNT = 22;
 	ProtoRootBall rootBalls[ROOTBALL_COUNT];
 
 private:

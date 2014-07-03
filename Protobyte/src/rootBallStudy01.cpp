@@ -5,14 +5,15 @@
 
 
 float theta5 = 0;
+float theta = 0;
 
 void rootBallStudy01::init() {
-
+	shadowsOn();
 	
 	TransformFunction t2 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(.14f, .22f), 80); // local, so can't be sent as reference
 	
 	// wall
-	plane = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(1, 1, 1, 1), 1, 1, "white_tile.jpg");
+	plane = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(0, 0, 0, 1), 1, 1, "white_tile.jpg");
 	//plane.textureOn();
 	plane.setBumpMap("white_tile.jpg");
 	//plane.loadBumpMapTexture("shipPlate_normal.jpg");
@@ -32,13 +33,22 @@ void rootBallStudy01::init() {
 	ground.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
 	ground.setShininess(3);
 
-	std::string texs[] = { "pebbles.jpg", "gold_foil2.jpg", "vascular.jpg", "greenCrocSkin.jpg", "pink2.jpg", "metal_screwHeads.jpg", "woodPlank.jpg", "metal_blue.jpg", "shipPlate_yellow.jpg", "reptile2_invert.jpg", "corroded_metal.jpg", "giraffe.jpg", "shipPlate.jpg", "metal_grate.jpg" }; 
+	//http://1.bp.blogspot.com/-x0fmAALwyPM/UmpNqLMJfhI/AAAAAAAAEsE/JugrjQr0yRs/s1600/Seamless+tileable+reptile+snake+alien+frog+skin+texture.jpg
+	//std::string texs[] = { "pebbles.jpg", "gold_foil2.jpg", "vascular.jpg", "greenCrocSkin.jpg", "pink2.jpg", "metal_screwHeads.jpg", "woodPlank.jpg", "metal_blue.jpg", "shipPlate_yellow.jpg", "reptile2_invert.jpg", "corroded_metal.jpg", "giraffe.jpg", "shipPlate.jpg", "metal_grate.jpg" }; 
+
+	const int TEXTURE_COUNT = 2;
+	std::string texs[] = { "skin01.jpg", "skin02.jpg", "skin03.jpg" };
 	
 
 		for (int i = 0; i < ROOTBALL_COUNT; ++i){
-			int sub = int(random(14));
+			int sub = int(random(TEXTURE_COUNT));
 			rootBalls[i] = RootBall(Vec3f(), Vec3f(), Dim3f(2.55f), Col4f(.9f), 1, 150, .3, Tup2f(.2, .5), texs[sub], 14);
-			TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(.06f, .35f), int(random(3, 65))); // local, so can't be sent as reference
+			float sz = 0;
+			if (i % 7 == 0)
+				sz = float(random(1.15, 1.65));
+			else
+				sz = float(random(.02, .3));
+			TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(sz, sz), int(random(3, 65))); // local, so can't be sent as reference
 			rootBalls[i].setTransformFunction(t1);
 			rootBalls[i].setTextureScale(Vec2f(1, .0075));
 		}
@@ -50,26 +60,38 @@ void rootBallStudy01::init() {
 		//vs.insert(vs.end(), temp2.begin(), temp2.end());
 		//export(vs, STL);
 		//shadowsOn();
+
+
+
+		//const int cps = 14;
+		//float len = 3;
+		//float seg = len / cps;
+
+		//std::vector<Vec3> vecs;
+		//for (int i = 0; i < cps; ++i){
+		//	vecs.push_back(Vec3(random(-.03, .03), seg*i, random(-.03, .03)));
+		//}
+
+		//for (int i = 0; i < TUBE_COUNT; ++i){
+		//	int sub = int(random(14));
+		//	tubes[i] = Tube(Spline3(vecs, 5, false, 1), .2, 12, ProtoTransformFunction(ProtoTransformFunction::SINUSOIDAL, Tup2f(random(.2, .75), random(.75, 1.5)), int(random(2, 12))), true, texs[sub]);
+		//	tubes[i].setBumpMap(texs[sub]);
+		//	tubes[i].setTextureScale(Vec2f(3, .2));
+		//	tubes[i].setSpecularMaterial(Col4f(1, 1, 1, 1.0));
+		//	tubes[i].setShininess(4);
+		//}
+		//save("roots", 7);
 }
 
 
-
-
 void rootBallStudy01::run() {
+	save("roots", 4);
+}
+
+// update screen
+void rootBallStudy01::display(){
 	setBackground(0);
-
-	// save high resolution rendering
-	// currently only works with max 999 tiles
-	//
-	//std::thread t(&ProtoBaseApp::render);
-	//t.join();
-	//render();
-
-	// wall
-	
-
 	static int frameCounter = 0;
-	
 
 	// shadowsOn();
 	// shape display()
@@ -87,8 +109,6 @@ void rootBallStudy01::run() {
 	//ground.display();
 	//pop();
 
-
-
 	push();
 	translate(-1, sin(theta5) * 2, 0);
 	scale(4.75);
@@ -100,9 +120,17 @@ void rootBallStudy01::run() {
 	}
 	pop();
 
-	if (frameCounter++ < 1){
-		save("roots", 14);
-		/*std::thread t(&this->save, "roots", 13);
-		t.join();*/
+	/*push();
+	rotate(-getFrameCount()*.06, 0, 1, 0);
+	theta = 0;
+	for (int i = 0; i < TUBE_COUNT; ++i){
+	push();
+	translate(cos(theta)*6.2, -8, sin(theta)*6.2);
+	scale(3);
+	rotate(getFrameCount()*.12, 0, 1, 0);
+	tubes[i].display();
+	pop();
+	theta += TWO_PI / TUBE_COUNT;
 	}
+	pop(); */
 }
