@@ -27,30 +27,37 @@
 #include "ProtoVector3.h"
 
 namespace ijg {
-    class ProtoQuaternion {
-       
 
+	class ProtoQuaternion;
+	typedef ProtoQuaternion Quaternion;
+
+	/*****************************************************/
+	/*            Non-Member Ops & Functions             */
+	/*****************************************************/
+	ProtoQuaternion operator*(const ProtoQuaternion& lhs, const ProtoQuaternion& rhs); // need to implement
+	
+	class ProtoQuaternion {
     public:
         // fields
         float x, y, z, w;
         
         // constructor
-        ProtoQuaternion(const ProtoVector3& axis = ProtoVector3(0, 0, 1), float theta = 0);
+		ProtoQuaternion(const Vec3& axis = Vec3(0, 0, 1), float theta = 0);
         ProtoQuaternion(float x, float y, float z, float w);
         //void rotate(ProtoVector3 v);
-        ProtoVector3 getRotate(const ProtoVector3& v); // return
-        void rotate(ProtoVector3& v); // update in place
+		Vec3 getRotate(const Vec3& v); // return
+		void rotate(Vec3& v); // update in place
         float mag() const;
         void normalize();
         
-        friend ProtoQuaternion& operator*(const ProtoQuaternion& q); // need to implement
+       
         void operator*=(const ProtoQuaternion& q); // need to implement
         
-        void setAxis(const ProtoVector3& axis);
-        const ProtoVector3& getAxis() const;
+		void setAxis(const Vec3& axis);
+		const Vec3& getAxis() const;
         
     private:
-        ProtoVector3 axis;
+		Vec3 axis;
         float theta;
 
     };

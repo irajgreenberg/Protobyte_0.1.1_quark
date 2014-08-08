@@ -97,7 +97,11 @@ ProtoRootBall::ProtoRootBall(const Vec3f& pos, const Vec3f& rot, const Dim3f& si
 
 void ProtoRootBall::init(){
 	// default transform;
-	transform = ProtoTransformFunction(ProtoTransformFunction::SINUSOIDAL, Tup2f(random(.4, rootRadii.elem0), random(rootRadii.elem0, rootRadii.elem1)), 50);
+//	transform = ProtoTransformFunction(ProtoTransformFunction::SINUSOIDAL, Tup2f
+//(random(.01, rootRadii.elem0), random(rootRadii.elem0, rootRadii.elem1)), 145);
+
+	//transform = ProtoTransformFunction(ProtoTransformFunction::SINUSOIDAL, Tup2f
+	//	(.2, 1.5), 145);
 
 	//float theta = 0;
 	//float radius = .107;
@@ -165,9 +169,11 @@ void ProtoRootBall::update(){
 		//const Vec3f& pos, const Vec3f& rot, const ProtoDimension3f& size, const ProtoColor4f& col4, const ProtoSpline3& path, float radius, int crossSectionDetail, bool isClosed
 		//trace("2 transform =", transform);
 		roots.push_back(ProtoTube(Vec3f(), Vec3f(), Dim3f(1), col4s.at(i), rootSplines.at(i), .09, 12, transform, true, textureURLs.at(i), Vec2f(1, .01)));
-		roots.at(i).setShininess(int(random(6, 30)));
+		//roots.at(i).setShininess(int(random(6, 30)));
+		roots.at(i).setShininess(int(random(6, 20)));
+		//roots.at(i).setBumpMap(textureURLs.at(i)); 
 		roots.at(i).setBumpMap(textureURLs.at(i));
-		roots.at(i).setSpecularMaterial(Col4f(.8, .7, 1, 1.0));
+		roots.at(i).setSpecularMaterial(Col4f(1, 1, 1, 1.0));
 		//roots.at(i).textureOn();
 		//roots.at(i).setTextureScale(textureScales.at(i));
 	}

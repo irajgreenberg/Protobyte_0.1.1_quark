@@ -26,15 +26,12 @@ This class is part of the group common (update)
 
 void ProtoJuncusEffusus04::init() {
 
-	stitchTiles("C:\\Users\\Ira\\Dropbox\\ira_dev\\Protobyte_0.1.0_quark\\Protobyte\\output\\juncs_2014_4_19_23_36_48\\", 13);
+	stitchTiles("C:\\Users\\Ira\\Dropbox\\ira_dev\\Protobyte_0.1.0_quark\\Protobyte\\output\\roots_2014_7_7_17_9_37\\", 5);
 }
-
-
 void ProtoJuncusEffusus04::run() {
 
 }
 
-void ProtoJuncusEffusus04::render(int scaleFactor){
-
+void ProtoJuncusEffusus04::display(){
 }
 

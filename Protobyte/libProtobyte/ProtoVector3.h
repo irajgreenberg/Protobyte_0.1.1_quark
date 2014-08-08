@@ -129,6 +129,7 @@ namespace ijg {
         ProtoVector3(RandFlag randFlagVal=EXPLICIT);
         ProtoVector3(T xMax, T yMax, T zMax, RandFlag randFlagVal=EXPLICIT);
         ProtoVector3(T xMin, T xMax, T yMin, T yMax, T zMin, T zMax);
+		ProtoVector3(T xyzMax, RandFlag randFlagVal = EXPLICIT);
         
         /*****************************************************/
         /*              Member Overloaded Ops                */
@@ -214,6 +215,17 @@ namespace ijg {
             z = zMax;
         }
     }
+
+	// 1 component arg, optional ijg::randomization
+	template <class T>
+	inline ProtoVector3<T>::ProtoVector3(T xyzMax, RandFlag randFlagVal){
+		if (randFlagVal == RANDOMIZED){
+			x = y = z = ijg::random(xyzMax);
+		}
+		else {
+			x = y = z = yzMax;
+		}
+	}
     
     // ijg::randomized
     template <class T>

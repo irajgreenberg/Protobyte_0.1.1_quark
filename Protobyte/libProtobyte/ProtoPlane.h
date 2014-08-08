@@ -1,4 +1,4 @@
-/*!  \brief  ProtoPlane.h: Simple plane
+/*!  \brief  ProtoPlane.h: Simple Plane
  ProtoPlane.h
  Protobyte Library v02
  
@@ -21,8 +21,8 @@
  \sa NO LINK
  */
 
-#ifndef PROTO_PLANE_H
-#define	PROTO_PLANE_H
+#ifndef PROTO_Plane_H
+#define	PROTO_Plane_H
 
 #include "ProtoGeom3.h"
 
@@ -34,7 +34,7 @@ namespace ijg {
 	
 	class ProtoPlane : public ProtoGeom3 {
     public:
-        friend std::ostream& operator<<(std::ostream& out, const ProtoPlane& plane);
+        friend std::ostream& operator<<(std::ostream& out, const ProtoPlane& Plane);
 
         ProtoPlane();
         
@@ -80,5 +80,5 @@ namespace ijg {
     }
 }
 
-#endif	/* PROTO_PLANE_H */
+#endif	/* PROTO_Plane_H */
 

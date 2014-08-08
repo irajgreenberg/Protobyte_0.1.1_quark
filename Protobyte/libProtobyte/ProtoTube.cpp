@@ -474,7 +474,7 @@ void ProtoTube::calcVerts() {
 
 
 			float z = ijg::random(-perturbation.z, perturbation.z);
-			theta += TWO_PI / (crossSectionDetail);
+			theta += TWO_PI / (float(crossSectionDetail)-random(.98, 1.0)); // added -.99 to avoid seams 7/27
 
 			if (i == 0 && j == 0) {
 				//trace("vecs.at(0) =", vecs.at(0));

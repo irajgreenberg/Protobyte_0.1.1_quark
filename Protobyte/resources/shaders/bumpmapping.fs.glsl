@@ -103,7 +103,7 @@ void main(void)
 		//darken the diffuse component apprpriately
 
 
-		diffuse = mix(diffuse, diffuse*shadow, 0.5); 
+		diffuse = mix(diffuse, diffuse*shadow, 0.4); 
 	}
 
     // Final color is diffuse + specular

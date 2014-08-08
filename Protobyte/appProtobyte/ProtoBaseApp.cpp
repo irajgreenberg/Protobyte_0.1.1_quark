@@ -51,11 +51,11 @@ void ProtoBaseApp::_init(){
 	// camera at 11
 	// default inital light
 	//light0.setPosition(Vec3f(-1.9, .9, 8));
-	light0.setPosition(Vec3f(0, 1, 4));
+	light0.setPosition(Vec3f(-1, 1.5, 8));
 	//light0.setPosition(Vec3f(-14.2, 2.5, 8));
 	light0.setIntensity(Vec3f(1, .85, 1));
 
-	light1.setPosition(Vec3f(0, 6, 2));
+	light1.setPosition(Vec3f(0, 6, -2));
 	light1.setIntensity(Vec3f(.8, .8, .8));
 
 	light2.setPosition(Vec3f(-.3, .3, 1));
@@ -76,11 +76,17 @@ void ProtoBaseApp::_init(){
 	light7.setPosition(Vec3f(0, 0, 1));
 	light7.setIntensity(Vec3f(0, 0, 0));
 
+	// mouse
+	mouseX = mouseY = mouseLastFrameX = mouseLastFrameY = 0;
+	//arcball
+	arcballRotX = arcballRotY = arcballRotXLast, arcballRotYLast = mouseXIn = mouseYIn = 0;
+	//isArcballOn = false;
+
 	glViewport(0, 0, width, height);
 
 	// START standard transformation matrices: ModelView / Projection / Normal
 	M = glm::mat4(1.0f); // set to identity
-	V = glm::lookAt(glm::vec3(0.0, 0.0, 15), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	V = glm::lookAt(glm::vec3(0.0, 0.0, 60), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 	MV = V * M;
 	N = glm::transpose(glm::inverse(glm::mat3(MV)));
 
@@ -243,7 +249,25 @@ void ProtoBaseApp::_initUniforms(){
 
 }
 
-void ProtoBaseApp::_run(){
+void ProtoBaseApp::_run(const Vec2f& mousePos/*, int mouseBtn, int key*/){
+	mouseX = mousePos.x;
+	mouseY = mousePos.y;
+	// mouse is moving/dragging
+	if (Vec2(mouseX, mouseY) - Vec2(mouseLastFrameX, mouseLastFrameY) != Vec2(0, 0)){
+		if (isMousePressed){
+
+			// arcball
+			//if (isArcballOn){
+				arcballRotY = mouseX - mouseXIn + arcballRotYLast;
+				arcballRotX = mouseY - mouseYIn + arcballRotXLast;
+			//}
+
+			mouseDragged();
+		}
+		else {
+			mouseMoved();
+		}
+	}
 
 	//global ambient
 	glUniform3fv(globalAmbient_U, 1, &globalAmbient.r);
@@ -260,7 +284,7 @@ void ProtoBaseApp::_run(){
 	// I thought I needed this to reset matrix each frame?
 	M = glm::mat4(1.0f);
 
-	V = glm::lookAt(glm::vec3(0.0, 0.0, 16.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	V = glm::lookAt(glm::vec3(0.0, 0.0, 18.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 	//M = T * R * S;
 	MV = V * M;
 	MVP = P * MV;
@@ -285,9 +309,22 @@ void ProtoBaseApp::_run(){
 
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	//glViewport(0, 0, width, height);
+
+	//if (isArcballOn){
+		//push();
+		//rotate(arcballRotX, 1, 0, 0);
+		//rotate(arcballRotY, 0, 1, 0);
+	//}
+
 	run();
+	push();
 	display();
+	pop();
 	render();
+
+	//if (isArcballOn){
+		//pop();
+	//}
 
 
 	//// if shadowing is enabled do double pass with shadow map framebuffer
@@ -361,12 +398,14 @@ void ProtoBaseApp::_run(){
 	//	// render scene in second pass
 	//	run();
 	//}
-
+	mouseLastFrameX = mouseX;
+	mouseLastFrameY = mouseY;
 }
 
 void ProtoBaseApp::render(int x, int y, int scaleFactor) {
 	// if shadowing is enabled do double pass with shadow map framebuffer
 	if (areShadowsEnabled){
+		//glEnable(GL_CULL_FACE);
 		//trace("shadows enabled");
 		// bind shadow map framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowBufferID);
@@ -389,6 +428,7 @@ void ProtoBaseApp::render(int x, int y, int scaleFactor) {
 		display();
 
 		// rest backface culling
+		//glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		//glDisable(GL_CULL_FACE);
 
@@ -404,7 +444,7 @@ void ProtoBaseApp::render(int x, int y, int scaleFactor) {
 
 
 
-		// disable shadoing blending in fragment shader
+		// disable shadowing blending in fragment shader
 		glUniform1i(shaderPassFlag_U, 0); // controls render pass in shader
 		//glUniform1i(shadowMap_U, 0);
 
@@ -431,7 +471,7 @@ void ProtoBaseApp::render(int x, int y, int scaleFactor) {
 
 		// rest backface culling
 		glCullFace(GL_BACK);
-		//glDisable(GL_CULL_FACE);
+		//
 
 		// disable shadoing blending in fragment shader
 		glUniform1i(shaderPassFlag_U, 0); // controls render pass in shader
@@ -441,6 +481,44 @@ void ProtoBaseApp::render(int x, int y, int scaleFactor) {
 		display();
 	}
 
+}
+
+// event behavior
+void ProtoBaseApp::setMouseButton(int mouseAction, int mouseButton, int mouseMods){
+	if (mouseAction == 1){
+		isMousePressed = true;
+
+		// arcball
+			mouseXIn = mouseX;
+			mouseYIn = mouseY;
+
+		mousePressed();
+	}
+	else if (mouseAction == 0){
+		isMousePressed = false;
+
+		// arcball
+			arcballRotXLast = arcballRotX;
+			arcballRotYLast = arcballRotY;
+
+
+		mouseReleased();
+	}
+	/*this->mouseButton = mouseButton;
+	trace("LEFT mouse button pressed");*/
+}
+
+//arcball
+void ProtoBaseApp::arcballBegin(){
+	//isArcballOn = true;
+	push();
+	rotate(arcballRotX, 1, 0, 0);
+	rotate(arcballRotY, 0, 1, 0);
+}
+
+void ProtoBaseApp::arcballEnd(){
+	//isArcballOn = false;
+	pop();
 }
 
 // gen funcs
@@ -685,6 +763,7 @@ void ProtoBaseApp::ellipse(Vec2 pt0, Vec2 pt1, Registration reg){
 void ProtoBaseApp::ellipse(float x, float y, float r, Registration reg){
 
 }
+
 
 
 
@@ -1203,7 +1282,7 @@ void ProtoBaseApp::mousePressed(){}
 void ProtoBaseApp::mouseRightPressed(){}
 void ProtoBaseApp::mouseReleased(){}
 void ProtoBaseApp::mouseRightReleased(){}
-void ProtoBaseApp::mouseMoved(int mx, int my){}
+void ProtoBaseApp::mouseMoved(){}
 void ProtoBaseApp::mouseDragged(){}
 
 // window events

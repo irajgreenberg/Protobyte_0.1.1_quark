@@ -34,7 +34,7 @@ class ProtoJuncusEffusus04 : public ProtoBaseApp {
 public:
 	void init();
 	void run(); 
-	void render(int scaleFactor = 1);
+	void display();
 
 private:
 	

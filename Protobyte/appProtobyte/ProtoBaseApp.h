@@ -45,6 +45,7 @@
 #include "libProtobyte/ProtoMath.h"
 #include "libProtobyte/ProtoVector2.h"
 #include "libProtobyte/ProtoVector3.h"
+#include "libProtobyte/ProtoCylinder.h"
 #include "libProtobyte/ProtoToroid.h"
 #include "libProtobyte/ProtoSpline3.h"
 #include "libProtobyte/ProtoSphere.h"
@@ -52,6 +53,7 @@
 #include "libProtobyte/ProtoLight.h"
 #include "libProtobyte/ProtoCore.h"
 #include "libProtobyte/ProtoTuple4.h"
+#include "libProtobyte/ProtoEllipse.h"
 
 #include "libProtobyte/ProtoJuncusEffusus.h"
 #include "libProtobyte/ProtoCephalopod.h"
@@ -90,6 +92,8 @@ namespace ijg {
 		ProtoBaseApp(const ProtoOSC& listener);
 		// void setAppWindowDetails(int appWidth, int appHeight, std::string appTitle);
 
+		void setMouseButton(int mouseAction, int mouseButton, int mouseMods);
+
 	private:
 		// only needed to be called by ProtoPlasm class - a friend
 		void setWorld(std::unique_ptr<ProtoWorld> world);
@@ -101,7 +105,7 @@ namespace ijg {
 
 		void _init();
 		void _initUniforms();
-		void _run();
+		void _run(const Vec2f& mousePos/*, int mouseBtn, int key*/);
 		//void setViewport(int width, int height);
 		// void concat(); moved down for testing
 
@@ -125,6 +129,21 @@ namespace ijg {
 		// background color
 		Col3f bgColor;
 
+		// mouse fields
+		float mouseX, mouseY, mouseLastFrameX, mouseLastFrameY;
+		// 1, 2, or 3
+		int mouseButton;
+		int mouseAction;
+		int mouseMods;
+		bool isMousePressed;
+
+		// for arcball
+		float arcballRotX, arcballRotY;
+		float arcballRotXLast, arcballRotYLast;
+		float mouseXIn, mouseYIn;
+		//bool isArcballOn;
+
+
 		// CAMERAS
 		// 5 cameras (for now) accessible in world
 		ProtoCamera camera0, camera1, camera2, camera3, camera4;
@@ -134,8 +153,8 @@ namespace ijg {
 		// light0 enabled by default
 		//std::shared_ptr<ProtoLight> light0, light1, light2, light3, light4, light5, light6, light7;
 
-		Col3f globalAmbient; 
-		
+		Col3f globalAmbient;
+
 		GLint glLights[8];
 
 		enum Light {
@@ -214,10 +233,10 @@ namespace ijg {
 
 		// Uniform Shadow Map
 		GLuint shadowMap_U;
-		
+
 		// shadow mapping texture id's
 		GLuint shadowBufferID, shadowTextureID;
-		
+
 		// flag for shadowing
 		bool areShadowsEnabled;
 
@@ -236,10 +255,10 @@ namespace ijg {
 			GLuint specular;;
 		};
 		Light_U lights_U[8];
-		
+
 		GLuint globalAmbient_U;
 
-	
+
 
 		// OSC obj 
 		ProtoOSC listener;
@@ -254,8 +273,8 @@ namespace ijg {
 		virtual void display() = 0;
 
 		// switched from pure virtual above to enable thread to call member functions
-	/*	virtual void init(){}
-		virtual void run(){}*/
+		/*	virtual void init(){}
+			virtual void run(){}*/
 
 		virtual bool ProtoBaseApp::createShadowMap();
 
@@ -265,12 +284,17 @@ namespace ijg {
 		virtual void mouseRightPressed();
 		virtual void mouseReleased();
 		virtual void mouseRightReleased();
-		virtual void mouseMoved(int mx, int my);
+		virtual void mouseMoved();
 		virtual void mouseDragged();
 
 		// window events
 		virtual void onResized();
 		virtual void onClosed();
+
+		//arcball
+		void arcballBegin();
+		void arcballEnd();
+
 
 		// frame values
 		void setFrameRate(float frameRate);
@@ -327,7 +351,7 @@ namespace ijg {
 		//void lookAt(const Vec3f& eye, const Vec3f& center, const Vec3f& up);
 		//void perspective(float viewAngle, float aspect, float nearDist, float farDist);
 
-		
+
 		// exporting 
 		void export(std::vector<Tup4v> vs, Format type); // bucket of Vecs
 
@@ -363,7 +387,7 @@ namespace ijg {
 
 
 		// saving stuff
-		virtual void render(int x=0, int y=0, int scaleFactor = 1); // eventually maybe make pure virtual (ehhh, maybe not)
+		virtual void render(int x = 0, int y = 0, int scaleFactor = 1); // eventually maybe make pure virtual (ehhh, maybe not)
 		void save(std::string name = "img", int scaleFactor = 1);
 		void threadSave(std::string name, int scaleFactor); // thread safe save with mutex locking
 		std::mutex mtx;
@@ -384,6 +408,7 @@ namespace ijg {
 	};
 
 	// inline methods
+
 	inline void ProtoBaseApp::setFrameRate(float frameRate){
 		this->frameRate = frameRate;
 	}
@@ -457,6 +482,8 @@ namespace ijg {
 #define POINTS ProtoGeom3::POINTS
 #define WIREFRAME ProtoGeom3::WIREFRAME
 #define SURFACE ProtoGeom3::SURFACE
+#define arcBallBegin arcballBegin
+#define arcBallEnd arcballEnd
 
 	// remove this old stuff
 	//#define pushMatrix glPushMatrix
@@ -474,6 +501,8 @@ namespace ijg {
 #define light5 lights.at(5)
 #define light6 lights.at(6)
 #define light7 lights.at(7)
+
+#define background setBackground
 
 }
 

@@ -91,6 +91,7 @@ ProtoGeom3::~ProtoGeom3() {
 
 
 void ProtoGeom3::init() {
+	clearVectors(); // empty all vectors in case called by setter
 	createDiffuseMapTexture(diffuseMapImage); // set default diffuse color texture
     calcVerts();
 	calcInds();
@@ -164,6 +165,64 @@ void ProtoGeom3::init() {
     
     // set default texture enabled state
     isTextureEnabled = true;
+}
+
+void ProtoGeom3::clearVectors(){
+	if (diffuseTextureImageURLs.size()> 0){
+		diffuseTextureImageURLs.clear();
+	}
+
+	if (verts.size()> 0){
+		verts.clear();
+	}
+
+	if (inds.size()> 0){
+		inds.clear();
+	}
+
+	if (vertPrims.size()> 0){
+		vertPrims.clear();
+	}
+
+	if (indPrims.size()> 0){
+		indPrims.clear();
+	}
+
+	if (normPrims.size()> 0){
+		normPrims.clear();
+	}
+
+	if (tangentPrims.size()> 0){
+		tangentPrims.clear();
+	}
+
+	if (colorPrims.size()> 0){
+		colorPrims.clear();
+	}
+
+	if (texturePrims.size()> 0){
+		texturePrims.clear();
+	}
+
+	if (interleavedPrims.size()> 0){
+		interleavedPrims.clear();
+	}
+
+	if (geomSets.size()> 0){
+		geomSets.clear();
+	}
+
+	if (packedFaces.size()> 0){
+		packedFaces.clear();
+	}
+
+	if (faces.size()> 0){
+		faces.clear();
+	}
+
+	if (faces2.size()> 0){
+		faces2.clear();
+	}
 }
 
 

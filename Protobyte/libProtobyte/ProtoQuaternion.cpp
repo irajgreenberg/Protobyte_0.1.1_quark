@@ -25,7 +25,16 @@
 
 using namespace ijg;
 
-ProtoQuaternion::ProtoQuaternion(const ProtoVector3& axis, float theta):
+// non-member ops
+ProtoQuaternion operator*(const ProtoQuaternion& lhs, const ProtoQuaternion& rhs) {
+	float qx = lhs.w*rhs.x + lhs.x*rhs.w + lhs.y*rhs.z - lhs.z*rhs.y;
+	float qy = lhs.w*rhs.y - lhs.x*rhs.z + lhs.y*rhs.w + lhs.z*rhs.x;
+	float qz = lhs.w*rhs.z + lhs.x*rhs.y - lhs.y*rhs.x + lhs.z*rhs.w;
+	float qw = lhs.w*rhs.w - lhs.x*rhs.x - lhs.y*rhs.y - lhs.z*rhs.z;
+	return ProtoQuaternion(qx, qy, qz, qw);
+}
+
+ProtoQuaternion::ProtoQuaternion(const Vec3& axis, float theta) :
 axis(axis), theta(theta)
 {
     
@@ -40,17 +49,9 @@ axis(axis), theta(theta)
 }
 
 ProtoQuaternion::ProtoQuaternion(float x, float y, float z, float w):
-x(x), y(y), z(z), w(x){
+x(x), y(y), z(z), w(w){
 }
 
-// implement as overloaded op
-/*ProtoQuaternion::ProtoQuaternion mult(const ProtoQuaternion& q) {
-    float qx = w*q.x + x*q.w + y*q.z - z*q.y;
-    float qy = w*q.y - x*q.z + y*q.w + z*q.x;
-    float qz = w*q.z + x*q.y - y*q.x + z*q.w;
-    float qw = w*q.w - x*q.x - y*q.y - z*q.z;
-    return new ProtoQuaternion(qx, qy, qz, qw);
-}*/
 
 /*void ProtoQuaternion::rotate(ProtoVector3 v) {
     float newX = v.x*(1-2*y*y-2*z*z) + v.y*(2*x*y-2*w*z) + v.z*(2*x*z+2*w*y);
@@ -61,16 +62,16 @@ x(x), y(y), z(z), w(x){
     v.z = newZ;
 }*/
 
-ProtoVector3 ProtoQuaternion::getRotate(const ProtoVector3& v) {
+Vec3 ProtoQuaternion::getRotate(const Vec3& v) {
     float newX = v.x*(1-2*y*y-2*z*z) + v.y*(2*x*y-2*w*z) + v.z*(2*x*z+2*w*y);
     float newY = v.x*(2*x*y+2*w*z) + v.y*(1-2*x*x-2*z*z) + v.z*(2*y*z+2*w*x);
     float newZ = v.x*(2*x*z-2*w*y) + v.y*(2*y*z-2*w*x) + v.z*(1-2*x*x-2*y*y);
     
-    return ProtoVector3(newX, newY, newZ);
+	return Vec3(newX, newY, newZ);
 }
 
-void ProtoQuaternion::rotate(ProtoVector3& v) {
-    ProtoVector3 tempV = v;
+void ProtoQuaternion::rotate(Vec3& v) {
+	Vec3 tempV = v;
     tempV.x = v.x*(1-2*y*y-2*z*z) + v.y*(2*x*y-2*w*z) + v.z*(2*x*z+2*w*y);
     tempV.y = v.x*(2*x*y+2*w*z) + v.y*(1-2*x*x-2*z*z) + v.z*(2*y*z+2*w*x);
     tempV.z = v.x*(2*x*z-2*w*y) + v.y*(2*y*z-2*w*x) + v.z*(1-2*x*x-2*y*y);
@@ -94,12 +95,12 @@ void ProtoQuaternion::normalize() {
     }
 }
 
-void ProtoQuaternion::setAxis(const ProtoVector3& axis)
+void ProtoQuaternion::setAxis(const Vec3& axis)
 {
     this->axis = axis;
 }
 
-const ProtoVector3& ProtoQuaternion::getAxis() const
+const Vec3& ProtoQuaternion::getAxis() const
 {
     return axis;
 }

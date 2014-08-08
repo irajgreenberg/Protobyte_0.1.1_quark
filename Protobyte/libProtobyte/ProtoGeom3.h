@@ -167,6 +167,8 @@ namespace ijg {
 		void updateColorBuffer();
 
 		/*std::string createFullShaderURL(const std::string& shaderName);*/
+
+		void clearVectors();// called from init to reset all vectors.
         
         
     public:
@@ -298,14 +300,17 @@ namespace ijg {
     // setters/getters
     inline void ProtoGeom3::setPosition(const Vec3f& pos) {
         this->pos = pos;
+		init();
     }
     
     inline void ProtoGeom3::setRotation(const Vec3f& rot) {
         this->rot = rot;
+		init();
     }
     
     inline void ProtoGeom3::setSize(const ProtoDimension3f size) {
         this->size = size;
+		init();
     }
     
     inline void ProtoGeom3::setColor(const ProtoColor4f col4) {
@@ -373,27 +378,32 @@ namespace ijg {
 		materials.diffuse = diffuseMaterial;
 		
 		diffuse_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "diffuseMaterial");
+		//init();
 	}
 
 	inline void ProtoGeom3::setAmbientMaterial(const Col4f& ambientMaterial){
 		materials.ambient = ambientMaterial;
 		
 		ambient_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "ambientMaterial");
+		//init();
 	}
 	inline void ProtoGeom3::setSpecularMaterial(const Col4f& specularMaterial){
 		materials.specular = specularMaterial;
 
 		specular_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "specularMaterial");
+		//init();
 	}
 
 	inline void ProtoGeom3::setEmissiveMaterial(const Col4f& emissiveMaterial){
 		materials.emissive = emissiveMaterial;
 
 		emissive_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "emissiveMaterial");
+		//init();
 	}
 
 	inline void ProtoGeom3::setShininess(float shininess){
 		materials.shininess = shininess;
+		//init();
 	}
 
 	inline const Col4f& ProtoGeom3::getDiffuseMaterial() const{

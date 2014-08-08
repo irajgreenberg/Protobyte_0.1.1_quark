@@ -36,18 +36,17 @@ public:
 	void init();
 	void run();
 	void display();
-
+	
 
 	ProtoGroundPlane plane, ground;
-	const static int TUBE_COUNT = 12;
+	const static int TUBE_COUNT = 19;
 	Tube tubes[TUBE_COUNT];
 	static const int W = 4;
 	static const int H = 4;
 	static const int D = 4;
 	Toroid toroids[W*H*D];
 
-	
-	const static int ROOTBALL_COUNT = 22;
+	const static int ROOTBALL_COUNT = 1;// 34;
 	ProtoRootBall rootBalls[ROOTBALL_COUNT];
 
 private:

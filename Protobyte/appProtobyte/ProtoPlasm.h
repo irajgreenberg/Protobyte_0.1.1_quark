@@ -61,6 +61,8 @@ namespace ijg {
     class ProtoPlasm {
         
     public:
+		friend void mouseBtn_callback(GLFWwindow* window, int button, int action, int mods);
+
 		//friend void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
         int frameCount;
