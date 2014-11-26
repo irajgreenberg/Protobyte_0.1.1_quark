@@ -46,7 +46,7 @@ public:
 	static const int D = 4;
 	Toroid toroids[W*H*D];
 
-	const static int ROOTBALL_COUNT = 1;// 34;
+	const static int ROOTBALL_COUNT = 31;// 34;
 	ProtoRootBall rootBalls[ROOTBALL_COUNT];
 
 private:

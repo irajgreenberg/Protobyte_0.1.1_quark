@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "appProtobyte/ProtoBaseApp.h"
+#include "libProtobyte/ProtoRootBall.h"
 
 using namespace ijg;
 
@@ -23,6 +24,15 @@ private:
 	ProtoGroundPlane plane;
 	ProtoTube tube;
 	std::vector<ProtoTube> ribs;
+	std::vector<ProtoTube> ribBands;
+	std::vector<Vec3> tempVecs, allVecs;
+	
+	// visera
+	ProtoTube vascularWrap; 
+	
+	// organs
+	const static int ROOTBALL_COUNT = 6;// 34;
+	ProtoRootBall rootBalls[ROOTBALL_COUNT];
 
 };
 

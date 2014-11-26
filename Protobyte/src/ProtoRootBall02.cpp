@@ -91,15 +91,6 @@ void ProtoRootBall02::init() {
 
 
 void ProtoRootBall02::run() {
-	setBackground(0);
-
-	// save high resolution rendering
-	// currently only works with max 999 tiles
-	//
-	//std::thread t(&ProtoBaseApp::render);
-	//t.join();
-	render();
-
 	static int frameCounter = 0;
 	if (frameCounter++ < 1){
 		//save("roots", 13);
@@ -112,23 +103,9 @@ void ProtoRootBall02::run() {
 }
 
 
-void ProtoRootBall02::render(int scaleFactor){
+void ProtoRootBall02::display(){
 
-	//push();
-	//rotate(getFrameCount()*.15f, 0, 1, 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, shadowBufferID);
-	//clear depth buffer
-	glClear(GL_DEPTH_BUFFER_BIT);
-	//reset viewport to the shadow map texture size
-	glViewport(0, 0, SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT);
-
-	// enable front face culling for shadowing
-	glCullFace(GL_FRONT);
-
-	glUniform1i(shaderPassFlag_U, 1); // controls render pass in shader
-
-	//glUniform1i(shadowMap_U, 5);
-
+	
 	// wall
 	push();
 	translate(0, 0, -14);
@@ -154,62 +131,7 @@ void ProtoRootBall02::render(int scaleFactor){
 	float layerSpan = depth / (D - 1);
 	int counter = 0;
 	
-	push();
-	rotate(getFrameCount()*.15f, 0, 1, 0);
-	rotate(getFrameCount()*.165f, 0, 0, 1);
-	rotate(getFrameCount()*.05f, 1, 0, 0);
-	for (int i = 0; i < W; ++i){
-		for (int j = 0; j < H; ++j){
-			for (int k = 0; k < D; ++k){
-				push();
-				translate(colSpan*i - width / 2, rowSpan*j - height / 2, layerSpan*k - depth / 2);
-				scale(.2);
-				rotate(-getFrameCount()*.75, toroids[counter].getRotation().x, toroids[counter].getRotation().y, toroids[counter].getRotation().z);
-				toroids[counter].display();
-				pop();
-				counter++;
-			}
-		}
-	}
-
-	pop();
-	//pop();
-	//renable back face culling
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	glDrawBuffer(GL_BACK_LEFT);
-	glViewport(0, 0, getWidth(), getHeight());
-
-	glCullFace(GL_BACK);
-	//glDisable(GL_CULL_FACE);
-
-	glUniform1i(shaderPassFlag_U, 0); // controls render pass in shader
-	//glUniform1i(shadowMap_U, 0);
-
-	
-	
-	// wall
-	push();
-	translate(0, 0, -14);
-	scale(13.75, 12.75, 1);
-	rotate(90, 1, 0, 0);
-	plane.display();
-	pop();
-
-	// ground 
-	push();
-	translate(0, -7, 5);
-	scale(13.75, 1, 10);
-	ground.display();
-	pop();
-
-
-
-
-	colSpan = width / (W - 1);
-	rowSpan = height / (H - 1);
-	layerSpan = depth / (D - 1);
-	counter = 0;
+	arcballBegin();
 	push();
 	rotate(getFrameCount()*.15f, 0, 1, 0);
 	rotate(getFrameCount()*.165f, 0, 0, 1);
@@ -228,6 +150,7 @@ void ProtoRootBall02::render(int scaleFactor){
 		}
 	}
 	pop();
+	arcballEnd();
 }
 
 

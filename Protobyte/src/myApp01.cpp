@@ -23,13 +23,13 @@ void myApp01::init() {
 	float radius = .107;
 	Vec3f v(0, 0, 0);
 
-	int segments = 85;
+	int segments = 20;
 	v = Vec3f(0, 0, 0);
 	Vec3f spd(0, 0, 0);
 	std::vector <Vec3> cps;
 	cps.push_back(v);
 	float turbulence = 2.5f;
-	Dim3f size(4.25, 4.25, 4.25);
+	Dim3f size(3.25, 3.25, 3.25);
 	Spline3 spline;
 
 	for (int j = 0; j < segments; ++j){
@@ -45,11 +45,11 @@ void myApp01::init() {
 		theta += PI / 15.0f;
 	}
 
-	spline = Spline3(cps, 4, false, .5);
+	spline = Spline3(cps, 12, false, .5);
 
-	TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(.9, 3), int(random(3, 25)));
+	TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(.2, random(3, 6)), 130/*int(random(3, 25))*/);
 
-	tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(1), spline, .09, 24, t1, true, "metal_flaky_blue.jpg", Vec2f(1, .008));
+	tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(1), spline, .09, 24, t1, false, "metal_flaky_blue.jpg", Vec2f(1, .01));
 	tube.setShininess(int(random(6, 20)));
 	tube.setBumpMap("metal_flaky_blue.jpg");
 	tube.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
@@ -75,33 +75,55 @@ void myApp01::run() {
 void myApp01::display() {
 	background(1.0, .5, 0);
 
-	push();
-	{
-		scale(1.06);
+	/*push();
+	{*/
+		//scale(1.06);
 		// shadowsOn();
 		// shape display()
-		push();
-		translate(0, 0, -14);
-		scale(13.75, 12.75, 1);
-		rotate(90, 1, 0, 0);
-		plane.display();
-		pop();
-
-		push();
-
-		translate(0, 0, 2);
+		//push();
+		//translate(0, 0, -14);
+		//scale(13.75, 12.75, 1);
+		//rotate(90, 1, 0, 0);
+		//plane.display();
+		//pop();
+//
+	arcballBegin(); 
+	
+	push();
+		
+		translate(-4, 0, -2);
 
 		rotate(getFrameCount()*.05f, 1, 0, 0);
 		rotate(getFrameCount()*.05f, 0, 1, 0);
 		rotate(getFrameCount()*.065f, 0, 0, 1);
-		scale(3, 3, 3);
-
-		tube.display();
-
-		//cylinder.display();
-
-		//ellipse.display();
+		scale(4);
+		ellipse.display();
+		//tube.display();
+		
 		pop();
-	}
-	pop();
+		//cylinder.display();
+		translate(5, 0, -2);
+		ellipse.display();
+		arcballEnd();
+		//pop();
+	/*}
+	pop();*/
 }
+
+void myApp01::mousePressed(){
+	//trace("mouse pressed");
+}
+
+void myApp01::mouseReleased(){
+	//trace("mouse released");
+	//save("protoRibs", 9);
+}
+
+void myApp01::mouseMoved() {
+	//trace("mouse moving");
+}
+
+void myApp01::mouseDragged() {
+	//trace("mouse dragging");
+}
+

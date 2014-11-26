@@ -20,7 +20,7 @@ void myApp02::init() {
 	float radius = .107;
 	Vec3f v(0, 0, 0);
 
-	int segments = 12; // 60;
+	int segments = 10; // 60;
 	v = Vec3f(0, 0, 0);
 	Vec3f spd(0, 0, 0);
 
@@ -31,14 +31,13 @@ void myApp02::init() {
 
 	float startY = -.5;
 
-	int ribCount = 11;// 17;
+	int ribCount = 3;// 17;
 	float ribSpan = 4.5;
 	float ribRadius = 0;
 	float ribRadiusMax = 2.0;
 	float ribTheta = 0;
 
 	float ribGap = ribSpan / ribCount;
-
 
 	for (int i = 0; i < ribCount; ++i){
 
@@ -59,7 +58,7 @@ void myApp02::init() {
 		ribTheta += PI / ribCount;
 
 		//spline = Spline3(cps, 4, false, .5);
-		spline = Spline3(cps, 3, false, .5);
+		spline = Spline3(cps, 5, false, .5);
 
 		TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(.02, .95 + (ribRadius*random(.07, .31))), 1/*int(random(1, 3))*/);
 
@@ -72,70 +71,24 @@ void myApp02::init() {
 		// rib tendrils
 		std::vector <Vec3> ribCps;
 		for (int j = 0; j < ribs.at(i).getFrenetFrameLength(); j += int(random(1, 3))){
-			for (int k = 0; k < ribs.at(i).getCrossSectionDetail(); k += 1){
-				int counter = j*ribs.at(i).getCrossSectionDetail() + k;
-					ribCps.push_back(ribs.at(i).getVertices().at(counter).pos);
-					if (i>0){
-						Vec3 v = ribs.at(i).getVertices().at(counter).pos*.75f;
-						tempVecs.push_back(v);
-					}
-	
+			for (int k = 0; k < ribs.at(i).getCrossSectionDetail(); k += int(random(1, 3))){
+				ribCps.push_back(ribs.at(i).getVertices().at(j*ribs.at(i).getCrossSectionDetail() + k).pos);
 			}
-
-
-			//if (i>0){
-			//	int ctr = ribs.at(i).getFrenetFrameLength()*i + j;
-			//	//allVecs.push_back(Vec3(ribCps[ctr].x, ribCps[ctr].y, ribCps[ctr].z));
-			//	//trace(allVecs[i]);
-			//}
 		}
 
-		
-
 		Spline3 ribSpline = Spline3(ribCps, 2, false, .5);
-		TransformFunction ribT = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(random(.09, .15), random(.2, .4)), int(random(1, 12)));
-		ribBands.push_back(ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(1), ribSpline, .09, 5, ribT, true, "vascular.jpg", Vec2f(1, random(.0825, .2))));
+		TransformFunction ribT = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(random(.05, .2), random(..3, .5)), int(random(5, 12)));
+		ribBands.push_back(ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(1), ribSpline, .09, 12, ribT, true, "vascular.jpg", Vec2f(1, random(.0825, 1))));
 		ribBands.at(i).setIsClosed(0);
-		ribBands.at(i).setSpecularMaterial(Col4f(.4, .275, .1, 1));
-		ribBands.at(i).setShininess(6);
+		ribBands.at(i).setSpecularMaterial(Col4f(.8, .275, .1, 1));
+		ribBands.at(i).setShininess(5);
 		ribBands.at(i).setBumpMap("vascular.jpg");
 	}
 
 	
-
-	// mesh - not working!!
-	//std::vector <Vec3> wrapCps;
-	for (int i = 0; i < tempVecs.size(); i+=4){
-		allVecs.push_back(tempVecs.at(static_cast<int>(random(tempVecs.size()))));
-	}
-	
-	Spline3 wrapSpline = Spline3(allVecs, 12, false, random(.48, .53));
-	TransformFunction wrapT = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(random(.08, .15), random(.15, .3)), static_cast<int>(random(100, 300)));
-	vascularWrap = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(1), wrapSpline, .09, 6, wrapT, true, "corrogated_metal2_color.jpg", Vec2f(1, random(.000825, .85)));
-	vascularWrap.setIsClosed(0);
-	vascularWrap.setSpecularMaterial(Col4f(.5, .5, .5, 1));
-	vascularWrap.setShininess(6);
-	vascularWrap.setBumpMap("corrogated_metal2_color.jpg");
-	
-
-	
-// organs
-	const int TEXTURE_COUNT = 1;
-	//std::string texs[] = { "metal_panel02.jpg", "metal_rivets01.jpg", "metal_panel01.jpg", "corrogated_metal_colored.jpg", "corrogated_metal2_color.jpg", "ship_plate.jpg", "corroded_red.jpg", "corroded_metal.jpg", "corrogated_metal_colored.jpg", "metal_flaky_blue.jpg", "rust01.jpg", "rust02.jpg", "pitted.jpg" };
-
-	std::string texs[] = { "corroded_red.jpg" };
-
-	for (int i = 0; i < ROOTBALL_COUNT; ++i){
-		int sub = int(random(TEXTURE_COUNT));
-		rootBalls[i] = RootBall(Vec3f(), Vec3f(), Dim3f(2.55f), Col4f(.9f), 1, 150, .3, Tup2f(.2, .5), texs[sub], 14);
-		float sz = 0;
-			sz = float(random(4, 6.5));
-
-		TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(.2, sz), int(random(4, 80))); // local, so can't be sent as reference
-		rootBalls[i].setTransformFunction(t1);
-		rootBalls[i].setTextureScale(Vec2f(1, .0075));
-	}
-
+	//yRot = xRot = 0;
+	//xRotLast = yRotLast = 0;
+	//mouseXIn = mouseYIn = 0;
 
 }
 
@@ -166,21 +119,19 @@ void myApp02::display() {
 			//rotate(getFrameCount()*.065f, 0, 0, 1);
 			scale(3, 3, 3);
 
+			//tube.display();
+
+			//cylinder.display();
+
+			//ellipse.display();
 			arcballBegin();
-			
-			// ribs
 			for (int i = 0; i < ribs.size(); ++i){
 				ribs.at(i).display();
 				ribBands.at(i).display();
 			}
-			
-			// viscera
-			vascularWrap.display();
 
-			// organs
-			for (int i = 0; i < ROOTBALL_COUNT; ++i){
-				rootBalls[i].display();
-			}
+			
+
 			arcballEnd();
 		}
 		pop();

@@ -50,11 +50,11 @@ void rootBallStudy01::init() {
 			int sub = int(random(TEXTURE_COUNT));
 			rootBalls[i] = RootBall(Vec3f(), Vec3f(), Dim3f(2.55f), Col4f(.9f), 1, 150, .3, Tup2f(.2, .5), texs[sub], 14);
 			float sz = 0;
-			if (i % 13 == 0)
+			if (i % 9 == 0)
 				sz = float(random(.05, 3.5));
 			else
 				sz = float(random(.04, .55));
-			TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(.02, sz), int(random(22, 145))); // local, so can't be sent as reference
+			TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(.02, sz), int(random(8, 75))); // local, so can't be sent as reference
 			rootBalls[i].setTransformFunction(t1);
 			rootBalls[i].setTextureScale(Vec2f(1, .0075));
 		}
@@ -120,6 +120,7 @@ void rootBallStudy01::display(){
 	//ground.display();
 	//pop();
 
+	arcballBegin();
 	push();
 	translate(-1, sin(theta5) * 2, 0);
 	scale(4.75);
@@ -130,6 +131,7 @@ void rootBallStudy01::display(){
 		rootBalls[i].display();
 	}
 	pop();
+	arcballEnd();
 
 	/*push();
 	rotate(-getFrameCount()*.06, 0, 1, 0);

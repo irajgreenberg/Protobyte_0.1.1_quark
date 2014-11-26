@@ -1,13 +1,13 @@
 
-#ifndef __MYAPP01_H__
-#define __MYAPP01_H__
+#ifndef __MYAPP03_H__
+#define __MYAPP03_H__
 
 #include <iostream>
 #include "appProtobyte/ProtoBaseApp.h"
 
 using namespace ijg;
 
-class myApp01 : public ProtoBaseApp {
+class myApp03 : public ProtoBaseApp {
 
 public:
 void init();
@@ -20,12 +20,7 @@ void mouseMoved();
 void mouseDragged();
 
 private:
-	ProtoGroundPlane plane;
-	ProtoTube tube;
-	Cylinder cylinder;
-	ProtoEllipse ellipse;
-
-	
+	Toroid toroid;
 };
 
-#endif //__MYAPP01_H__
+#endif //__MYAPP03_H__

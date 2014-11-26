@@ -38,7 +38,7 @@ class ProtoRootBall02 : public ProtoBaseApp {
 public:
 	void init();
 	void run();
-
+	void display();
 
 	void render(int scaleFactor = 1);
 	RootBall rootBallCore, rootBall;
