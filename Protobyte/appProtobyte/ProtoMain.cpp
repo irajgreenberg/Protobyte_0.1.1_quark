@@ -10,6 +10,7 @@
 #include "rootBallStudy01.h"
 #include "myApp01.h"
 #include "myApp02.h"
+#include "ThanksgivingBeast.h"
 
 namespace {
 	//ijg::ProtoOSC listener;
@@ -31,7 +32,7 @@ int main(int argc, char const** argv)
 	//std::thread t1(runOSC);
 	
 	
-	ijg::ProtoPlasm p(1300, 800, "My App 02", new myApp02());
+	ijg::ProtoPlasm p(1300, 800, "Happy ThanksgivingBeast", new myApp01());
 	//ijg::ProtoPlasm p(1200, 900, "shadow test", new shadowTest());
 	return EXIT_SUCCESS;
 }

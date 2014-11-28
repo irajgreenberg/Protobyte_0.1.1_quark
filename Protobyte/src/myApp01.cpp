@@ -62,10 +62,15 @@ void myApp01::init() {
 	cylinder.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
 
 	ellipse = ProtoEllipse(Vec3f(), Vec3f(), Dim2f(1, 1),
-		Col4f(1, 1, 1, 1), 24);
-	ellipse.setDiffuseMap("ship_plate.jpg");
-	ellipse.setBumpMap("ship_plate.jpg");
-	ellipse.setTextureScale(Vec2f(3, 3));
+		Col4f(1, 0, 0, 1), 24);
+	//ellipse.setDiffuseMaterial(Col4f(1.0, 0.0, 0.0, 1.0));
+	//ellipse.setDiffuseMap("ship_plate.jpg");
+	//ellipse.setBumpMap("ship_plate.jpg");
+	//ellipse.setTextureScale(Vec2f(3, 3));
+
+	//ProtoPath3(const Col4f& col4, const std::vector<Vec3f>& pathVecs);
+	myPath = ProtoPath3(Col4f(.2, .75, 1, 1), cps);
+	std::cout << myPath << "\n";
 
 }
 
@@ -77,37 +82,51 @@ void myApp01::display() {
 
 	/*push();
 	{*/
-		//scale(1.06);
-		// shadowsOn();
-		// shape display()
-		//push();
-		//translate(0, 0, -14);
-		//scale(13.75, 12.75, 1);
-		//rotate(90, 1, 0, 0);
-		//plane.display();
-		//pop();
-//
-	arcballBegin(); 
-	
+	//scale(1.06);
+	// shadowsOn();
+	// shape display()
+	//push();
+	//translate(0, 0, -14);
+	//scale(13.75, 12.75, 1);
+	//rotate(90, 1, 0, 0);
+	//plane.display();
+	//pop();
+	//
+
+
+
+	beginArcball();
+	//rotate(getFrameCount()*.05f, 1, 0, 0);
+	//rotate(getFrameCount()*.05f, 0, 1, 0);
+	//rotate(getFrameCount()*.065f, 0, 0, 1);
 	push();
-		
+	{
 		translate(-4, 0, -2);
 
 		rotate(getFrameCount()*.05f, 1, 0, 0);
 		rotate(getFrameCount()*.05f, 0, 1, 0);
 		rotate(getFrameCount()*.065f, 0, 0, 1);
-		scale(4);
+		//scale(4);
 		ellipse.display();
 		//tube.display();
-		
-		pop();
-		//cylinder.display();
-		translate(5, 0, -2);
-		ellipse.display();
-		arcballEnd();
-		//pop();
-	/*}
-	pop();*/
+	}
+	pop();
+	
+	
+	push();
+	//cylinder.display();
+	translate(4, 0, 2);
+	rotate(-getFrameCount()*.5f, 1, 0, 0);
+	rotate(getFrameCount()*.05f, 0, 1, 0);
+	rotate(-getFrameCount()*.065f, 0, 0, 1);
+	scale(3);
+	//ellipse.display(WIREFRAME);
+
+	myPath.display();
+	pop();
+
+	endArcball();
+
 }
 
 void myApp01::mousePressed(){

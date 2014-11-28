@@ -25,6 +25,8 @@ private:
 	Cylinder cylinder;
 	ProtoEllipse ellipse;
 
+	ProtoPath3 myPath;
+
 	
 };
 

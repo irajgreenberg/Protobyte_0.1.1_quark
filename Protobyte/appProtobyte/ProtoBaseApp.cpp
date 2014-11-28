@@ -51,17 +51,17 @@ void ProtoBaseApp::_init(){
 	// camera at 11
 	// default inital light
 	//light0.setPosition(Vec3f(-1.9, .9, 8));
-	light0.setPosition(Vec3f(-1, 1.5, 8));
+	light0.setPosition(Vec3f(0, 0, .1));
 	//light0.setPosition(Vec3f(-14.2, 2.5, 8));
-	light0.setIntensity(Vec3f(1, .85, 1));
+	light0.setIntensity(Vec3f(1, 1, 1));
 
-	light1.setPosition(Vec3f(0, 6, -2));
-	light1.setIntensity(Vec3f(.8, .8, .8));
+	light1.setPosition(Vec3f(0, 0, 1));
+	light1.setIntensity(Vec3f(0, 0, 0));
 
-	light2.setPosition(Vec3f(-.3, .3, 1));
+	light2.setPosition(Vec3f(0, 0, 1));
 	light2.setIntensity(Vec3f(0, 0, 0));
 
-	light3.setPosition(Vec3f(1, 1, 1));
+	light3.setPosition(Vec3f(0, 0, 1));
 	light3.setIntensity(Vec3f(0, 0, 0));
 
 	light4.setPosition(Vec3f(0, 0, 1));
@@ -258,8 +258,8 @@ void ProtoBaseApp::_run(const Vec2f& mousePos/*, int mouseBtn, int key*/){
 
 			// arcball
 			//if (isArcballOn){
-				arcballRotY = mouseX - mouseXIn + arcballRotYLast;
-				arcballRotX = mouseY - mouseYIn + arcballRotXLast;
+			arcballRotY = mouseX - mouseXIn + arcballRotYLast;
+			arcballRotX = mouseY - mouseYIn + arcballRotXLast;
 			//}
 
 			mouseDragged();
@@ -311,9 +311,9 @@ void ProtoBaseApp::_run(const Vec2f& mousePos/*, int mouseBtn, int key*/){
 	//glViewport(0, 0, width, height);
 
 	//if (isArcballOn){
-		//push();
-		//rotate(arcballRotX, 1, 0, 0);
-		//rotate(arcballRotY, 0, 1, 0);
+	//push();
+	//rotate(arcballRotX, 1, 0, 0);
+	//rotate(arcballRotY, 0, 1, 0);
 	//}
 
 	run();
@@ -323,7 +323,7 @@ void ProtoBaseApp::_run(const Vec2f& mousePos/*, int mouseBtn, int key*/){
 	render();
 
 	//if (isArcballOn){
-		//pop();
+	//pop();
 	//}
 
 
@@ -489,8 +489,8 @@ void ProtoBaseApp::setMouseButton(int mouseAction, int mouseButton, int mouseMod
 		isMousePressed = true;
 
 		// arcball
-			mouseXIn = mouseX;
-			mouseYIn = mouseY;
+		mouseXIn = mouseX;
+		mouseYIn = mouseY;
 
 		mousePressed();
 	}
@@ -498,8 +498,8 @@ void ProtoBaseApp::setMouseButton(int mouseAction, int mouseButton, int mouseMod
 		isMousePressed = false;
 
 		// arcball
-			arcballRotXLast = arcballRotX;
-			arcballRotYLast = arcballRotY;
+		arcballRotXLast = arcballRotX;
+		arcballRotYLast = arcballRotY;
 
 
 		mouseReleased();
@@ -748,6 +748,23 @@ void ProtoBaseApp::GLSLInfo(ProtoShader* shader){
 	trace("vertexTexture Location =", glGetAttribLocation(shader->getID(), "vertexTexture"));
 }
 
+
+/****************************************
+*        convenience plotting api       *
+****************************************/
+
+// PATH
+void ProtoBaseApp::beginPath() {
+
+}
+void ProtoBaseApp::endPath() {
+
+}
+void ProtoBaseApp::closePath() {
+
+}
+
+//PRIMITIVES
 void ProtoBaseApp::rect(Vec2 pt0, Vec2 pt1, Registration reg){
 	rect(pt0.x, pt0.y, pt1.x - pt0.x, pt1.y - pt0.y, reg);
 }
@@ -764,6 +781,61 @@ void ProtoBaseApp::ellipse(float x, float y, float r, Registration reg){
 
 }
 
+
+// FILL
+void ProtoBaseApp::fill(const Col4f& col) {
+
+}
+void ProtoBaseApp::fill(float gray) {
+
+}
+void ProtoBaseApp::fill(float gray, float a) {
+
+}
+void ProtoBaseApp::fill(float r, float g, float b) {
+
+}
+void ProtoBaseApp::fill(float r, float g, float b, float a) {
+
+}
+void ProtoBaseApp::noFill() {
+
+}
+// STROKE
+void ProtoBaseApp::stroke(const Col4f& col) {
+
+}
+void ProtoBaseApp::stroke(float gray) {
+
+}
+void ProtoBaseApp::stroke(float gray, float a) {
+
+}
+void ProtoBaseApp::stroke(float r, float g, float b) {
+
+}
+void ProtoBaseApp::stroke(float r, float g, float b, float a) {
+
+}
+void ProtoBaseApp::noStroke() {
+
+}
+void ProtoBaseApp::strokeWeight() {
+
+}
+
+void ProtoBaseApp::vertex(const Vec2f& vec) {
+
+}
+void ProtoBaseApp::vertex(const Vec3f& vec) {
+
+}
+void ProtoBaseApp::vertex(float x, float y) {
+
+}
+void ProtoBaseApp::vertex(float x, float y, float z) {
+
+}
 
 
 
@@ -1184,30 +1256,7 @@ bool ProtoBaseApp::stitchTiles(std::string url, int tiles){
 
 // matrix transformation functions, in style of GL 1.0
 void ProtoBaseApp::translate(float tx, float ty, float tz){
-
-
-
 	M = glm::translate(M, glm::vec3(tx, ty, tz));
-
-	//std::cout << "M after = " <<
-	//	M[0][0] << ", " <<
-	//	M[0][1] << ", " <<
-	//	M[0][2] << ", " <<
-	//	M[0][3] << ", " <<
-	//	M[1][0] << ", " <<
-	//	M[1][1] << ", " <<
-	//	M[1][2] << ", " <<
-	//	M[1][3] << ", " <<
-	//	M[2][0] << ", " <<
-	//	M[2][1] << ", " <<
-	//	M[2][2] << ", " <<
-	//	M[2][3] << ", " <<
-	//	M[3][0] << ", " <<
-	//	M[3][1] << ", " <<
-	//	M[3][2] << ", " <<
-	//	M[3][3] << ", " <<
-	//	std::endl;
-
 	concat();
 }
 void ProtoBaseApp::translate(const Vec3f& tXYZ){
@@ -1237,6 +1286,7 @@ void ProtoBaseApp::scale(const Vec3f& sXYZ){
 
 // concatenate MV, N, and MVP matrices and update values on GPU
 void ProtoBaseApp::concat(){
+	push();
 	MV = V * M;
 	N = glm::transpose(glm::inverse(glm::mat3(MV)));
 	MVP = P * MV;
@@ -1254,6 +1304,7 @@ void ProtoBaseApp::concat(){
 
 	glm::mat4 shaderMat = L_MVBP*M; // new 
 	glUniformMatrix4fv(L_MVBP_U, 1, GL_FALSE, &shaderMat[0][0]);
+	pop();
 }
 
 // implements transform matrix stack

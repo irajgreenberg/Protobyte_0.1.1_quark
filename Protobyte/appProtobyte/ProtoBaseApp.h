@@ -54,6 +54,7 @@
 #include "libProtobyte/ProtoCore.h"
 #include "libProtobyte/ProtoTuple4.h"
 #include "libProtobyte/ProtoEllipse.h"
+#include "libProtobyte/ProtoPath3.h"
 
 #include "libProtobyte/ProtoJuncusEffusus.h"
 #include "libProtobyte/ProtoCephalopod.h"
@@ -207,6 +208,13 @@ namespace ijg {
 		void setProjection(ProjectionType projType = PERSPECTIVE);
 
 		/***********************************
+		*           path plotting  
+		*beginPath(), endPath(), closePath()
+		***********************************/
+		std::vector<Vec3f> path;
+		/***************END****************/
+
+		/***********************************
 		*           GLSL UNIFORMS          *
 		***********************************/
 		// using initials ONLY for matrices
@@ -303,6 +311,7 @@ namespace ijg {
 		int getFrameCount() const;
 
 		// Add content to world
+		// NOT USED - REMOVE
 		void add(std::unique_ptr<ProtoGeom3> geom);
 		//void add(std::unique_ptr<ProtoLight> lt);
 		//void add(std::shared_ptr<ProtoLight> lt);
@@ -326,6 +335,7 @@ namespace ijg {
 		Dim2i getSize()const;
 
 		// image loading using SFML
+		// IS THIS STILL BEING USED?? - NO MORE SFML
 		void loadImage(std::string url);
 
 		// shaders stuff
@@ -347,6 +357,36 @@ namespace ijg {
 		//implements transform matrix stack
 		void push();
 		void pop();
+		
+		/****************************************
+		*        convenience plotting api       *
+		****************************************/
+		void beginPath();
+		void endPath();
+		void closePath(); // avoid passing flag
+
+		// enable syle states between beginPath() ... endPath()
+		void fill(const Col4f& col);
+		void fill(float gray);
+		void fill(float gray, float a); 
+		void fill(float r, float g, float b);
+		void fill(float r, float g, float b, float a);
+		void noFill();
+		
+		void stroke(const Col4f& col);
+		void stroke(float gray);
+		void stroke(float gray, float a);
+		void stroke(float r, float g, float b);
+		void stroke(float r, float g, float b, float a);
+		void noStroke();
+		void strokeWeight();
+		
+		void vertex(const Vec2f& vec); 
+		void vertex(const Vec3f& vec);
+		void vertex(float x, float y);
+		void vertex(float x, float y, float z);
+		
+
 
 		//void lookAt(const Vec3f& eye, const Vec3f& center, const Vec3f& up);
 		//void perspective(float viewAngle, float aspect, float nearDist, float farDist);
@@ -482,8 +522,14 @@ namespace ijg {
 #define POINTS ProtoGeom3::POINTS
 #define WIREFRAME ProtoGeom3::WIREFRAME
 #define SURFACE ProtoGeom3::SURFACE
+	// make this intuitive
 #define arcBallBegin arcballBegin
 #define arcBallEnd arcballEnd
+#define beginArcball arcballBegin
+#define endArcball arcballEnd
+#define beginArcBall arcballBegin
+#define endArcBall arcballEnd
+
 
 	// remove this old stuff
 	//#define pushMatrix glPushMatrix
