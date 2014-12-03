@@ -93,19 +93,23 @@ namespace ijg {
 
 
 	inline const GLuint ProtoShader::getID_2() {
+		trace("in ProtoShader::getID_2()");
 		return shader_id_2;
 	}
 
 
 	inline GLuint ProtoShader::getID() {
+		trace("in ProtoShader::getID()");
 		return shader_id;
 	}
 
 	inline void ProtoShader::bind() {
+		trace("in ProtoShader::bind()");
 		glUseProgram(shader_id);
 	}
 
 	inline void ProtoShader::unbind() {
+		trace("in ProtoShader::unbind()");
 		glUseProgram(0);
 	}
 

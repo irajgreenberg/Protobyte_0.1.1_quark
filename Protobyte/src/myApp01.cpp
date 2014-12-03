@@ -2,7 +2,11 @@
 #include "myApp01.h"
 
 void myApp01::init() {
-
+	
+	shader3D.bind();
+	_initUniforms(&shader3D);
+	
+	//_initUniforms(&shader3D);
 	//globalAmbient = Col3f(.3, .3, .3);
 	shadowsOn();
 	// wall
@@ -49,7 +53,7 @@ void myApp01::init() {
 
 	TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(.2, random(3, 6)), 130/*int(random(3, 25))*/);
 
-	tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(1), spline, .09, 24, t1, false, "metal_flaky_blue.jpg", Vec2f(1, .01));
+	tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(.5, .275, .45, 1), spline, .09, 24, t1, false, "metal_flaky_blue.jpg", Vec2f(1, .01));
 	tube.setShininess(int(random(6, 20)));
 	tube.setBumpMap("metal_flaky_blue.jpg");
 	tube.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
@@ -62,7 +66,7 @@ void myApp01::init() {
 	cylinder.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
 
 	ellipse = ProtoEllipse(Vec3f(), Vec3f(), Dim2f(1, 1),
-		Col4f(1, 0, 0, 1), 24);
+		Col4f(1, 0, .75, 1), 24);
 	//ellipse.setDiffuseMaterial(Col4f(1.0, 0.0, 0.0, 1.0));
 	//ellipse.setDiffuseMap("ship_plate.jpg");
 	//ellipse.setBumpMap("ship_plate.jpg");
@@ -79,6 +83,7 @@ void myApp01::run() {
 
 void myApp01::display() {
 	background(1.0, .5, 0);
+	shader3D.bind();
 
 	/*push();
 	{*/
@@ -106,23 +111,37 @@ void myApp01::display() {
 		rotate(getFrameCount()*.05f, 1, 0, 0);
 		rotate(getFrameCount()*.05f, 0, 1, 0);
 		rotate(getFrameCount()*.065f, 0, 0, 1);
-		//scale(4);
+		scale(4);
+		
+		//shader = ProtoShader("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
+		//_initUniforms(&shader3D);
+		
 		ellipse.display();
-		//tube.display();
+
+		
+		tube.display();
 	}
 	pop();
 	
 	
 	push();
-	//cylinder.display();
-	translate(4, 0, 2);
-	rotate(-getFrameCount()*.5f, 1, 0, 0);
-	rotate(getFrameCount()*.05f, 0, 1, 0);
-	rotate(-getFrameCount()*.065f, 0, 0, 1);
-	scale(3);
-	//ellipse.display(WIREFRAME);
+	{
+		//cylinder.display();
+		translate(4, 0, 2);
+		rotate(-getFrameCount()*.5f, 1, 0, 0);
+		rotate(getFrameCount()*.05f, 0, 1, 0);
+		rotate(-getFrameCount()*.065f, 0, 0, 1);
+		scale(3);
+		
 
-	myPath.display();
+
+		//_initUniforms(&shader2D);
+		//shader2D.bind();
+		ellipse.display(WIREFRAME, 8);
+		//shader2D.unbind();
+		myPath.display();
+		//shader2D.unbind();
+	}
 	pop();
 
 	endArcball();

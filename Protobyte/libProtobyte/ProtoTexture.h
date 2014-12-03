@@ -54,8 +54,8 @@ namespace ijg {
 	
 	class ProtoTexture {
 
+		friend class ProtoGeom2;
 		friend class ProtoGeom3;
-
 	private:
 		// used by ProtoGeom3 only
 		enum TextureMapType{

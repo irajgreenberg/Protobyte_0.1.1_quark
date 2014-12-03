@@ -105,12 +105,13 @@ namespace ijg {
 		void setSize(const Dim2i& canvasSize);
 
 		void _init();
-		void _initUniforms();
+		//void _initUniforms();
 		void _run(const Vec2f& mousePos/*, int mouseBtn, int key*/);
 		//void setViewport(int width, int height);
 		// void concat(); moved down for testing
 
 	protected:
+		void _initUniforms(ProtoShader* shader_ptr); // temporarily here. put back in private eventually
 		void concat();
 		/************************************
 		 **********     FIELDS     **********
@@ -177,6 +178,7 @@ namespace ijg {
 
 		// shader
 		ProtoShader shader;
+		ProtoShader shader3D, shader2D;
 
 		//ProtoLight light0, light1, light2, light3, light4, light5, light6, light7;
 		//std::shared_ptr<ProtoLight> lights[8];

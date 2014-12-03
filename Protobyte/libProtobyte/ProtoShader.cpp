@@ -86,7 +86,7 @@ void ProtoShader::init() {
     
     std::string url = ProtoUtility::getBuildPath();
     
-   std::cout << "path to shaders  url = ," << url << std::endl;
+  // std::cout << "path to shaders  url = ," << url << std::endl;
 
 	std::string vShaderURL;
 	std::string fShaderURL;

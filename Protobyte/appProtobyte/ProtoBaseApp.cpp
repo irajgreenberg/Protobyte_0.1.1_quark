@@ -43,7 +43,10 @@ void ProtoBaseApp::_init(){
 	//areShadowsEnabled = true;
 	//shader = ProtoShader("shader1.vert", "shader1.frag");
 	//shader = ProtoShader("protoShader.vert", "protoShader.frag");
-	shader = ProtoShader("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
+	//shader2D = ProtoShader("colorOnlyShader.vert.glsl", "colorOnlyShader.frag.glsl");
+	shader3D = ProtoShader("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
+	
+
 
 	// default global ambient
 	globalAmbient = Col3f(.02f, .02f, .02f);
@@ -157,10 +160,11 @@ void ProtoBaseApp::_init(){
 	// END Shadow Matrices
 
 	createShadowMap();
-
-	_initUniforms();
+	//shader3D.bind();
+	//_initUniforms(&shader3D);
 
 	init();
+	
 }
 
 bool ProtoBaseApp::createShadowMap(){
@@ -204,49 +208,49 @@ bool ProtoBaseApp::createShadowMap(){
 	return false;
 }
 
-void ProtoBaseApp::_initUniforms(){
+void ProtoBaseApp::_initUniforms(ProtoShader* shader_ptr){
+	//shader = _shader;
 	//bind shaders
-	shader.bind();
+	//shader_ptr->bind();
 
 	// get shader location for default 8 lights
 	for (int i = 0; i < 8; ++i){
 		std::string pos = "lights[" + std::to_string(i) + "].position";
-		lights_U[i].position = glGetUniformLocation(shader.getID(), pos.c_str());
+		lights_U[i].position = glGetUniformLocation(shader_ptr->getID(), pos.c_str());
 
 		std::string inten = "lights[" + std::to_string(i) + "].intensity";
-		lights_U[i].intensity = glGetUniformLocation(shader.getID(), inten.c_str());
+		lights_U[i].intensity = glGetUniformLocation(shader_ptr->getID(), inten.c_str());
 
 		// eventually get rid of these probably
 		std::string diff = "lights[" + std::to_string(i) + "].diffuse";
-		lights_U[i].diffuse = glGetUniformLocation(shader.getID(), diff.c_str());
+		lights_U[i].diffuse = glGetUniformLocation(shader_ptr->getID(), diff.c_str());
 
 		std::string amb = "lights[" + std::to_string(i) + "].ambient";
-		lights_U[i].ambient = glGetUniformLocation(shader.getID(), amb.c_str());
+		lights_U[i].ambient = glGetUniformLocation(shader_ptr->getID(), amb.c_str());
 
 		std::string spec = "lights[" + std::to_string(i) + "].specular";
-		lights_U[i].specular = glGetUniformLocation(shader.getID(), spec.c_str());
+		lights_U[i].specular = glGetUniformLocation(shader_ptr->getID(), spec.c_str());
 	}
 
 	// global ambient light
-	globalAmbient_U = glGetUniformLocation(shader.getID(), "globalAmbientLight");
+	globalAmbient_U = glGetUniformLocation(shader_ptr->getID(), "globalAmbientLight");
 
 	// transformation matrices
-	M_U = glGetUniformLocation(shader.getID(), "modelMatrix");
-	MV_U = glGetUniformLocation(shader.getID(), "modelViewMatrix");
-	MVP_U = glGetUniformLocation(shader.getID(), "modelViewProjectionMatrix");
-	N_U = glGetUniformLocation(shader.getID(), "normalMatrix");
+	M_U = glGetUniformLocation(shader_ptr->getID(), "modelMatrix");
+	MV_U = glGetUniformLocation(shader_ptr->getID(), "modelViewMatrix");
+	MVP_U = glGetUniformLocation(shader_ptr->getID(), "modelViewProjectionMatrix");
+	N_U = glGetUniformLocation(shader_ptr->getID(), "normalMatrix");
 
 	// shadow map and light transformation matrix for shadowmapping
-	shadowMap_U = glGetUniformLocation(shader.getID(), "shadowMap");
-	L_MVBP_U = glGetUniformLocation(shader.getID(), "shadowModelViewBiasProjectionMatrix");
+	shadowMap_U = glGetUniformLocation(shader_ptr->getID(), "shadowMap");
+	L_MVBP_U = glGetUniformLocation(shader_ptr->getID(), "shadowModelViewBiasProjectionMatrix");
 
 	// pass shadow map texture to shader
-	shaderPassFlag_U = glGetUniformLocation(shader.getID(), "shadowPassFlag");
+	shaderPassFlag_U = glGetUniformLocation(shader_ptr->getID(), "shadowPassFlag");
 	glUniform1i(shaderPassFlag_U, 1); // controls render pass in shader
 	glUniform1i(shadowMap_U, 5);
 
-	//shader.unbind();
-
+	//shader_ptr->unbind();
 }
 
 void ProtoBaseApp::_run(const Vec2f& mousePos/*, int mouseBtn, int key*/){

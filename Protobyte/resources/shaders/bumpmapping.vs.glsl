@@ -7,6 +7,7 @@ layout (location = 3) in vec2 vertexTextureCoords;
 layout (location = 4) in vec3 vertexTangent;
 
 
+
 out VS_OUT
 {
     vec2 texcoord;
