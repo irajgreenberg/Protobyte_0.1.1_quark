@@ -43,7 +43,7 @@ void ProtoBaseApp::_init(){
 	//areShadowsEnabled = true;
 	//shader = ProtoShader("shader1.vert", "shader1.frag");
 	//shader = ProtoShader("protoShader.vert", "protoShader.frag");
-	//shader2D = ProtoShader("colorOnlyShader.vert.glsl", "colorOnlyShader.frag.glsl");
+	shader2D = ProtoShader("colorOnlyShader.vert.glsl", "colorOnlyShader.frag.glsl");
 	shader3D = ProtoShader("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
 	
 
@@ -160,9 +160,13 @@ void ProtoBaseApp::_init(){
 	// END Shadow Matrices
 
 	createShadowMap();
-	//shader3D.bind();
-	//_initUniforms(&shader3D);
-
+	
+	shader2D.bind(); 
+	_initUniforms(&shader2D);
+	
+	shader3D.bind();
+	_initUniforms(&shader3D);
+	
 	init();
 	
 }

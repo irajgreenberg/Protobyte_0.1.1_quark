@@ -226,6 +226,11 @@ void ProtoGeom3::clearVectors(){
 }
 
 
+void ProtoGeom3::setShader(const ProtoShader* shader) {
+	this->shader = shader;
+}
+
+
 
 // public interface for texture generation
 void ProtoGeom3::setDiffuseMap(const std::string& diffuseMapImage){

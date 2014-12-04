@@ -3,8 +3,8 @@
 
 void myApp01::init() {
 	
-	shader3D.bind();
-	_initUniforms(&shader3D);
+	shader2D.bind();
+	_initUniforms(&shader2D);
 	
 	//_initUniforms(&shader3D);
 	//globalAmbient = Col3f(.3, .3, .3);
@@ -74,16 +74,22 @@ void myApp01::init() {
 
 	//ProtoPath3(const Col4f& col4, const std::vector<Vec3f>& pathVecs);
 	myPath = ProtoPath3(Col4f(.2, .75, 1, 1), cps);
-	std::cout << myPath << "\n";
 
+	//shader3D.unbind();
 }
 
 void myApp01::run() {
+	
 }
 
 void myApp01::display() {
 	background(1.0, .5, 0);
-	shader3D.bind();
+
+
+
+	//shader3D.bind();
+	//_initUniforms(&shader3D);
+
 
 	/*push();
 	{*/

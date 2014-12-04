@@ -169,6 +169,10 @@ namespace ijg {
 		/*std::string createFullShaderURL(const std::string& shaderName);*/
 
 		void clearVectors();// called from init to reset all vectors.
+
+		// set Shader
+		const ProtoShader* shader;
+		void setShader(const ProtoShader* shader);
         
         
     public:
