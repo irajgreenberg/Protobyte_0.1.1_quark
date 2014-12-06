@@ -39,6 +39,12 @@
 #include <sstream>
 #include <fstream>
 
+// include GLM
+#include "glm/gtc/type_ptr.hpp" // matrix copying
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/transform2.hpp"
+
 
 namespace ijg {
 
@@ -74,6 +80,24 @@ namespace ijg {
 		/******/#define setFragShader setFragmentShader;
 		/******/#define setGeomShader setGeometryShader;
 
+		bool   isLinked();
+
+		void   bindAttribLocation(GLuint location, const char * name);
+		void   bindFragDataLocation(GLuint location, const char * name);
+
+
+		// from Opengl 4.0 Cookbook
+		void   setUniform(const char *name, const glm::vec3 & v);
+		void   setUniform(const char *name, const glm::vec4 & v);
+		void   setUniform(const char *name, const glm::mat4 & m);
+		void   setUniform(const char *name, const glm::mat3 & m);
+		void   setUniform(const char *name, float val);
+		void   setUniform(const char *name, int val);
+		void   setUniform(const char *name, bool val);
+
+		void   printActiveUniforms();
+		void   printActiveAttribs();
+
 
 	private:
 		// must initialize these before using!!!
@@ -87,19 +111,19 @@ namespace ijg {
 		std::vector<GLuint> attribLocs, uniformLocs;
 
 		// used for access in Geom3 class
-		// Shader object is essentially a singleton, so the id will remain unchanged throughout program
-		static GLuint shader_id_2;
+		// Shader object is essentily a singleton, so the id will remain unchanged throughout program
+		static GLuint shader_alid_2;
 
-	};
-
-
-	inline const GLuint ProtoShader::getID_2() {
-		trace("in ProtoShader::getID_2()");
+	};n ProtoShader::getID_2()");
 		return shader_id_2;
 	}
 
 
-	inline GLuint ProtoShader::getID() {
+	in
+
+
+	inline const GLuint ProtoShader::getID_2() {
+		trace("iline GLuint ProtoShader::getID() {
 		trace("in ProtoShader::getID()");
 		return shader_id;
 	}
