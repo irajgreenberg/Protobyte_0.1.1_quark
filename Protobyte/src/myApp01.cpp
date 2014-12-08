@@ -3,13 +3,17 @@
 
 void myApp01::init() {
 	
-	shader2D.bind();
-	_initUniforms(&shader2D);
+	
 	
 	//_initUniforms(&shader3D);
 	//globalAmbient = Col3f(.3, .3, .3);
+
+
+
 	shadowsOn();
 	// wall
+	//plane = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(0, 0, 0, 1), 1, 1, "linen.jpg"); 
+	
 	plane = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(0, 0, 0, 1), 1, 1, "linen.jpg");
 	//Plane.textureOn();
 	plane.setBumpMap("linen.jpg");
@@ -76,6 +80,10 @@ void myApp01::init() {
 	myPath = ProtoPath3(Col4f(.2, .75, 1, 1), cps);
 
 	//shader3D.unbind();
+	shader3D.bind();
+	_initUniforms(&shader3D);
+
+
 }
 
 void myApp01::run() {
@@ -119,13 +127,13 @@ void myApp01::display() {
 		rotate(getFrameCount()*.065f, 0, 0, 1);
 		scale(4);
 		
-		//shader = ProtoShader("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
-		//_initUniforms(&shader3D);
-		
+		shader3D.setShaders("colorOnlyShader.vert.glsl", "colorOnlyShader.frag.glsl");
+		//
+		//_initUniforms(&shader3D); 
 		ellipse.display();
 
 		
-		tube.display();
+		//tube.display();
 	}
 	pop();
 	
@@ -138,15 +146,13 @@ void myApp01::display() {
 		rotate(getFrameCount()*.05f, 0, 1, 0);
 		rotate(-getFrameCount()*.065f, 0, 0, 1);
 		scale(3);
-		
 
+		shader3D.setShaders("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
+		//shader3D.bind();
+		//_initUniforms(&shader3D); 
+		ellipse.display();
+		//myPath.display();
 
-		//_initUniforms(&shader2D);
-		//shader2D.bind();
-		ellipse.display(WIREFRAME, 8);
-		//shader2D.unbind();
-		myPath.display();
-		//shader2D.unbind();
 	}
 	pop();
 

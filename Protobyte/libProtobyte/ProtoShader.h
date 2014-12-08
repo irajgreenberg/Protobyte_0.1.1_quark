@@ -40,10 +40,10 @@
 #include <fstream>
 
 // include GLM
-#include "glm/gtc/type_ptr.hpp" // matrix copying
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtx/transform2.hpp"
+//#include "glm/gtc/type_ptr.hpp" // matrix copying
+//#include "glm/glm.hpp"
+//#include "glm/gtc/matrix_transform.hpp"
+//#include "glm/gtx/transform2.hpp"
 
 
 namespace ijg {
@@ -75,6 +75,7 @@ namespace ijg {
 		static void setVertexShader(const std::string& vShaderURL);
 		static void setFragmentShader(const std::string& fShaderURL);
 		static void setGeometryShader(const std::string& gShaderURL);
+		void setShaders(const std::string& vShaderURL, const std::string& fShaderURL);
 
 		/******/#define setVertShader setVertexShader;
 		/******/#define setFragShader setFragmentShader;
@@ -87,13 +88,13 @@ namespace ijg {
 
 
 		// from Opengl 4.0 Cookbook
-		void   setUniform(const char *name, const glm::vec3 & v);
-		void   setUniform(const char *name, const glm::vec4 & v);
-		void   setUniform(const char *name, const glm::mat4 & m);
-		void   setUniform(const char *name, const glm::mat3 & m);
-		void   setUniform(const char *name, float val);
-		void   setUniform(const char *name, int val);
-		void   setUniform(const char *name, bool val);
+		//void   setUniform(const char *name, const glm::vec3 & v);
+		//void   setUniform(const char *name, const glm::vec4 & v);
+		//void   setUniform(const char *name, const glm::mat4 & m);
+		//void   setUniform(const char *name, const glm::mat3 & m);
+		//void   setUniform(const char *name, float val);
+		//void   setUniform(const char *name, int val);
+		//void   setUniform(const char *name, bool val);
 
 		void   printActiveUniforms();
 		void   printActiveAttribs();
@@ -112,20 +113,16 @@ namespace ijg {
 
 		// used for access in Geom3 class
 		// Shader object is essentily a singleton, so the id will remain unchanged throughout program
-		static GLuint shader_alid_2;
+		static GLuint shader_id_2;
 
-	};n ProtoShader::getID_2()");
-		return shader_id_2;
+	};
+
+	inline GLuint ProtoShader::getID() {
+		return shader_id;
 	}
 
-
-	in
-
-
 	inline const GLuint ProtoShader::getID_2() {
-		trace("iline GLuint ProtoShader::getID() {
-		trace("in ProtoShader::getID()");
-		return shader_id;
+		return shader_id_2;
 	}
 
 	inline void ProtoShader::bind() {
@@ -136,6 +133,12 @@ namespace ijg {
 	inline void ProtoShader::unbind() {
 		trace("in ProtoShader::unbind()");
 		glUseProgram(0);
+	}
+
+	inline void ProtoShader::setShaders(const std::string& vShaderURL, const std::string& fShaderURL){
+		vShader = vShaderURL;
+		fShader = fShaderURL;
+		init();
 	}
 
 }

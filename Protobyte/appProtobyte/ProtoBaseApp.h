@@ -95,6 +95,10 @@ namespace ijg {
 
 		void setMouseButton(int mouseAction, int mouseButton, int mouseMods);
 
+
+		static ProtoBaseApp* baseApp;
+		static ProtoBaseApp* getBaseApp();
+
 	private:
 		// only needed to be called by ProtoPlasm class - a friend
 		void setWorld(std::unique_ptr<ProtoWorld> world);
@@ -109,6 +113,8 @@ namespace ijg {
 		void _run(const Vec2f& mousePos/*, int mouseBtn, int key*/);
 		//void setViewport(int width, int height);
 		// void concat(); moved down for testing
+
+		
 
 	protected:
 		void _initUniforms(ProtoShader* shader_ptr); // temporarily here. put back in private eventually

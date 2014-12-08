@@ -12,6 +12,8 @@
 using namespace ijg;
 
 
+ProtoBaseApp* ProtoBaseApp::baseApp = 0;
+
 // NOTE: called before GL context created
 ProtoBaseApp::ProtoBaseApp() {
 
@@ -24,6 +26,7 @@ ProtoBaseApp::ProtoBaseApp() {
 	lights.push_back(ProtoLight());
 	lights.push_back(ProtoLight());
 
+	ProtoBaseApp::baseApp = this;
 }
 
 ProtoBaseApp::ProtoBaseApp(const ProtoOSC& listener) :
@@ -37,13 +40,21 @@ listener(listener){
 	lights.push_back(ProtoLight());
 	lights.push_back(ProtoLight());
 	lights.push_back(ProtoLight());
+
+	ProtoBaseApp::baseApp = this;
 }
 
+ProtoBaseApp* ProtoBaseApp::getBaseApp() {
+	return ProtoBaseApp::baseApp;
+}
+
+
 void ProtoBaseApp::_init(){
+	//trace(ProtoBaseApp::baseApp);
 	//areShadowsEnabled = true;
 	//shader = ProtoShader("shader1.vert", "shader1.frag");
 	//shader = ProtoShader("protoShader.vert", "protoShader.frag");
-	shader2D = ProtoShader("colorOnlyShader.vert.glsl", "colorOnlyShader.frag.glsl");
+	//shader2D = ProtoShader("colorOnlyShader.vert.glsl", "colorOnlyShader.frag.glsl");
 	shader3D = ProtoShader("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
 	
 
@@ -161,11 +172,11 @@ void ProtoBaseApp::_init(){
 
 	createShadowMap();
 	
-	shader2D.bind(); 
-	_initUniforms(&shader2D);
+	//shader2D.bind(); 
+	//_initUniforms(&shader2D);
 	
-	shader3D.bind();
-	_initUniforms(&shader3D);
+	//shader3D.bind();
+	//_initUniforms(&shader3D);
 	
 	init();
 	
