@@ -175,9 +175,12 @@ void ProtoBaseApp::_init(){
 	//shader2D.bind(); 
 	//_initUniforms(&shader2D);
 	
-	//shader3D.bind();
-	//_initUniforms(&shader3D);
+	shader3D.bind();
+	_initUniforms(&shader3D);
 	
+
+	// for 2D rendering - enables/disables lighting effects
+	ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 1.0);
 	init();
 	
 }
@@ -265,6 +268,12 @@ void ProtoBaseApp::_initUniforms(ProtoShader* shader_ptr){
 	glUniform1i(shaderPassFlag_U, 1); // controls render pass in shader
 	glUniform1i(shadowMap_U, 5);
 
+	// enable/disable lighting factors for 2D rendering
+	// default is all on
+	lightRenderingFactors_U = glGetUniformLocation(shader_ptr->getID(), "lightRenderingFactors");
+	//glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
+	
+	
 	//shader_ptr->unbind();
 }
 
@@ -326,6 +335,10 @@ void ProtoBaseApp::_run(const Vec2f& mousePos/*, int mouseBtn, int key*/){
 	glUniformMatrix4fv(MVP_U, 1, GL_FALSE, &MVP[0][0]);
 	glUniformMatrix3fv(N_U, 1, GL_FALSE, &N[0][0]);
 
+	// enable  /disable lighting effects ofr 2D rendering
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
+	
+	
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	//glViewport(0, 0, width, height);
 
@@ -637,18 +650,9 @@ void ProtoBaseApp::loadImage(std::string imageName){
 //	std::cout << matrix[3] << " | " << matrix[7] << " | " << matrix[11] << " | " << matrix[15] << std::endl;
 //}
 
-// 2D api  ********************NOTE: This is not really implemented!**********************
+// 2D api 
 void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
 	float _x = 0, _y = 0;
-	// initialize glew for Windows
-#if defined(_WIN32) || defined(__linux__)
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		/* Problem: glewInit failed, something is seriously wrong. */
-		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-	}
-#endif
 
 	/* CENTER,
 	CORNER, // assumed top left
@@ -685,7 +689,6 @@ void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
 
 	}
 
-
 	float vecs[] = { _x, _y, _x, _y - h, _x + w, _y - h, _x + w, _y };
 	int inds[] = { 0, 1, 2, 0, 2, 3 };
 
@@ -704,10 +707,8 @@ void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GL_UNSIGNED_INT)* 6, NULL, GL_STATIC_DRAW); // allocate
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GL_UNSIGNED_INT)* 6, &inds[0]); // upload the data
 
-
 	// fill state is true - need to create this
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
 
 	// draw rect
 	glBindBuffer(GL_ARRAY_BUFFER, vboID);
@@ -716,13 +717,9 @@ void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glVertexPointer(2, GL_FLOAT, 2 * sizeof(GLfloat), BUFFER_OFFSET(0));
 
-
-	glDisable(GL_LIGHTING);
-
-	//pushMatrix();
-	//translatef(0, 0, -500); // set camera to -500 default to get close to pixel accurate coords
+	//glDisable(GL_LIGHTING);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
-	//popMatrix();
+
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

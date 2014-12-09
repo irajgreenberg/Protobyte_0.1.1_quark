@@ -250,6 +250,12 @@ namespace ijg {
 		// Uniform Shadow Map
 		GLuint shadowMap_U;
 
+		// Uniform Lighting factors
+		// enable/disable lighting factors for 2D rendering
+		Vec4f ltRenderingFactors;
+		GLuint lightRenderingFactors_U;
+
+
 		// shadow mapping texture id's
 		GLuint shadowBufferID, shadowTextureID;
 

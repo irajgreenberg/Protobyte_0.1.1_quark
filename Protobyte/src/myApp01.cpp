@@ -57,7 +57,7 @@ void myApp01::init() {
 
 	TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(.2, random(3, 6)), 130/*int(random(3, 25))*/);
 
-	tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(.5, .275, .45, 1), spline, .09, 24, t1, false, "metal_flaky_blue.jpg", Vec2f(1, .01));
+	tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(1, .275, .45, 1), spline, .09, 24, t1, false, "metal_flaky_blue.jpg", Vec2f(1, .01));
 	tube.setShininess(int(random(6, 20)));
 	tube.setBumpMap("metal_flaky_blue.jpg");
 	tube.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
@@ -80,10 +80,8 @@ void myApp01::init() {
 	myPath = ProtoPath3(Col4f(.2, .75, 1, 1), cps);
 
 	//shader3D.unbind();
-	shader3D.bind();
-	_initUniforms(&shader3D);
-
-
+	//shader3D.bind();
+	//_initUniforms(&shader3D);
 }
 
 void myApp01::run() {
@@ -143,15 +141,16 @@ void myApp01::display() {
 		rotate(getFrameCount()*.065f, 0, 0, 1);
 		scale(100);
 		
-		shader3D.setShaders("colorOnlyShader.vert.glsl", "colorOnlyShader.frag.glsl");
+		//shader3D.setShaders("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
 		//
 		//_initUniforms(&shader3D); 
+		fill(1.0, .2, .4, 1.0);
 		ellipse.display();
 
 		
 
 		
-		//tube.display();
+		tube.display();
 	}
 	pop();
 	
@@ -165,7 +164,7 @@ void myApp01::display() {
 		rotate(-getFrameCount()*.065f, 0, 0, 1);
 		scale(100);
 
-		shader3D.setShaders("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
+		//shader3D.setShaders("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
 		//shader3D.bind();
 		//_initUniforms(&shader3D); 
 		ellipse.display();

@@ -1,5 +1,6 @@
 #version 430 core
 
+in vec4 inColor; // orig attribute color set in v. shader
 out vec4 color;
 
 // Texture maps
@@ -39,6 +40,14 @@ uniform vec4 emissiveMaterial;
 uniform float shininess;
 
 //uniform bool isShadowEnabled;
+
+// multiplier to null out lighting factors for 2D rendering
+// diffuse, specular, ambientMat, globalAmbientLight
+// avoids need for conditional testing
+// 3D default: (1,1,1,1)
+// 2D default: (0,0,0,0)
+uniform vec4 lightRenderingFactors;
+
 
 
 
@@ -106,6 +115,9 @@ void main(void)
 		diffuse = mix(diffuse, diffuse*shadow, 0.4); 
 	}
 
-    // Final color is diffuse + specular
-    color = vec4(diffuse + specular + vec3(ambientMaterial)*globalAmbientLight, 1.0);
+    // Final color is diffuse + specular + ambient with lightRendering Factors enabling/disabling lighting effects for 2D rendering
+	//inColor +
+
+	vec4 vc = vec4(.125, 0, .15, 1.0);
+    color = vc + vec4(diffuse*lightRenderingFactors.x + specular*lightRenderingFactors.y + vec3(ambientMaterial*lightRenderingFactors.z)*globalAmbientLight*lightRenderingFactors.w, 1.0);
 }
