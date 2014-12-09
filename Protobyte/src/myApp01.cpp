@@ -114,23 +114,41 @@ void myApp01::display() {
 
 
 
-	beginArcball();
+	
+
+
+	beginArcball(); 
+	push();
+	translate(-51, 0, 0);
+	//rect(0, 0, 100, 100, CENTER);
+	pop();
+	
+	push();
+	translate(51, 0, 0);
+	scale(10);
+	//rect(0, 0, 1, 1, CENTER);
+	pop();
+
+
+
 	//rotate(getFrameCount()*.05f, 1, 0, 0);
 	//rotate(getFrameCount()*.05f, 0, 1, 0);
 	//rotate(getFrameCount()*.065f, 0, 0, 1);
 	push();
 	{
-		translate(-4, 0, -2);
+		translate(-50, 0, 0);
 
 		rotate(getFrameCount()*.05f, 1, 0, 0);
 		rotate(getFrameCount()*.05f, 0, 1, 0);
 		rotate(getFrameCount()*.065f, 0, 0, 1);
-		scale(4);
+		scale(100);
 		
 		shader3D.setShaders("colorOnlyShader.vert.glsl", "colorOnlyShader.frag.glsl");
 		//
 		//_initUniforms(&shader3D); 
 		ellipse.display();
+
+		
 
 		
 		//tube.display();
@@ -141,11 +159,11 @@ void myApp01::display() {
 	push();
 	{
 		//cylinder.display();
-		translate(4, 0, 2);
+		translate(50, 0, 0);
 		rotate(-getFrameCount()*.5f, 1, 0, 0);
 		rotate(getFrameCount()*.05f, 0, 1, 0);
 		rotate(-getFrameCount()*.065f, 0, 0, 1);
-		scale(3);
+		scale(100);
 
 		shader3D.setShaders("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
 		//shader3D.bind();

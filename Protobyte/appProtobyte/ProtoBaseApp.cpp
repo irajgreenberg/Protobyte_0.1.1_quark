@@ -106,7 +106,7 @@ void ProtoBaseApp::_init(){
 
 	// projection matrix and MVP Matrix
 	// perspective
-	viewAngle = 65.0f;
+	viewAngle = 75.0f;
 	aspect = float(width) / float(height);
 	// ortho
 	//trace("width = ", width);
@@ -117,7 +117,7 @@ void ProtoBaseApp::_init(){
 	top = height / 2;
 
 	nearDist = .1f;
-	farDist = 500.0f;
+	farDist = 1500.0f;
 
 	P = glm::perspective(viewAngle, aspect, nearDist, farDist);
 	MVP = P * MV;
@@ -302,8 +302,8 @@ void ProtoBaseApp::_run(const Vec2f& mousePos/*, int mouseBtn, int key*/){
 
 	// I thought I needed this to reset matrix each frame?
 	M = glm::mat4(1.0f);
-
-	V = glm::lookAt(glm::vec3(0.0, 0.0, 18.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	// was 18
+	V = glm::lookAt(glm::vec3(0.0, 0.0, 500.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 	//M = T * R * S;
 	MV = V * M;
 	MVP = P * MV;
@@ -768,94 +768,78 @@ void ProtoBaseApp::GLSLInfo(ProtoShader* shader){
 }
 
 
-/****************************************
-*        convenience plotting api       *
-****************************************/
-
-// PATH
-void ProtoBaseApp::beginPath() {
-
+/***********BEGIN************
+2D Automatic Procedural API
+***************************/
+// Styles API
+void ProtoBaseApp::fill(const Col4f& col) {
 }
-void ProtoBaseApp::endPath() {
-
+void ProtoBaseApp::fill(float gray) {
 }
-void ProtoBaseApp::closePath() {
-
+void ProtoBaseApp::fill(float gray, float a) {
+}
+void ProtoBaseApp::fill(float r, float g, float b) {
+}
+void ProtoBaseApp::fill(float r, float g, float b, float a) {
+}
+void ProtoBaseApp::noFill() {
+}
+// begin STROKE
+void ProtoBaseApp::stroke(const Col4f& col) {
+}
+void ProtoBaseApp::stroke(float gray) {
+}
+void ProtoBaseApp::stroke(float gray, float a) {
+}
+void ProtoBaseApp::stroke(float r, float g, float b) {
+}
+void ProtoBaseApp::stroke(float r, float g, float b, float a) {
+}
+void ProtoBaseApp::noStroke() {
+}
+void ProtoBaseApp::strokeWeight() {
 }
 
 //PRIMITIVES
-void ProtoBaseApp::rect(Vec2 pt0, Vec2 pt1, Registration reg){
-	rect(pt0.x, pt0.y, pt1.x - pt0.x, pt1.y - pt0.y, reg);
+//void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg) {
+//}
+void ProtoBaseApp::rect(const Vec2& pt0, const Vec2& pt1, Registration reg) {
+}
+void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg) {
+}
+void ProtoBaseApp::ellipse(const Vec2& pt0, const Vec2& pt1, Registration reg) {
+}
+void ProtoBaseApp::ellipse(float x, float y, float r, Registration reg) {
+}
+void ProtoBaseApp::triangle(const Vec2& pt0, const Vec2& pt1, const Vec2& pt2) {
+}
+void ProtoBaseApp::triangle(float x0, float y0, float x1, float y1, float x2, float y2) {
+}
+void ProtoBaseApp::poly(int sides, float radius) {
+}
+void ProtoBaseApp::poly(int sides, float radius1, float radius2) {
+}
+void ProtoBaseApp::star(int sides, float innerRadius, float outerRadius) {
+}
+void ProtoBaseApp::star(int sides, const Vec2& radiusAndRatio) {
 }
 
-void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg){
-
+// PATH
+void ProtoBaseApp::beginPath() {
 }
-
-void ProtoBaseApp::ellipse(Vec2 pt0, Vec2 pt1, Registration reg){
-
+void ProtoBaseApp::endPath() {
 }
-
-void ProtoBaseApp::ellipse(float x, float y, float r, Registration reg){
-
+void ProtoBaseApp::closePath() {
 }
-
-
-// FILL
-void ProtoBaseApp::fill(const Col4f& col) {
-
-}
-void ProtoBaseApp::fill(float gray) {
-
-}
-void ProtoBaseApp::fill(float gray, float a) {
-
-}
-void ProtoBaseApp::fill(float r, float g, float b) {
-
-}
-void ProtoBaseApp::fill(float r, float g, float b, float a) {
-
-}
-void ProtoBaseApp::noFill() {
-
-}
-// STROKE
-void ProtoBaseApp::stroke(const Col4f& col) {
-
-}
-void ProtoBaseApp::stroke(float gray) {
-
-}
-void ProtoBaseApp::stroke(float gray, float a) {
-
-}
-void ProtoBaseApp::stroke(float r, float g, float b) {
-
-}
-void ProtoBaseApp::stroke(float r, float g, float b, float a) {
-
-}
-void ProtoBaseApp::noStroke() {
-
-}
-void ProtoBaseApp::strokeWeight() {
-
-}
-
 void ProtoBaseApp::vertex(const Vec2f& vec) {
-
 }
 void ProtoBaseApp::vertex(const Vec3f& vec) {
-
 }
 void ProtoBaseApp::vertex(float x, float y) {
-
 }
 void ProtoBaseApp::vertex(float x, float y, float z) {
-
 }
-
+/****END 2D API****/
 
 
 

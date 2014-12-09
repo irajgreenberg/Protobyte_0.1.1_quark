@@ -366,33 +366,7 @@ namespace ijg {
 		void push();
 		void pop();
 		
-		/****************************************
-		*        convenience plotting api       *
-		****************************************/
-		void beginPath();
-		void endPath();
-		void closePath(); // avoid passing flag
-
-		// enable syle states between beginPath() ... endPath()
-		void fill(const Col4f& col);
-		void fill(float gray);
-		void fill(float gray, float a); 
-		void fill(float r, float g, float b);
-		void fill(float r, float g, float b, float a);
-		void noFill();
 		
-		void stroke(const Col4f& col);
-		void stroke(float gray);
-		void stroke(float gray, float a);
-		void stroke(float r, float g, float b);
-		void stroke(float r, float g, float b, float a);
-		void noStroke();
-		void strokeWeight();
-		
-		void vertex(const Vec2f& vec); 
-		void vertex(const Vec3f& vec);
-		void vertex(float x, float y);
-		void vertex(float x, float y, float z);
 		
 
 
@@ -421,8 +395,8 @@ namespace ijg {
 		// WORLD
 		void printMatrix(Matrix m = MODEL_VIEW);
 
-		/****************************
-		 2d Automatic Procedural API
+		/***********BEGIN************
+		 2D Automatic Procedural API
 		 ***************************/
 		enum Registration{
 			CENTER,
@@ -433,7 +407,49 @@ namespace ijg {
 			RANDOM
 		};
 
+		// Styles API
+		void fill(const Col4f& col);
+		void fill(float gray);
+		void fill(float gray, float a);
+		void fill(float r, float g, float b);
+		void fill(float r, float g, float b, float a);
+		void noFill();
 
+		void stroke(const Col4f& col);
+		void stroke(float gray);
+		void stroke(float gray, float a);
+		void stroke(float r, float g, float b);
+		void stroke(float r, float g, float b, float a);
+		void noStroke();
+		void strokeWeight();
+		
+		// Primitives API
+		void rect(float x, float y, float w, float h, Registration reg = CORNER);
+		void rect(const Vec2& pt0, const Vec2& pt1, Registration reg = CORNER);
+		void rect(float radius1, float radius2, Registration reg = CENTER);
+		void ellipse(float x, float y, float w, float h, Registration reg = CENTER);
+		void ellipse(const Vec2& pt0, const Vec2& pt1, Registration reg = CENTER);
+		void ellipse(float x, float y, float r, Registration reg = CENTER);
+		void triangle(const Vec2& pt0, const Vec2& pt1, const Vec2& pt2);
+		void triangle(float x0, float y0, float x1, float y1, float x2, float y2);
+		void poly(int sides, float radius);
+		void poly(int sides, float radius1, float radius2);
+		void star(int sides, float innerRadius, float outerRadius);
+		void star(int sides, const Vec2& radiusAndRatio);
+
+		// Drawing Methods API
+		void beginPath();
+		void endPath();
+		void closePath(); // avoid passing flag
+		void vertex(const Vec2f& vec);
+		void vertex(const Vec3f& vec);
+		void vertex(float x, float y);
+		void vertex(float x, float y, float z);
+		/****END 2D API****/
+		
+		/***********BEGIN************
+		       Save/Thread/Other
+		***************************/
 		// saving stuff
 		virtual void render(int x = 0, int y = 0, int scaleFactor = 1); // eventually maybe make pure virtual (ehhh, maybe not)
 		void save(std::string name = "img", int scaleFactor = 1);
@@ -441,17 +457,7 @@ namespace ijg {
 		std::mutex mtx;
 		//void saveTiles(int rows, int columns);
 		bool stitchTiles(std::string url, int tiles);
-
-
-
-
-		void rect(float x, float y, float w, float h, Registration reg = CORNER);
-		void rect(Vec2 pt0, Vec2 pt1, Registration reg = CORNER);
-		void ellipse(float x, float y, float w, float h, Registration reg = CENTER);
-		void ellipse(Vec2 pt0, Vec2 pt1, Registration reg = CENTER);
-		void ellipse(float x, float y, float r, Registration reg = CENTER);
-
-
+		/****END Save/Thread/Other****/
 
 	};
 
