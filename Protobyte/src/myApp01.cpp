@@ -14,18 +14,18 @@ void myApp01::init() {
 	// wall
 	//plane = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(0, 0, 0, 1), 1, 1, "linen.jpg"); 
 	
-	plane = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(0, 0, 0, 1), 1, 1, "linen.jpg");
+	//plane = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(0, 0, 0, 1), 1, 1, "linen.jpg");
 	//Plane.textureOn();
-	plane.setBumpMap("linen.jpg");
+	//plane.setBumpMap("linen.jpg");
 	//Plane.loadBumpMapTexture("shipPlate_normal.jpg");
-	plane.setTextureScale(Vec2f(.5));
+	//plane.setTextureScale(Vec2f(.5));
 	//Plane.setAmbientMaterial(Col4f(.02, .02, .02, 1.0));
-	plane.setSpecularMaterial(Col4f(.85, .85, .85, 1.0));
-	plane.setShininess(45);
+	//plane.setSpecularMaterial(Col4f(.85, .85, .85, 1.0));
+	//plane.setShininess(45);
 	//trace("GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS =", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
 
-	tube = ProtoTube();
+	//tube = ProtoTube();
 
 	float theta = 0;
 	float radius = .107;
@@ -57,27 +57,27 @@ void myApp01::init() {
 
 	TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(.2, random(3, 6)), 130/*int(random(3, 25))*/);
 
-	tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(1, .275, .45, 1), spline, .09, 24, t1, false, "metal_flaky_blue.jpg", Vec2f(1, .01));
-	tube.setShininess(int(random(6, 20)));
-	tube.setBumpMap("metal_flaky_blue.jpg");
-	tube.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
+	//tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(1, .275, .45, 1), spline, .09, 24, t1, false, "metal_flaky_blue.jpg", Vec2f(1, .01));
+	//tube.setShininess(int(random(6, 20)));
+	//tube.setBumpMap("metal_flaky_blue.jpg");
+	//tube.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
 
 	//ProtoCylinder::ProtoCylinder(int detail, Registration reg) :
-	cylinder = Cylinder(60, "pitted.jpg", ProtoCylinder::CENTER);
-	cylinder.setShininess(1);
-	cylinder.setBumpMap("pitted.jpg");
-	cylinder.setDiffuseMaterial(Col4f(1, 1, 1, 1.0));
-	cylinder.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
+	//cylinder = Cylinder(60, "pitted.jpg", ProtoCylinder::CENTER);
+	//cylinder.setShininess(1);
+	//cylinder.setBumpMap("pitted.jpg");
+	//cylinder.setDiffuseMaterial(Col4f(1, 1, 1, 1.0));
+	//cylinder.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
 
-	ellipse = ProtoEllipse(Vec3f(), Vec3f(), Dim2f(1, 1),
-		Col4f(1, 0, .75, 1), 24);
+	//ellipse = ProtoEllipse(Vec3f(), Vec3f(), Dim2f(1, 1),
+		//Col4f(1, 0, .75, 1), 24);
 	//ellipse.setDiffuseMaterial(Col4f(1.0, 0.0, 0.0, 1.0));
 	//ellipse.setDiffuseMap("ship_plate.jpg");
 	//ellipse.setBumpMap("ship_plate.jpg");
 	//ellipse.setTextureScale(Vec2f(3, 3));
 
 	//ProtoPath3(const Col4f& col4, const std::vector<Vec3f>& pathVecs);
-	myPath = ProtoPath3(Col4f(.2, .75, 1, 1), cps);
+	//myPath = ProtoPath3(Col4f(.2, .75, 1, 1), cps);
 
 	//shader3D.unbind();
 	//shader3D.bind();
@@ -114,17 +114,17 @@ void myApp01::display() {
 
 	
 
-
+	fill(1.0, .75, .65);
 	beginArcball(); 
 	push();
-	translate(-51, 0, 0);
-	//rect(0, 0, 100, 100, CENTER);
+	translate(-101, 0, 0);
+	rect(0, 0, 200, 200, CENTER);
 	pop();
 	
 	push();
-	translate(51, 0, 0);
-	scale(10);
-	//rect(0, 0, 1, 1, CENTER);
+	translate(101, 0, 0);
+	scale(200);
+	rect(0, 0, 1, 1, CENTER);
 	pop();
 
 
@@ -145,12 +145,12 @@ void myApp01::display() {
 		//
 		//_initUniforms(&shader3D); 
 		fill(1.0, .2, .4, 1.0);
-		ellipse.display();
+		//ellipse.display();
 
 		
 
 		
-		tube.display();
+		//tube.display();
 	}
 	pop();
 	
@@ -167,7 +167,7 @@ void myApp01::display() {
 		//shader3D.setShaders("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
 		//shader3D.bind();
 		//_initUniforms(&shader3D); 
-		ellipse.display();
+		//ellipse.display();
 		//myPath.display();
 
 	}

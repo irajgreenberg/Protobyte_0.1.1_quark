@@ -1,6 +1,6 @@
 #version 430 core
 
-in vec4 inColor; // orig attribute color set in v. shader
+in vec4 vertCol; // orig attribute color set in v. shader
 out vec4 color;
 
 // Texture maps
@@ -77,6 +77,7 @@ void main(void)
 		vec3 V = normalize(fs_in.eyeDir);
 		vec3 L = normalize(fs_in.lightDir[i]); // ***********multi here
     
+		// Calculate diffuse color with simple N dot L.
 		// Read the normal from the normal map and normalize it.
 		vec3 N = normalize(texture(bumpMap, fs_in.texcoord).rgb * 2.0 - vec3(1.0));
     
@@ -88,7 +89,6 @@ void main(void)
 
 		// Fetch the diffuse albedo from the texture.
 		vec3 diffuse_albedo = texture(diffuseMap, fs_in.texcoord).rgb;
-		// Calculate diffuse color with simple N dot L.
 		diffuse += max(dot(N, L), 0.0) * diffuse_albedo * vec3(diffuseMaterial) * lights[i].intensity; // ***********multi here
 		// Uncomment this to turn off diffuse shading
 		// diffuse = vec3(0.0);
@@ -116,8 +116,5 @@ void main(void)
 	}
 
     // Final color is diffuse + specular + ambient with lightRendering Factors enabling/disabling lighting effects for 2D rendering
-	//inColor +
-
-	vec4 vc = vec4(.125, 0, .15, 1.0);
-    color = vc + vec4(diffuse*lightRenderingFactors.x + specular*lightRenderingFactors.y + vec3(ambientMaterial*lightRenderingFactors.z)*globalAmbientLight*lightRenderingFactors.w, 1.0);
+    color = vertCol*lightRenderingFactors.w + vec4(diffuse*lightRenderingFactors.x + specular*lightRenderingFactors.y + (vec3(ambientMaterial)*globalAmbientLight)*lightRenderingFactors.z, 1.0);
 }

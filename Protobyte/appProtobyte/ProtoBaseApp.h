@@ -73,7 +73,9 @@
 // end relative loading proproc dir
 
 
+// for offset into the FBO interleaved buffer (ugly I know!)
 #define BUFFER_OFFSET(i) ((void*)(i))
+
 #include <iostream>
 #include <stack>
 
@@ -254,6 +256,8 @@ namespace ijg {
 		// enable/disable lighting factors for 2D rendering
 		Vec4f ltRenderingFactors;
 		GLuint lightRenderingFactors_U;
+
+		Col4f fillColor, strokeColor;
 
 
 		// shadow mapping texture id's

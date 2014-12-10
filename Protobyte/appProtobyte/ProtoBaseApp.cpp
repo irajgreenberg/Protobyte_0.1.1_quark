@@ -172,15 +172,17 @@ void ProtoBaseApp::_init(){
 
 	createShadowMap();
 	
-	//shader2D.bind(); 
-	//_initUniforms(&shader2D);
-	
+	// for 2D rendering - enables/disables lighting effects
+	ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 0.0);
+
+	// default 2D style states
+	fillColor = Col4f(1, 1, 1, 1);
+	strokeColor = Col4f(1, 1, 1, 1);
+
+
 	shader3D.bind();
 	_initUniforms(&shader3D);
-	
 
-	// for 2D rendering - enables/disables lighting effects
-	ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 1.0);
 	init();
 	
 }
@@ -652,6 +654,8 @@ void ProtoBaseApp::loadImage(std::string imageName){
 
 // 2D api 
 void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
+	ltRenderingFactors = Vec4f(0.0, 0.0, 0.0, 1.0); 
+	
 	float _x = 0, _y = 0;
 
 	/* CENTER,
@@ -689,23 +693,41 @@ void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
 
 	}
 
-	float vecs[] = { _x, _y, _x, _y - h, _x + w, _y - h, _x + w, _y };
+	// needs work
+	// interleaved float[] (x, y, 0, r, g, b, a) 7*4 pts
+	float prims[] = {
+		_x, _y, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
+		_x, _y - h, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
+		_x + w, _y - h, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
+		_x + w, _y, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a
+	};
+	
 	int inds[] = { 0, 1, 2, 0, 2, 3 };
 
 	// vert data
+	// 1. Create and bind VAO
+	GLuint vaoID;
+	glGenVertexArrays(1, &vaoID); // Create VAO
+	glBindVertexArray(vaoID); // Bind VAO (making it active)
+
+	// 2. Create and bind VBO
+	// a. Vertex attributes vboID;
 	GLuint vboID;
 	glGenBuffers(1, &vboID); // Create the buffer ID
 	glBindBuffer(GL_ARRAY_BUFFER, vboID); // Bind the buffer (vertex array data)
-	int vertsDataSize = sizeof (GLfloat)* 8;
-	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STATIC_DRAW); // allocate space
-	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &vecs[0]); // upload the data
+	int vertsDataSize = sizeof (GLfloat) * 28; 
+	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STATIC_DRAW);// allocate space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &prims[0]); // upload the data
 
 	// indices data
 	GLuint indexVboID;
 	glGenBuffers(1, &indexVboID); // Generate buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboID); // Bind the element array buffer
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GL_UNSIGNED_INT)* 6, NULL, GL_STATIC_DRAW); // allocate
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GL_UNSIGNED_INT)* 6, &inds[0]); // upload the data
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboID); // Bind element buffer
+
+	int indsDataSize = 6 * sizeof(GL_UNSIGNED_INT);
+
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indsDataSize, NULL, GL_STATIC_DRAW); // allocate
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indsDataSize, &inds[0]); // upload data
 
 	// fill state is true - need to create this
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -714,18 +736,24 @@ void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
 	glBindBuffer(GL_ARRAY_BUFFER, vboID);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboID);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(2, GL_FLOAT, 2 * sizeof(GLfloat), BUFFER_OFFSET(0));
+	glEnableVertexAttribArray(0); // vertices
+	glEnableVertexAttribArray(2); // color
+	// stride is 6: pos(2) + col(4)
+	// (x, y, r, g, b, a)
+	int stride = 7;
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(0)); // pos
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(12)); // col
 
 	//glDisable(GL_LIGHTING);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
 
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
+	// Disable VAO
+	glEnableVertexAttribArray(0);
+	glBindVertexArray(0);
 	// reenable lighting
 	//glEnable(GL_LIGHTING);
+
+	//ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 0.0);
 }
 
 
@@ -770,29 +798,47 @@ void ProtoBaseApp::GLSLInfo(ProtoShader* shader){
 ***************************/
 // Styles API
 void ProtoBaseApp::fill(const Col4f& col) {
+	fillColor = col;
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 void ProtoBaseApp::fill(float gray) {
+	fillColor = Col4f(gray, gray, gray, 1);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 void ProtoBaseApp::fill(float gray, float a) {
+	fillColor = Col4f(gray, gray, gray, a);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 void ProtoBaseApp::fill(float r, float g, float b) {
+	fillColor = Col4f(r, b, b, 1);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 void ProtoBaseApp::fill(float r, float g, float b, float a) {
+	fillColor = Col4f(r, g, b, a);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 void ProtoBaseApp::noFill() {
+	fillColor = Col4f(0, 0, 0, 0);
+	
 }
 // begin STROKE
 void ProtoBaseApp::stroke(const Col4f& col) {
+	strokeColor = col;
 }
 void ProtoBaseApp::stroke(float gray) {
+	strokeColor = Col4f(gray, gray, gray, 1);
 }
 void ProtoBaseApp::stroke(float gray, float a) {
+	strokeColor = Col4f(gray, gray, gray, a);
 }
 void ProtoBaseApp::stroke(float r, float g, float b) {
+	strokeColor = Col4f(r, g, b, 1);
 }
 void ProtoBaseApp::stroke(float r, float g, float b, float a) {
+	strokeColor = Col4f(r, g, b, a);
 }
 void ProtoBaseApp::noStroke() {
+	strokeColor = Col4f(0, 0, 0, 0);
 }
 void ProtoBaseApp::strokeWeight() {
 }
