@@ -25,7 +25,7 @@ void myApp01::init() {
 	//trace("GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS =", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
 
-	//tube = ProtoTube();
+	tube = ProtoTube();
 
 	float theta = 0;
 	float radius = .107;
@@ -57,10 +57,10 @@ void myApp01::init() {
 
 	TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(.2, random(3, 6)), 130/*int(random(3, 25))*/);
 
-	//tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(1, .275, .45, 1), spline, .09, 24, t1, false, "metal_flaky_blue.jpg", Vec2f(1, .01));
-	//tube.setShininess(int(random(6, 20)));
-	//tube.setBumpMap("metal_flaky_blue.jpg");
-	//tube.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
+	tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(1, .275, .45, 1), spline, .09, 24, t1, false, "metal_flaky_blue.jpg", Vec2f(1, .01));
+	tube.setShininess(int(random(6, 20)));
+	tube.setBumpMap("metal_flaky_blue.jpg");
+	tube.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
 
 	//ProtoCylinder::ProtoCylinder(int detail, Registration reg) :
 	//cylinder = Cylinder(60, "pitted.jpg", ProtoCylinder::CENTER);
@@ -150,7 +150,7 @@ void myApp01::display() {
 		
 
 		
-		//tube.display();
+		tube.display();
 	}
 	pop();
 	

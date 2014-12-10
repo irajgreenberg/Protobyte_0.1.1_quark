@@ -21,7 +21,7 @@ void mouseDragged();
 
 private:
 	//ProtoGroundPlane plane;
-	//ProtoTube tube;
+	ProtoTube tube;
 	//Cylinder cylinder;
 	//ProtoEllipse ellipse;
 

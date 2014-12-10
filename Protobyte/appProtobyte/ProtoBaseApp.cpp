@@ -356,6 +356,9 @@ void ProtoBaseApp::_run(const Vec2f& mousePos/*, int mouseBtn, int key*/){
 	pop();
 	render();
 
+	ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 0.0);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
+
 	//if (isArcballOn){
 	//pop();
 	//}
@@ -653,108 +656,6 @@ void ProtoBaseApp::loadImage(std::string imageName){
 //}
 
 // 2D api 
-void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
-	ltRenderingFactors = Vec4f(0.0, 0.0, 0.0, 1.0); 
-	
-	float _x = 0, _y = 0;
-
-	/* CENTER,
-	CORNER, // assumed top left
-	CORNER_TR,
-	CORNER_BR,
-	CORNER_BL,
-	RANDOM
-	*/
-
-	switch (reg){
-	case CENTER:
-		_x = x - w / 2;
-		_y = y + h / 2;
-		break;
-	case CORNER:
-		_x = x;
-		_y = y;
-		break;
-	case CORNER_TR:
-		_x = x - w;
-		_y = y;
-		break;
-	case CORNER_BR:
-		_x = x - w;
-		_y = y + h;
-		break;
-	case CORNER_BL:
-		_x = x;
-		_y = y + h;
-		break;
-	case RANDOM:
-		// to do
-		break;
-
-	}
-
-	// needs work
-	// interleaved float[] (x, y, 0, r, g, b, a) 7*4 pts
-	float prims[] = {
-		_x, _y, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
-		_x, _y - h, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
-		_x + w, _y - h, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
-		_x + w, _y, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a
-	};
-	
-	int inds[] = { 0, 1, 2, 0, 2, 3 };
-
-	// vert data
-	// 1. Create and bind VAO
-	GLuint vaoID;
-	glGenVertexArrays(1, &vaoID); // Create VAO
-	glBindVertexArray(vaoID); // Bind VAO (making it active)
-
-	// 2. Create and bind VBO
-	// a. Vertex attributes vboID;
-	GLuint vboID;
-	glGenBuffers(1, &vboID); // Create the buffer ID
-	glBindBuffer(GL_ARRAY_BUFFER, vboID); // Bind the buffer (vertex array data)
-	int vertsDataSize = sizeof (GLfloat) * 28; 
-	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STATIC_DRAW);// allocate space
-	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &prims[0]); // upload the data
-
-	// indices data
-	GLuint indexVboID;
-	glGenBuffers(1, &indexVboID); // Generate buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboID); // Bind element buffer
-
-	int indsDataSize = 6 * sizeof(GL_UNSIGNED_INT);
-
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indsDataSize, NULL, GL_STATIC_DRAW); // allocate
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indsDataSize, &inds[0]); // upload data
-
-	// fill state is true - need to create this
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-	// draw rect
-	glBindBuffer(GL_ARRAY_BUFFER, vboID);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboID);
-
-	glEnableVertexAttribArray(0); // vertices
-	glEnableVertexAttribArray(2); // color
-	// stride is 6: pos(2) + col(4)
-	// (x, y, r, g, b, a)
-	int stride = 7;
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(0)); // pos
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(12)); // col
-
-	//glDisable(GL_LIGHTING);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
-
-	// Disable VAO
-	glEnableVertexAttribArray(0);
-	glBindVertexArray(0);
-	// reenable lighting
-	//glEnable(GL_LIGHTING);
-
-	//ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 0.0);
-}
 
 
 
@@ -844,8 +745,110 @@ void ProtoBaseApp::strokeWeight() {
 }
 
 //PRIMITIVES
-//void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg) {
-//}
+void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
+	ltRenderingFactors = Vec4f(0.0, 0.0, 0.0, 1.0);
+
+	float _x = 0, _y = 0;
+
+	/* CENTER,
+	CORNER, // assumed top left
+	CORNER_TR,
+	CORNER_BR,
+	CORNER_BL,
+	RANDOM
+	*/
+
+	switch (reg){
+	case CENTER:
+		_x = x - w / 2;
+		_y = y + h / 2;
+		break;
+	case CORNER:
+		_x = x;
+		_y = y;
+		break;
+	case CORNER_TR:
+		_x = x - w;
+		_y = y;
+		break;
+	case CORNER_BR:
+		_x = x - w;
+		_y = y + h;
+		break;
+	case CORNER_BL:
+		_x = x;
+		_y = y + h;
+		break;
+	case RANDOM:
+		// to do
+		break;
+
+	}
+
+
+	// interleaved float[] (x, y, 0, r, g, b, a) 7*4 pts
+	float prims[] = {
+		_x, _y, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
+		_x, _y - h, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
+		_x + w, _y - h, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
+		_x + w, _y, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a
+	};
+
+	int inds[] = { 0, 1, 2, 0, 2, 3 };
+
+	// vert data
+	// 1. Create and bind VAO
+	GLuint vaoID;
+	glGenVertexArrays(1, &vaoID); // Create VAO
+	glBindVertexArray(vaoID); // Bind VAO (making it active)
+
+	// 2. Create and bind VBO
+	// a. Vertex attributes vboID;
+	GLuint vboID;
+	glGenBuffers(1, &vboID); // Create the buffer ID
+	glBindBuffer(GL_ARRAY_BUFFER, vboID); // Bind the buffer (vertex array data)
+	int vertsDataSize = sizeof (GLfloat)* 28;
+	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STATIC_DRAW);// allocate space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &prims[0]); // upload the data
+
+	// indices data
+	GLuint indexVboID;
+	glGenBuffers(1, &indexVboID); // Generate buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboID); // Bind element buffer
+
+	int indsDataSize = 6 * sizeof(GL_UNSIGNED_INT);
+
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indsDataSize, NULL, GL_STATIC_DRAW); // allocate
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indsDataSize, &inds[0]); // upload data
+
+	// fill state is true - need to create this
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	// draw rect
+	glBindBuffer(GL_ARRAY_BUFFER, vboID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboID);
+
+	glEnableVertexAttribArray(0); // vertices
+	glEnableVertexAttribArray(2); // color
+	// stride is 6: pos(2) + col(4)
+	// (x, y, r, g, b, a)
+	int stride = 7;
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(0)); // pos
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(12)); // col
+
+	//glDisable(GL_LIGHTING);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+
+	// Disable VAO
+	glEnableVertexAttribArray(0);
+	glBindVertexArray(0);
+	// reenable lighting
+	//glEnable(GL_LIGHTING);
+
+	/*ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 0.0);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);*/
+}
+
 void ProtoBaseApp::rect(const Vec2& pt0, const Vec2& pt1, Registration reg) {
 }
 void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg) {
