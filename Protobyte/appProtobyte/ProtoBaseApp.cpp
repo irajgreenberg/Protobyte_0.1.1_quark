@@ -356,8 +356,8 @@ void ProtoBaseApp::_run(const Vec2f& mousePos/*, int mouseBtn, int key*/){
 	pop();
 	render();
 
-	ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 0.0);
-	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
+	//ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 0.0);
+	//glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 
 	//if (isArcballOn){
 	//pop();
@@ -697,9 +697,22 @@ void ProtoBaseApp::GLSLInfo(ProtoShader* shader){
 /***********BEGIN************
 2D Automatic Procedural API
 ***************************/
+
+// flag  enable/disable 2D lighting
+void ProtoBaseApp::enable2DRendering() {
+	ltRenderingFactors = Vec4f(0.0, 0.0, 0.0, 1.0);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
+}
+void ProtoBaseApp::disable2DRendering(){
+	ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 0.0);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
+}
+
+
 // Styles API
 void ProtoBaseApp::fill(const Col4f& col) {
 	fillColor = col;
+	ltRenderingFactors = Vec4f(0.0, 0.0, 0.0, 1.0);
 	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 void ProtoBaseApp::fill(float gray) {
@@ -712,6 +725,7 @@ void ProtoBaseApp::fill(float gray, float a) {
 }
 void ProtoBaseApp::fill(float r, float g, float b) {
 	fillColor = Col4f(r, b, b, 1);
+	ltRenderingFactors = Vec4f(0.0, 0.0, 0.0, 1.0);
 	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 void ProtoBaseApp::fill(float r, float g, float b, float a) {
@@ -746,7 +760,11 @@ void ProtoBaseApp::strokeWeight() {
 
 //PRIMITIVES
 void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
-	ltRenderingFactors = Vec4f(0.0, 0.0, 0.0, 1.0);
+	
+	// enable 2D rendering
+	//ltRenderingFactors = Vec4f(0.0, 0.0, 0.0, 1.0);
+	//glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
+	enable2DRendering();
 
 	float _x = 0, _y = 0;
 
@@ -842,14 +860,19 @@ void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
 	// Disable VAO
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
-	// reenable lighting
-	//glEnable(GL_LIGHTING);
 
-	/*ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 0.0);
-	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);*/
+
+	// reenable 3D rendering
+	//ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 0.0);
+	//glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
+	disable2DRendering();
 }
 
 void ProtoBaseApp::rect(const Vec2& pt0, const Vec2& pt1, Registration reg) {
+	rect(pt0.x, pt0.y, pt1.x - pt0.x, pt1.y - pt0.y, reg);
+}
+void ProtoBaseApp::rect(float radius1, float radius2, Registration reg) {
+	rect(0, 0, radius1, radius2, reg);
 }
 void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg) {
 }

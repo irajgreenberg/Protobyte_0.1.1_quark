@@ -417,6 +417,12 @@ namespace ijg {
 			RANDOM
 		};
 
+		// functions that flag  enable/disable 2D lighting
+		void enable2DRendering();
+		void disable2DRendering();
+
+		void calculate2DBuffers(float prims[], int inds[], int primsCount, int indsCount);
+
 		// Styles API
 		void fill(const Col4f& col);
 		void fill(float gray);

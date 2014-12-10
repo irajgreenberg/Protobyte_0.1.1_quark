@@ -55,9 +55,9 @@ void myApp01::init() {
 
 	spline = Spline3(cps, 12, false, .5);
 
-	TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(.2, random(3, 6)), 130/*int(random(3, 25))*/);
+	TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(2.2, random(3, 8)), 40/*int(random(3, 25))*/);
 
-	tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(1, .275, .45, 1), spline, .09, 24, t1, false, "metal_flaky_blue.jpg", Vec2f(1, .01));
+	tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(.2, .275, 1, 1), spline, .09, 24, t1, true, "metal_flaky_blue.jpg", Vec2f(1, .01));
 	tube.setShininess(int(random(6, 20)));
 	tube.setBumpMap("metal_flaky_blue.jpg");
 	tube.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
@@ -92,39 +92,18 @@ void myApp01::display() {
 	background(1.0, .5, 0);
 
 
-
-	//shader3D.bind();
-	//_initUniforms(&shader3D);
-
-
-	/*push();
-	{*/
-	//scale(1.06);
-	// shadowsOn();
-	// shape display()
-	//push();
-	//translate(0, 0, -14);
-	//scale(13.75, 12.75, 1);
-	//rotate(90, 1, 0, 0);
-	//plane.display();
-	//pop();
-	//
-
-
-
-	
-
-	fill(1.0, .75, .65);
 	beginArcball(); 
 	push();
 	translate(-101, 0, 0);
+	fill(1.0, .75, 0.0);
 	rect(0, 0, 200, 200, CENTER);
 	pop();
 	
 	push();
 	translate(101, 0, 0);
 	scale(200);
-	rect(0, 0, 1, 1, CENTER);
+	fill(0.0, 1.0, .65); 
+	rect(1, 1, CENTER);
 	pop();
 
 
@@ -140,15 +119,6 @@ void myApp01::display() {
 		rotate(getFrameCount()*.05f, 0, 1, 0);
 		rotate(getFrameCount()*.065f, 0, 0, 1);
 		scale(100);
-		
-		//shader3D.setShaders("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
-		//
-		//_initUniforms(&shader3D); 
-		fill(1.0, .2, .4, 1.0);
-		//ellipse.display();
-
-		
-
 		
 		tube.display();
 	}
