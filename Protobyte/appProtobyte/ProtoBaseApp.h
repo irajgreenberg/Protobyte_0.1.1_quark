@@ -439,6 +439,10 @@ namespace ijg {
 		void noStroke();
 		void strokeWeight();
 		
+		// points around ellipse
+		int ellipseDetail;
+
+		
 		// Primitives API
 		void rect(float x, float y, float w, float h, Registration reg = CORNER);
 		void rect(const Vec2& pt0, const Vec2& pt1, Registration reg = CORNER);

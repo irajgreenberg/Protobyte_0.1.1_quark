@@ -96,14 +96,14 @@ void myApp01::display() {
 	push();
 	translate(-101, 0, 0);
 	fill(1.0, .75, 0.0);
-	rect(0, 0, 200, 200, CENTER);
+	ellipse(0, 0, 200, 200, CENTER);
 	pop();
 	
 	push();
 	translate(101, 0, 0);
 	scale(200);
 	fill(0.0, 1.0, .65); 
-	rect(1, 1, CENTER);
+	//rect(1, 1, CENTER);
 	pop();
 
 
@@ -120,7 +120,7 @@ void myApp01::display() {
 		rotate(getFrameCount()*.065f, 0, 0, 1);
 		scale(100);
 		
-		tube.display();
+		//tube.display();
 	}
 	pop();
 	

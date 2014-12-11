@@ -56,7 +56,7 @@ void ProtoBaseApp::_init(){
 	//shader = ProtoShader("protoShader.vert", "protoShader.frag");
 	//shader2D = ProtoShader("colorOnlyShader.vert.glsl", "colorOnlyShader.frag.glsl");
 	shader3D = ProtoShader("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
-	
+
 
 
 	// default global ambient
@@ -171,7 +171,7 @@ void ProtoBaseApp::_init(){
 	// END Shadow Matrices
 
 	createShadowMap();
-	
+
 	// for 2D rendering - enables/disables lighting effects
 	ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 0.0);
 
@@ -179,12 +179,15 @@ void ProtoBaseApp::_init(){
 	fillColor = Col4f(1, 1, 1, 1);
 	strokeColor = Col4f(1, 1, 1, 1);
 
+	// default number of points around ellipse
+	ellipseDetail = 18;
+
 
 	shader3D.bind();
 	_initUniforms(&shader3D);
 
 	init();
-	
+
 }
 
 bool ProtoBaseApp::createShadowMap(){
@@ -274,8 +277,8 @@ void ProtoBaseApp::_initUniforms(ProtoShader* shader_ptr){
 	// default is all on
 	lightRenderingFactors_U = glGetUniformLocation(shader_ptr->getID(), "lightRenderingFactors");
 	//glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
-	
-	
+
+
 	//shader_ptr->unbind();
 }
 
@@ -339,8 +342,8 @@ void ProtoBaseApp::_run(const Vec2f& mousePos/*, int mouseBtn, int key*/){
 
 	// enable  /disable lighting effects ofr 2D rendering
 	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
-	
-	
+
+
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	//glViewport(0, 0, width, height);
 
@@ -734,7 +737,7 @@ void ProtoBaseApp::fill(float r, float g, float b, float a) {
 }
 void ProtoBaseApp::noFill() {
 	fillColor = Col4f(0, 0, 0, 0);
-	
+
 }
 // begin STROKE
 void ProtoBaseApp::stroke(const Col4f& col) {
@@ -760,10 +763,8 @@ void ProtoBaseApp::strokeWeight() {
 
 //PRIMITIVES
 void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
-	
+
 	// enable 2D rendering
-	//ltRenderingFactors = Vec4f(0.0, 0.0, 0.0, 1.0);
-	//glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 	enable2DRendering();
 
 	float _x = 0, _y = 0;
@@ -863,8 +864,6 @@ void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
 
 
 	// reenable 3D rendering
-	//ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 0.0);
-	//glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 	disable2DRendering();
 }
 
@@ -875,6 +874,132 @@ void ProtoBaseApp::rect(float radius1, float radius2, Registration reg) {
 	rect(0, 0, radius1, radius2, reg);
 }
 void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg) {
+
+	// enable 2D rendering
+	enable2DRendering();
+
+	float _x = 0, _y = 0;
+
+	/* CENTER,
+	CORNER, // assumed top left
+	CORNER_TR,
+	CORNER_BR,
+	CORNER_BL,
+	RANDOM
+	*/
+
+	switch (reg){
+	case CENTER:
+		_x = x - w / 2;
+		_y = y + h / 2;
+		break;
+	case CORNER:
+		_x = x;
+		_y = y;
+		break;
+	case CORNER_TR:
+		_x = x - w;
+		_y = y;
+		break;
+	case CORNER_BR:
+		_x = x - w;
+		_y = y + h;
+		break;
+	case CORNER_BL:
+		_x = x;
+		_y = y + h;
+		break;
+	case RANDOM:
+		// to do
+		break;
+
+	}
+	int primCount = (ellipseDetail + 1) * 7;
+	// interleaved float[] (x, y, 0, r, g, b, a)
+	float* prims = new float[primCount];
+	int* inds = new int[ellipseDetail*3];
+	prims[0] = (x + w) / 2;
+	prims[1] = (y + h) / 2;
+	prims[2] = 0;
+	prims[3] = fillColor.r;
+	prims[4] = fillColor.g;
+	prims[5] = fillColor.b;
+	prims[6] = fillColor.a;
+
+	float theta = 0.0;
+	for (int i = 7; i <= ellipseDetail*7; i += 7){
+		prims[i] = cos(theta)*w / 2.0;
+		prims[i + 1] = sin(theta)*h / 2.0;
+		prims[i + 2] = 0;
+		prims[i + 3] = fillColor.r;
+		prims[i + 4] = fillColor.g;
+		prims[i + 5] = fillColor.b;
+		prims[i + 6] = fillColor.a;
+		theta += TWO_PI / ellipseDetail;
+	}
+	for (int i = 0, j = 1; i < ellipseDetail*3; ++j, i+=3){
+		inds[i] = j;
+		inds[i + 1] = 0;
+		if (i < ellipseDetail*3 - 1){
+			inds[i + 2] = j + 1;
+		}
+		else {
+			//inds[i + 2] = 1;
+		}
+	}
+
+
+	// vert data
+	// 1. Create and bind VAO
+	GLuint vaoID;
+	glGenVertexArrays(1, &vaoID); // Create VAO
+	glBindVertexArray(vaoID); // Bind VAO (making it active)
+
+	// 2. Create and bind VBO
+	// a. Vertex attributes vboID;
+	GLuint vboID;
+	glGenBuffers(1, &vboID); // Create the buffer ID
+	glBindBuffer(GL_ARRAY_BUFFER, vboID); // Bind the buffer (vertex array data)
+	int vertsDataSize = sizeof (GLfloat)* primCount;
+	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STATIC_DRAW);// allocate space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &prims[0]); // upload the data
+
+	// indices data
+	GLuint indexVboID;
+	glGenBuffers(1, &indexVboID); // Generate buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboID); // Bind element buffer
+
+	int indsDataSize = ellipseDetail*3 * sizeof(GL_UNSIGNED_INT);
+
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indsDataSize, NULL, GL_STATIC_DRAW); // allocate
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indsDataSize, &inds[0]); // upload data
+
+	// fill state is true - need to create this
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	// draw rect
+	glBindBuffer(GL_ARRAY_BUFFER, vboID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboID);
+
+	glEnableVertexAttribArray(0); // vertices
+	glEnableVertexAttribArray(2); // color
+	// stride is 6: pos(2) + col(4)
+	// (x, y, r, g, b, a)
+	int stride = 7;
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(0)); // pos
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(12)); // col
+
+	//glDisable(GL_LIGHTING);
+	glDrawElements(GL_TRIANGLES, ellipseDetail * 3, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+
+	// Disable VAO
+	glEnableVertexAttribArray(0);
+	glBindVertexArray(0);
+
+	delete [] inds; 
+	delete [] prims; // clean up heap
+	// reenable 3D rendering
+	disable2DRendering();
 }
 void ProtoBaseApp::ellipse(const Vec2& pt0, const Vec2& pt1, Registration reg) {
 }
