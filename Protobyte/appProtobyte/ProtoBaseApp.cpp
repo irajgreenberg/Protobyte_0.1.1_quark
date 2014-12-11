@@ -890,24 +890,24 @@ void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg)
 
 	switch (reg){
 	case CENTER:
-		_x = x - w / 2;
+		_x = x;
+		_y = y;
+		break;
+	case CORNER: // TL
+		_x = x + w / 2;
 		_y = y + h / 2;
 		break;
-	case CORNER:
-		_x = x;
-		_y = y;
-		break;
 	case CORNER_TR:
-		_x = x - w;
-		_y = y;
+		_x = x + w / 2;
+		_y = y + h / 2;
 		break;
 	case CORNER_BR:
-		_x = x - w;
-		_y = y + h;
+		_x = x + w / 2;
+		_y = y - h / 2;
 		break;
 	case CORNER_BL:
-		_x = x;
-		_y = y + h;
+		_x = x - w / 2;
+		_y = y - h;
 		break;
 	case RANDOM:
 		// to do
@@ -918,8 +918,8 @@ void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg)
 	// interleaved float[] (x, y, 0, r, g, b, a)
 	float* prims = new float[primCount];
 	int* inds = new int[ellipseDetail*3];
-	prims[0] = (x + w) / 2;
-	prims[1] = (y + h) / 2;
+	prims[0] = _x;
+	prims[1] = _y;
 	prims[2] = 0;
 	prims[3] = fillColor.r;
 	prims[4] = fillColor.g;
@@ -928,8 +928,8 @@ void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg)
 
 	float theta = 0.0;
 	for (int i = 7; i <= ellipseDetail*7; i += 7){
-		prims[i] = cos(theta)*w / 2.0;
-		prims[i + 1] = sin(theta)*h / 2.0;
+		prims[i] = _x + cos(theta)*w / 2.0;
+		prims[i + 1] = _y + sin(theta)*h / 2.0;
 		prims[i + 2] = 0;
 		prims[i + 3] = fillColor.r;
 		prims[i + 4] = fillColor.g;
@@ -940,11 +940,11 @@ void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg)
 	for (int i = 0, j = 1; i < ellipseDetail*3; ++j, i+=3){
 		inds[i] = j;
 		inds[i + 1] = 0;
-		if (i < ellipseDetail*3 - 1){
+		if (i < ellipseDetail*3 - 3){
 			inds[i + 2] = j + 1;
 		}
 		else {
-			//inds[i + 2] = 1;
+			inds[i + 2] = 1;
 		}
 	}
 

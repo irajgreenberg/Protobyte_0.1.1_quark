@@ -95,15 +95,25 @@ void myApp01::display() {
 	beginArcball(); 
 	push();
 	translate(-101, 0, 0);
+	fill(0.0, .75, 0.0);
+	ellipse(-200, 0, 200, 200, CENTER);
 	fill(1.0, .75, 0.0);
 	ellipse(0, 0, 200, 200, CENTER);
+	fill(1.0, .75, 1.0);
+	ellipse(200, 0, 200, 200, CENTER);
+	fill(.5, .75, 0.5);
+	ellipse(400, 0, 200, 200, CENTER);
+	//rect(0, 0, 200, 200);
 	pop();
 	
 	push();
-	translate(101, 0, 0);
+	translate(101, 0,20);
 	scale(200);
 	fill(0.0, 1.0, .65); 
-	//rect(1, 1, CENTER);
+	rect(1, 1, CENTER);
+	rect(1, 1.5, 1, 1, CENTER);
+	fill(1, 1, 0);
+	ellipse(1, 1, .5, .5, CENTER);
 	pop();
 
 
