@@ -180,7 +180,7 @@ void ProtoBaseApp::_init(){
 	strokeColor = Col4f(1, 1, 1, 1);
 
 	// default number of points around ellipse
-	ellipseDetail = 18;
+	ellipseDetail = 36;
 
 
 	shader3D.bind();
@@ -283,6 +283,12 @@ void ProtoBaseApp::_initUniforms(ProtoShader* shader_ptr){
 }
 
 void ProtoBaseApp::_run(const Vec2f& mousePos/*, int mouseBtn, int key*/){
+
+	// reset state
+	fillColor = Col4f(1, 1, 1, 1); // white fill
+	strokeColor = Col4f(0, 0, 0, 1); // black stroke
+
+
 	mouseX = mousePos.x;
 	mouseY = mousePos.y;
 	// mouse is moving/dragging
@@ -727,7 +733,7 @@ void ProtoBaseApp::fill(float gray, float a) {
 	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 void ProtoBaseApp::fill(float r, float g, float b) {
-	fillColor = Col4f(r, b, b, 1);
+	fillColor = Col4f(r, g, b, 1);
 	ltRenderingFactors = Vec4f(0.0, 0.0, 0.0, 1.0);
 	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
@@ -875,6 +881,7 @@ void ProtoBaseApp::rect(float radius1, float radius2, Registration reg) {
 }
 void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg) {
 
+	//trace("fillColor =", fillColor);
 	// enable 2D rendering
 	enable2DRendering();
 
