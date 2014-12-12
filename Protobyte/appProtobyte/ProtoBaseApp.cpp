@@ -184,6 +184,7 @@ void ProtoBaseApp::_init(){
 
 	// create base primitives
 	_createRect();
+	_createEllipse();
 
 
 	shader3D.bind();
@@ -255,6 +256,90 @@ void ProtoBaseApp::_createRect(){
 	// Disable VAO
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
+}
+
+// create default buffers for ellipse function
+void ProtoBaseApp::_createEllipse() {
+	ellipsePrims.push_back(0);
+	ellipsePrims.push_back(0);
+	ellipsePrims.push_back(0);
+	ellipsePrims.push_back(fillColor.r);
+	ellipsePrims.push_back(fillColor.g);
+	ellipsePrims.push_back(fillColor.b);
+	ellipsePrims.push_back(fillColor.a);
+
+	float theta = 0.0;
+	for (int i = 7; i <= ellipseDetail * 7; i += 7){
+		ellipsePrims.push_back(0 + cos(theta)*1 / 2.0);
+		ellipsePrims.push_back(0 + sin(theta)*1 / 2.0);
+		ellipsePrims.push_back(0);
+		ellipsePrims.push_back(fillColor.r);
+		ellipsePrims.push_back(fillColor.g);
+		ellipsePrims.push_back(fillColor.b);
+		ellipsePrims.push_back(fillColor.a);
+		theta += TWO_PI / ellipseDetail;
+	}
+	for (int i = 0, j = 1; i < ellipseDetail * 3; ++j, i += 3){
+		ellipseInds.push_back(j);
+		ellipseInds.push_back(0);
+		if (i < ellipseDetail * 3 - 3){
+			ellipseInds.push_back(j + 1);
+		}
+		else {
+			ellipseInds.push_back(1);
+		}
+	}
+
+
+	// vert data
+	// 1. Create and bind VAO
+	//GLuint vaoID;
+	glGenVertexArrays(1, &vaoEllipseID); // Create VAO
+	glBindVertexArray(vaoEllipseID); // Bind VAO (making it active)
+
+	// 2. Create and bind VBO
+	// a. Vertex attributes vboID;
+	//GLuint vboID;
+	glGenBuffers(1, &vboEllipseID); // Create the buffer ID
+	glBindBuffer(GL_ARRAY_BUFFER, vboEllipseID); // Bind the buffer (vertex array data)
+	int vertsDataSize = sizeof (GLfloat)* ellipsePrims.size();
+	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STATIC_DRAW);// allocate space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &ellipsePrims[0]); // upload the data
+
+	// indices data
+	//GLuint indexVboID;
+	glGenBuffers(1, &indexVboEllipseID); // Generate buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboEllipseID); // Bind element buffer
+
+	int indsDataSize = ellipseDetail * 3 * sizeof(GL_UNSIGNED_INT);
+
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indsDataSize, NULL, GL_STATIC_DRAW); // allocate
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indsDataSize, &ellipseInds[0]); // upload data
+
+	// fill state is true - need to create this
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	// draw rect
+	glBindBuffer(GL_ARRAY_BUFFER, vboEllipseID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboEllipseID);
+
+	glEnableVertexAttribArray(0); // vertices
+	glEnableVertexAttribArray(2); // color
+	// stride is 6: pos(2) + col(4)
+	// (x, y, r, g, b, a)
+	int stride = 7;
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(0)); // pos
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(12)); // col
+
+	//glDisable(GL_LIGHTING);
+	//glDrawElements(GL_TRIANGLES, ellipseDetail * 3, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+
+	// Disable VAO
+	glEnableVertexAttribArray(0);
+	glBindVertexArray(0);
+
+	ellipsePrims.clear();
+	ellipseInds.clear();
 }
 
 bool ProtoBaseApp::createShadowMap(){
@@ -917,12 +1002,7 @@ void ProtoBaseApp::rect(float radius1, float radius2, Registration reg) {
 	rect(0, 0, radius1, radius2, reg);
 }
 void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg) {
-
-	//trace("fillColor =", fillColor);
-	// enable 2D rendering
-	enable2DRendering();
-
-	float _x = 0, _y = 0;
+float _x = 0, _y = 0;
 
 	/* CENTER,
 	CORNER, // assumed top left
@@ -958,96 +1038,67 @@ void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg)
 		break;
 
 	}
-	int primCount = (ellipseDetail + 1) * 7;
-	// interleaved float[] (x, y, 0, r, g, b, a)
-	float* prims = new float[primCount];
-	int* inds = new int[ellipseDetail*3];
-	prims[0] = _x;
-	prims[1] = _y;
-	prims[2] = 0;
-	prims[3] = fillColor.r;
-	prims[4] = fillColor.g;
-	prims[5] = fillColor.b;
-	prims[6] = fillColor.a;
+	ellipsePrims.push_back(_x);
+	ellipsePrims.push_back(_y);
+	ellipsePrims.push_back(0);
+	ellipsePrims.push_back(fillColor.r);
+	ellipsePrims.push_back(fillColor.g);
+	ellipsePrims.push_back(fillColor.b);
+	ellipsePrims.push_back(fillColor.a);
 
 	float theta = 0.0;
 	for (int i = 7; i <= ellipseDetail*7; i += 7){
-		prims[i] = _x + cos(theta)*w / 2.0;
-		prims[i + 1] = _y + sin(theta)*h / 2.0;
-		prims[i + 2] = 0;
-		prims[i + 3] = fillColor.r;
-		prims[i + 4] = fillColor.g;
-		prims[i + 5] = fillColor.b;
-		prims[i + 6] = fillColor.a;
+		ellipsePrims.push_back(_x + cos(theta)*w / 2.0);
+		ellipsePrims.push_back(_y + sin(theta)*h / 2.0);
+		ellipsePrims.push_back(0);
+		ellipsePrims.push_back(fillColor.r);
+		ellipsePrims.push_back(fillColor.g);
+		ellipsePrims.push_back(fillColor.b);
+		ellipsePrims.push_back(fillColor.a);
 		theta += TWO_PI / ellipseDetail;
 	}
 	for (int i = 0, j = 1; i < ellipseDetail*3; ++j, i+=3){
-		inds[i] = j;
-		inds[i + 1] = 0;
+		ellipseInds.push_back(j);
+		ellipseInds.push_back(0);
 		if (i < ellipseDetail*3 - 3){
-			inds[i + 2] = j + 1;
+			ellipseInds.push_back(j + 1);
 		}
 		else {
-			inds[i + 2] = 1;
+			ellipseInds.push_back(1);
 		}
 	}
+	
+	glBindBuffer(GL_ARRAY_BUFFER, vboEllipseID);
+	int vertsDataSize = sizeof (GLfloat)* ellipsePrims.size();
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &ellipsePrims[0]); // upload the data
 
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboEllipseID);
+	int indsDataSize = sizeof (int)* ellipseInds.size();
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indsDataSize, &ellipseInds[0]); // upload the data
 
-	// vert data
-	// 1. Create and bind VAO
-	GLuint vaoID;
-	glGenVertexArrays(1, &vaoID); // Create VAO
-	glBindVertexArray(vaoID); // Bind VAO (making it active)
-
-	// 2. Create and bind VBO
-	// a. Vertex attributes vboID;
-	GLuint vboID;
-	glGenBuffers(1, &vboID); // Create the buffer ID
-	glBindBuffer(GL_ARRAY_BUFFER, vboID); // Bind the buffer (vertex array data)
-	int vertsDataSize = sizeof (GLfloat)* primCount;
-	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STATIC_DRAW);// allocate space
-	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &prims[0]); // upload the data
-
-	// indices data
-	GLuint indexVboID;
-	glGenBuffers(1, &indexVboID); // Generate buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboID); // Bind element buffer
-
-	int indsDataSize = ellipseDetail*3 * sizeof(GL_UNSIGNED_INT);
-
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indsDataSize, NULL, GL_STATIC_DRAW); // allocate
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indsDataSize, &inds[0]); // upload data
-
-	// fill state is true - need to create this
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-	// draw rect
-	glBindBuffer(GL_ARRAY_BUFFER, vboID);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboID);
-
-	glEnableVertexAttribArray(0); // vertices
-	glEnableVertexAttribArray(2); // color
-	// stride is 6: pos(2) + col(4)
-	// (x, y, r, g, b, a)
-	int stride = 7;
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(0)); // pos
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(12)); // col
-
-	//glDisable(GL_LIGHTING);
-	glDrawElements(GL_TRIANGLES, ellipseDetail * 3, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+	enable2DRendering();
+	glBindVertexArray(vaoEllipseID);
+	glDrawElements(GL_TRIANGLES, ellipseInds.size(), GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+	disable2DRendering();
 
 	// Disable VAO
-	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
 
-	delete [] inds; 
-	delete [] prims; // clean up heap
-	// reenable 3D rendering
+	// reenable 3D lighting
 	disable2DRendering();
+
+	// clean up vectors between each frame
+	ellipsePrims.clear();
+	ellipseInds.clear();
 }
-void ProtoBaseApp::ellipse(const Vec2& pt0, const Vec2& pt1, Registration reg) {
+void ProtoBaseApp::ellipse(float r, Registration reg) {
+	ellipse(0, 0, r, r, reg);
+}
+void ProtoBaseApp::ellipse(float r0, float r1, Registration reg) {
+	ellipse(0, 0, r0, r1, reg);
 }
 void ProtoBaseApp::ellipse(float x, float y, float r, Registration reg) {
+	ellipse(x, y, r, r, reg);
 }
 void ProtoBaseApp::triangle(const Vec2& pt0, const Vec2& pt1, const Vec2& pt2) {
 }

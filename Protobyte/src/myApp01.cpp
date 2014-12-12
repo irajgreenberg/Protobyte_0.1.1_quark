@@ -96,8 +96,12 @@ void myApp01::display() {
 	//push();
 	//translate(0, 0, 0);
 	fill(0.0, .75, 1);
-	for (int i = 0; i < 8000; i++){
-		rect(random(-400, 400), random(-300, 300), random(20), random(20));
+	ellipseDetail = 36;
+	for (int i = 0; i < 50; i++){
+		fill(1.0, 1.0, 0); 
+		ellipse(random(-400, 400), random(-300, 300), 75, 75);
+		fill(1.0, 0, 1);
+		rect(random(-400, 400), random(-300, 300), 75, 75);
 	}
 	//fill(1.0, .75, 0.0);
 	//ellipse(0, 0, 200, 200, CENTER);

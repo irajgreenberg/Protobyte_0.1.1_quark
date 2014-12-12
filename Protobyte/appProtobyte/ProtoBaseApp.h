@@ -444,15 +444,32 @@ namespace ijg {
 
 		
 		// Primitives API
+		// Precalculating buffers for 2D primitives for efficiency
+		// updated with glBufferSubData and binding vbo/vao
+		
+		// rect buffer ids
 		float rectPrims[28];
 		GLuint vaoRectID, vboRectID;
 		void _createRect();
+
+		// ellipse buffer ids
+		std::vector<float> ellipsePrims;
+		std::vector<int> ellipseInds;
+		GLuint vaoEllipseID, vboEllipseID, indexVboEllipseID;
+		void _createEllipse();
+
+		// path buffer ids (for begin(), vertex(), end())
+		std::vector<float> pathPrims;
+		std::vector<int> pathInds;
+		GLuint vaoPathID, vboPathID, indexVboPathID; 
+		void _createPath();
 
 		void rect(float x, float y, float w, float h, Registration reg = CORNER);
 		void rect(const Vec2& pt0, const Vec2& pt1, Registration reg = CORNER);
 		void rect(float radius1, float radius2, Registration reg = CENTER);
 		void ellipse(float x, float y, float w, float h, Registration reg = CENTER);
-		void ellipse(const Vec2& pt0, const Vec2& pt1, Registration reg = CENTER);
+		void ellipse(float r0, float r1, Registration reg = CENTER);
+		void ellipse(float r, Registration reg = CENTER);
 		void ellipse(float x, float y, float r, Registration reg = CENTER);
 		void triangle(const Vec2& pt0, const Vec2& pt1, const Vec2& pt2);
 		void triangle(float x0, float y0, float x1, float y1, float x2, float y2);
