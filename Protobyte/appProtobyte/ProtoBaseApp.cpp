@@ -182,12 +182,79 @@ void ProtoBaseApp::_init(){
 	// default number of points around ellipse
 	ellipseDetail = 36;
 
+	// create base primitives
+	_createRect();
+
 
 	shader3D.bind();
 	_initUniforms(&shader3D);
 
 	init();
 
+}
+
+// create default buffers for rect function
+void ProtoBaseApp::_createRect(){
+
+	// interleaved float[] (x, y, 0, r, g, b, a) 7*4 pts
+	float prims[] = {
+		0, 0, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
+		0, 0 - 1, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
+		0 + 1, 0 - 1, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
+		0 + 1, 0, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a
+	};
+	for (int i = 0; i < 28; ++i){
+		rectPrims[i] = prims[i];
+	}
+
+	int inds[] = { 0, 1, 2, 0, 2, 3 };
+
+	// vert data
+	// 1. Create and bind VAO
+	glGenVertexArrays(1, &vaoRectID); // Create VAO
+	glBindVertexArray(vaoRectID); // Bind VAO (making it active)
+
+	// 2. Create and bind VBO
+	// a. Vertex attributes vboID;
+	//GLuint vboID;
+	glGenBuffers(1, &vboRectID); // Create the buffer ID
+	glBindBuffer(GL_ARRAY_BUFFER, vboRectID); // Bind the buffer (vertex array data)
+	int vertsDataSize = sizeof (GLfloat)* 28;
+	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &rectPrims[0]); // upload the data
+
+	// indices data
+	GLuint indexVboID;
+	glGenBuffers(1, &indexVboID); // Generate buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboID); // Bind element buffer
+
+	int indsDataSize = 6 * sizeof(GL_UNSIGNED_INT);
+
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indsDataSize, NULL, GL_STREAM_DRAW); // allocate
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indsDataSize, &inds[0]); // upload data
+
+	// fill state is true - need to create this
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glPolygonMode(GL_BACK, GL_FILL);
+
+	// draw rect
+	glBindBuffer(GL_ARRAY_BUFFER, vboRectID);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboID);
+
+	glEnableVertexAttribArray(0); // vertices
+	glEnableVertexAttribArray(2); // color
+	// stride is 6: pos(2) + col(4)
+	// (x, y, r, g, b, a)
+	int stride = 7;
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(0)); // pos
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(12)); // col
+
+	//glDisable(GL_LIGHTING);
+	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+
+	// Disable VAO
+	glEnableVertexAttribArray(0);
+	glBindVertexArray(0);
 }
 
 bool ProtoBaseApp::createShadowMap(){
@@ -770,19 +837,8 @@ void ProtoBaseApp::strokeWeight() {
 //PRIMITIVES
 void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
 
-	// enable 2D rendering
-	enable2DRendering();
-
-	float _x = 0, _y = 0;
-
-	/* CENTER,
-	CORNER, // assumed top left
-	CORNER_TR,
-	CORNER_BR,
-	CORNER_BL,
-	RANDOM
-	*/
-
+	float _x = 0, _y = 0; 
+	
 	switch (reg){
 	case CENTER:
 		_x = x - w / 2;
@@ -810,67 +866,48 @@ void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
 
 	}
 
+	rectPrims[0] = _x;
+	rectPrims[1] = _y;
+	//rectPrims[2] = 0;
+	rectPrims[3] = fillColor.r;
+	rectPrims[4] = fillColor.g;
+	rectPrims[5] = fillColor.b;
+	rectPrims[6] = fillColor.a;
+	rectPrims[7] = _x;
+	rectPrims[8] = _y - h;
+	//rectPrims[9] = 0;
+	rectPrims[10] = fillColor.r;
+	rectPrims[11] = fillColor.g;
+	rectPrims[12] = fillColor.b;
+	rectPrims[13] = fillColor.a;
+	rectPrims[14] = _x + w;
+	rectPrims[15] = _y - h;
+	//rectPrims[16] = 0;
+	rectPrims[17] = fillColor.r;
+	rectPrims[18] = fillColor.g;
+	rectPrims[19] = fillColor.b;
+	rectPrims[20] = fillColor.a;
+	rectPrims[21] = _x + w;
+	rectPrims[22] = _y;
+	//rectPrims[23] = 0;
+	rectPrims[24] = fillColor.r;
+	rectPrims[25] = fillColor.g;
+	rectPrims[26] = fillColor.b;
+	rectPrims[27] = fillColor.a;
 
-	// interleaved float[] (x, y, 0, r, g, b, a) 7*4 pts
-	float prims[] = {
-		_x, _y, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
-		_x, _y - h, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
-		_x + w, _y - h, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
-		_x + w, _y, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a
-	};
 
-	int inds[] = { 0, 1, 2, 0, 2, 3 };
-
-	// vert data
-	// 1. Create and bind VAO
-	GLuint vaoID;
-	glGenVertexArrays(1, &vaoID); // Create VAO
-	glBindVertexArray(vaoID); // Bind VAO (making it active)
-
-	// 2. Create and bind VBO
-	// a. Vertex attributes vboID;
-	GLuint vboID;
-	glGenBuffers(1, &vboID); // Create the buffer ID
-	glBindBuffer(GL_ARRAY_BUFFER, vboID); // Bind the buffer (vertex array data)
+	glBindBuffer(GL_ARRAY_BUFFER, vboRectID); 
 	int vertsDataSize = sizeof (GLfloat)* 28;
-	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STATIC_DRAW);// allocate space
-	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &prims[0]); // upload the data
-
-	// indices data
-	GLuint indexVboID;
-	glGenBuffers(1, &indexVboID); // Generate buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboID); // Bind element buffer
-
-	int indsDataSize = 6 * sizeof(GL_UNSIGNED_INT);
-
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indsDataSize, NULL, GL_STATIC_DRAW); // allocate
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indsDataSize, &inds[0]); // upload data
-
-	// fill state is true - need to create this
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-	// draw rect
-	glBindBuffer(GL_ARRAY_BUFFER, vboID);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboID);
-
-	glEnableVertexAttribArray(0); // vertices
-	glEnableVertexAttribArray(2); // color
-	// stride is 6: pos(2) + col(4)
-	// (x, y, r, g, b, a)
-	int stride = 7;
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(0)); // pos
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(12)); // col
-
-	//glDisable(GL_LIGHTING);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &rectPrims[0]); // upload the data
+	
+	enable2DRendering();
+	glBindVertexArray(vaoRectID);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
-
-	// Disable VAO
-	glEnableVertexAttribArray(0);
-	glBindVertexArray(0);
-
-
-	// reenable 3D rendering
 	disable2DRendering();
+	
+	// Disable VAO
+	glBindVertexArray(0); 
+	
 }
 
 void ProtoBaseApp::rect(const Vec2& pt0, const Vec2& pt1, Registration reg) {
@@ -902,19 +939,19 @@ void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg)
 		break;
 	case CORNER: // TL
 		_x = x + w / 2;
-		_y = y + h / 2;
-		break;
-	case CORNER_TR:
-		_x = x + w / 2;
-		_y = y + h / 2;
-		break;
-	case CORNER_BR:
-		_x = x + w / 2;
 		_y = y - h / 2;
 		break;
-	case CORNER_BL:
+	case CORNER_TR:
 		_x = x - w / 2;
-		_y = y - h;
+		_y = y - h / 2;
+		break;
+	case CORNER_BR:
+		_x = x - w / 2;
+		_y = y + h / 2;
+		break;
+	case CORNER_BL:
+		_x = x + w / 2;
+		_y = y + h / 2;
 		break;
 	case RANDOM:
 		// to do

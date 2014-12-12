@@ -93,10 +93,12 @@ void myApp01::display() {
 
 
 	beginArcball(); 
-	push();
-	translate(0, 0, 0);
-	fill(0.0, .75, 0.0);
-	ellipse(0, 0, 200, 200, CENTER);
+	//push();
+	//translate(0, 0, 0);
+	fill(0.0, .75, 1);
+	for (int i = 0; i < 8000; i++){
+		rect(random(-400, 400), random(-300, 300), random(20), random(20));
+	}
 	//fill(1.0, .75, 0.0);
 	//ellipse(0, 0, 200, 200, CENTER);
 	//fill(1.0, .75, 1.0);
@@ -104,54 +106,54 @@ void myApp01::display() {
 	//fill(.5, .75, 0.5);
 	//ellipse(400, 0, 200, 200, CENTER);
 	//rect(0, 0, 200, 200);
-	pop();
+	//pop();
 	
-	push();
-	translate(101, 0,20);
-	scale(200);
+	//push();
+	//translate(0, 0, 0);
+	//scale(200);
 	//fill(0.0, 1.0, .65); 
 	//rect(1, 1, CENTER);
 	//rect(1, 1.5, 1, 1, CENTER);
 	//fill(1, 1, 0);
 	//ellipse(1, 1, .5, .5, CENTER);
-	pop();
+	//pop();
 
 
 
 	//rotate(getFrameCount()*.05f, 1, 0, 0);
 	//rotate(getFrameCount()*.05f, 0, 1, 0);
 	//rotate(getFrameCount()*.065f, 0, 0, 1);
-	push();
-	{
-		translate(-50, 0, 0);
+	//push();
+	//{
+	//	translate(-50, 0, 0);
 
-		rotate(getFrameCount()*.05f, 1, 0, 0);
-		rotate(getFrameCount()*.05f, 0, 1, 0);
-		rotate(getFrameCount()*.065f, 0, 0, 1);
-		scale(100);
-		
-		//tube.display();
-	}
-	pop();
-	
-	
-	push();
-	{
-		//cylinder.display();
-		translate(50, 0, 0);
-		rotate(-getFrameCount()*.5f, 1, 0, 0);
-		rotate(getFrameCount()*.05f, 0, 1, 0);
-		rotate(-getFrameCount()*.065f, 0, 0, 1);
-		scale(100);
+	//	rotate(getFrameCount()*.05f, 1, 0, 0);
+	//	rotate(getFrameCount()*.05f, 0, 1, 0);
+	//	rotate(getFrameCount()*.065f, 0, 0, 1);
+	//	scale(100);
+	//	
+	//	//tube.display();
+	//}
+	//pop();
+	//
+	//
+	//push();
+	//{
+	//	//cylinder.display();
+	//	translate(50, 0, 0);
+	//	rotate(-getFrameCount()*.5f, 1, 0, 0);
+	//	rotate(getFrameCount()*.05f, 0, 1, 0);
+	//	rotate(-getFrameCount()*.065f, 0, 0, 1);
+	//	scale(100);
 
-		//shader3D.setShaders("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
-		//shader3D.bind();
-		//_initUniforms(&shader3D); 
-		//ellipse.display();
-		//myPath.display();
+	//	//shader3D.setShaders("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
+	//	//shader3D.bind();
+	//	//_initUniforms(&shader3D); 
+	//	//ellipse.display();
+	//	//myPath.display();
 
-	}
-	pop();
+	//}
+	//pop();
 
 	endArcball();
 

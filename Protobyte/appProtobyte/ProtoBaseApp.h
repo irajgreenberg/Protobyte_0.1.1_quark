@@ -444,6 +444,10 @@ namespace ijg {
 
 		
 		// Primitives API
+		float rectPrims[28];
+		GLuint vaoRectID, vboRectID;
+		void _createRect();
+
 		void rect(float x, float y, float w, float h, Registration reg = CORNER);
 		void rect(const Vec2& pt0, const Vec2& pt1, Registration reg = CORNER);
 		void rect(float radius1, float radius2, Registration reg = CENTER);
