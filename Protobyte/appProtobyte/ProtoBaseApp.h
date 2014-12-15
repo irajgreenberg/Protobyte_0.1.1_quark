@@ -459,6 +459,7 @@ namespace ijg {
 		void _createEllipse();
 
 		// path buffer ids (for begin(), vertex(), end())
+		bool isPathRecording;
 		std::vector<float> pathPrims;
 		std::vector<int> pathInds;
 		GLuint vaoPathID, vboPathID, indexVboPathID; 
@@ -480,8 +481,7 @@ namespace ijg {
 
 		// Drawing Methods API
 		void beginPath();
-		void endPath();
-		void closePath(); // avoid passing flag
+		void endPath(bool isClosed = 1);
 		void vertex(const Vec2f& vec);
 		void vertex(const Vec3f& vec);
 		void vertex(float x, float y);

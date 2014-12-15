@@ -182,6 +182,9 @@ void ProtoBaseApp::_init(){
 	// default number of points around ellipse
 	ellipseDetail = 36;
 
+	// drawing methods path
+	isPathRecording = false;
+
 	// create base primitives
 	_createRect();
 	_createEllipse();
@@ -1115,18 +1118,31 @@ void ProtoBaseApp::star(int sides, const Vec2& radiusAndRatio) {
 
 // PATH
 void ProtoBaseApp::beginPath() {
+	isPathRecording = true;
 }
-void ProtoBaseApp::endPath() {
-}
-void ProtoBaseApp::closePath() {
+void ProtoBaseApp::endPath(bool isClosed) {
+	isPathRecording = false;
+
+	// now draw geometry
 }
 void ProtoBaseApp::vertex(const Vec2f& vec) {
+	vertex(vec.x, vec.y, 0);
 }
 void ProtoBaseApp::vertex(const Vec3f& vec) {
+	vertex(vec.x, vec.y, vec.z);
 }
 void ProtoBaseApp::vertex(float x, float y) {
+	vertex(x, y, 0);
 }
 void ProtoBaseApp::vertex(float x, float y, float z) {
+	if (isPathRecording){
+		ellipsePrims.push_back(x);
+		ellipsePrims.push_back(y);
+		ellipsePrims.push_back(z);
+	}
+	else {
+		trace("Path Recording Failure: You must precede vertex() calls with beginPath()");
+	}
 }
 /****END 2D API****/
 

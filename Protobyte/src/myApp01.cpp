@@ -2,9 +2,9 @@
 #include "myApp01.h"
 
 void myApp01::init() {
-	
-	
-	
+
+
+
 	//_initUniforms(&shader3D);
 	//globalAmbient = Col3f(.3, .3, .3);
 
@@ -13,7 +13,7 @@ void myApp01::init() {
 	shadowsOn();
 	// wall
 	//plane = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(0, 0, 0, 1), 1, 1, "linen.jpg"); 
-	
+
 	//plane = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(0, 0, 0, 1), 1, 1, "linen.jpg");
 	//Plane.textureOn();
 	//plane.setBumpMap("linen.jpg");
@@ -70,7 +70,7 @@ void myApp01::init() {
 	//cylinder.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
 
 	//ellipse = ProtoEllipse(Vec3f(), Vec3f(), Dim2f(1, 1),
-		//Col4f(1, 0, .75, 1), 24);
+	//Col4f(1, 0, .75, 1), 24);
 	//ellipse.setDiffuseMaterial(Col4f(1.0, 0.0, 0.0, 1.0));
 	//ellipse.setDiffuseMap("ship_plate.jpg");
 	//ellipse.setBumpMap("ship_plate.jpg");
@@ -82,27 +82,45 @@ void myApp01::init() {
 	//shader3D.unbind();
 	//shader3D.bind();
 	//_initUniforms(&shader3D);
+
+	tesselator = gluNewTess();
+
+	for (int i = 0, ind = 0; i < ROWS; ++i){
+		for (int j = 0; j < COLUMNS; ++j){
+			for (int k = 0; k < LAYERS; ++k){
+				colors[ind] = Col4f(random(), random(), random(), 1.0);
+				rots[ind] = 0;
+				rotSpds[ind++] = random(-8, 8);
+			}
+		}
+	}
+
+	// 
 }
 
 void myApp01::run() {
-	
+
 }
 
 void myApp01::display() {
 	background(1.0, .5, 0);
 
 
-	beginArcball(); 
+	beginArcball();
 	//push();
 	//translate(0, 0, 0);
-	fill(0.0, .75, 1);
-	ellipseDetail = 36;
-	for (int i = 0; i < 50; i++){
-		fill(1.0, 1.0, 0); 
-		ellipse(random(-400, 400), random(-300, 300), 75, 75);
-		fill(1.0, 0, 1);
-		rect(random(-400, 400), random(-300, 300), 75, 75);
-	}
+
+
+	//fill(0.0, .75, 1);
+	//ellipseDetail = 36;
+	//for (int i = 0; i < 50; i++){
+	//	fill(1.0, 1.0, 0); 
+	//	ellipse(random(-400, 400), random(-300, 300), 75, 75);
+	//	fill(1.0, 0, 1);
+	//	rect(random(-400, 400), random(-300, 300), 75, 75);
+	//}
+
+
 	//fill(1.0, .75, 0.0);
 	//ellipse(0, 0, 200, 200, CENTER);
 	//fill(1.0, .75, 1.0);
@@ -111,7 +129,7 @@ void myApp01::display() {
 	//ellipse(400, 0, 200, 200, CENTER);
 	//rect(0, 0, 200, 200);
 	//pop();
-	
+
 	//push();
 	//translate(0, 0, 0);
 	//scale(200);
@@ -158,8 +176,39 @@ void myApp01::display() {
 
 	//}
 	//pop();
+	//GLUquadric* quadric = gluNewQuadric();
+	//gluPartialDisk(quadric,50,100,20,5,0,270);
+
+	rotate(-getFrameCount()*.5f, 1, 0, 0);
+	rotate(getFrameCount()*.5f, 0, 1, 0);
+	rotate(-getFrameCount()*.5f, 0, 0, 1);
+	float xStep = W / float(COLUMNS);
+	float yStep = H / float(ROWS);
+	float zStep = D / float(LAYERS);
+	for (int i = 0, ind = 0; i < ROWS; ++i){
+		for (int j = 0; j < COLUMNS; ++j){
+			for (int k = 0; k < LAYERS; ++k){
+				fill(colors[ind]);
+				push();
+				translate(-W/2+xStep*j, -H/2+yStep*i, -D/2+zStep*k);
+				rotate(rots[ind], 1, 1, 1);
+				if (ind % 2 == 0){
+					rect(0, 0, 13, 13, CENTER);
+				}
+				else {
+					ellipse(0, 0, 13, 13);
+				}
+				pop();
+				rots[ind] += rotSpds[ind];
+				ind++;
+			}
+		}
+	}
+
+
 
 	endArcball();
+
 
 
 }
