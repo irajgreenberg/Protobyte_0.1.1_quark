@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "appProtobyte/ProtoBaseApp.h"
-#include "tesselator.h"
+
 
 using namespace ijg;
 

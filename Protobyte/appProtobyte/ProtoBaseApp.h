@@ -55,6 +55,7 @@
 #include "libProtobyte/ProtoTuple4.h"
 #include "libProtobyte/ProtoEllipse.h"
 #include "libProtobyte/ProtoPath3.h"
+#include "libProtobyte/ProtoTessellator.h"
 
 #include "libProtobyte/ProtoJuncusEffusus.h"
 #include "libProtobyte/ProtoCephalopod.h"
@@ -584,6 +585,9 @@ namespace ijg {
 #define endArcball arcballEnd
 #define beginArcBall arcballBegin
 #define endArcBall arcballEnd
+
+#define begin beginPath
+#define end endPath
 
 
 	// remove this old stuff

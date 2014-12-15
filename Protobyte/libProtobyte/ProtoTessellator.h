@@ -17,8 +17,10 @@ Mountain View, California, 94041, USA.
 
 This notice must be retained any source distribution.
 
-Based on tutorial:
+Based on tutorials:
 http://www.songho.ca/opengl/gl_tessellation.html
+// calss design
+http://www.flipcode.com/archives/Polygon_Tessellation_In_OpenGL.shtml
 
 \ingroup common
 This class is part of the group common (update)
@@ -28,11 +30,42 @@ This class is part of the group common (update)
 #ifndef PROTO_TESSELLATOR_H
 #define	PROTO_TESSELLATOR_H
 
+#if defined(_WIN32) || defined(_WIN64) || defined(__linux__)
+#include <GL/glew.h>
+#endif
+
+// from OF documentation
+// OSX link with " " instead of < > to avoid putting in defualt include path
+#if defined(_WIN32) || defined(_WIN64)
+#include <GL/glu.h>
+#include <GLFW/glfw3.h>
+#else
+#include "GLFW/glfw3.h"
+#endif
+
+#ifndef CALLBACK
+#define CALLBACK
+#endif
+
 class ProtoTessellator {
 
 public:
 	ProtoTessellator();
 	virtual ~ProtoTessellator();
+
+	int init();
+	void setWindingRule(GLenum windingRule);
+	void RenderContour(GLdouble data[][7], int vertexCount);
+	void beginPolygon();
+	void endPolygon();
+	void beginContour();
+	void endContour();
+	void end();
+
+	//void CALLBACK combineCallback(GLdouble coords[3], GLdouble *vertex_data[4], GLfloat weight[4], GLdouble **dataOut);
+
+protected:
+	GLUtesselator* tesselator;
 };
 
 #endif	// PROTO_TESSELLATOR
