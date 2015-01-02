@@ -80,8 +80,25 @@
 #include <iostream>
 #include <stack>
 
-namespace ijg {
 
+// for triangle.c tessellation
+#ifdef SINGLE
+#define REAL float
+#else /* not SINGLE */
+#define REAL double
+#endif /* not SINGLE */
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <math.h>
+#include "triangle.h"
+
+//extern "C" void triangulate(char *, struct triangulateio *, struct triangulateio *,
+//struct triangulateio *);
+
+namespace ijg {
+	
+	
+	
 	// non-member functions
 
 
@@ -116,6 +133,9 @@ namespace ijg {
 		void _run(const Vec2f& mousePos/*, int mouseBtn, int key*/);
 		//void setViewport(int width, int height);
 		// void concat(); moved down for testing
+
+		void pathTessellate(struct triangulateio *io, int markers, int reporttriangles, int reportneighbors, int reportsegments,
+			int reportedges, int reportnorms);
 
 		
 
@@ -461,10 +481,16 @@ namespace ijg {
 
 		// path buffer ids (for begin(), vertex(), end())
 		bool isPathRecording;
-		std::vector<float> pathPrims;
+		ProtoTessellator tess;
+		std::vector<GLdouble> pathPrims;
+		std::vector<GLdouble> tessellatedPrims;
+		std::vector<std::vector<GLdouble>> pathPrimsForTessellator;
 		std::vector<int> pathInds;
 		GLuint vaoPathID, vboPathID, indexVboPathID; 
 		void _createPath();
+		enum PathRenderMode {
+			POLYGON, TRIANGLE, TRIANGLE_STRIP, TRIANGLE_FAN
+		} pathRenderMode;
 
 		void rect(float x, float y, float w, float h, Registration reg = CORNER);
 		void rect(const Vec2& pt0, const Vec2& pt1, Registration reg = CORNER);
@@ -481,7 +507,7 @@ namespace ijg {
 		void star(int sides, const Vec2& radiusAndRatio);
 
 		// Drawing Methods API
-		void beginPath();
+		void beginPath(PathRenderMode pathRenderMode = POLYGON);
 		void endPath(bool isClosed = 1);
 		void vertex(const Vec2f& vec);
 		void vertex(const Vec3f& vec);

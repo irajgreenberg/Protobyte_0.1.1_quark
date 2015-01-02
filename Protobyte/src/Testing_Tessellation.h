@@ -1,4 +1,3 @@
-
 /*!  \brief  ProtoTessellator.h: Basedon GLUTessellator
 ProtoTessellator.h
 Protobyte Library v02
@@ -27,8 +26,12 @@ This class is part of the group common (update)
 \sa NO LINK
 */
 
-#ifndef PROTO_TESSELLATOR_H
-#define	PROTO_TESSELLATOR_H
+
+
+
+#ifndef _TESTING_TESSELLATION_H_
+#define _TESTING_TESSELLATION_H_
+
 
 #include <vector>
 #include <iostream>
@@ -50,35 +53,27 @@ This class is part of the group common (update)
 #define CALLBACK
 #endif
 
+//GLUtesselator* iraTesselator2;
 
-class ProtoTessellator {
-
-public:
-	ProtoTessellator();
-	virtual ~ProtoTessellator();
-
-	int init();
-	void setWindingRule(GLenum windingRule);
-	void beginPolygon();
-	void beginContour();
-	void countourVertex(std::vector<GLdouble> data);
-	void addContourVertex(GLdouble obj_data[][6], int num_vertices);
-	//void countourVertex(GLdouble data[][7], int vertexCount);
-	void endContour();
-	void endPolygon();
-	void end();
-
-protected:
-	GLUtesselator* tesselator;
-
-	static void CALLBACK vertexCallback(GLvoid *vertex);
-	static void CALLBACK combineCallback(GLdouble coords[3], GLdouble *vertex_data[4], GLfloat weight[4], GLdouble **dataOut);
-	static void CALLBACK tesellationError(GLenum errorCode);
-	static void CALLBACK testMeBegin(GLenum triangleMode);
-	static void CALLBACK testMeEnd();
+int iraInit();
+void iraSetWindingRule(GLenum windingRule);
+void iraBeginPolygon();
+void iraBeginContour();
+void iraCountourVertex(std::vector<GLdouble> data);
+void iraAddContourVertex(GLdouble obj_data[][6], int num_vertices);
+void iraEndContour();
+void iraEndPolygon();
+void iraEnd();
+void CALLBACK iraTestMeBegin(GLenum triangleMode);
+void CALLBACK iraVertexCallback(GLvoid *vertex);
+void CALLBACK iraTestMeEnd();
+void CALLBACK iraTesellationError(GLenum errorCode);
+void CALLBACK iraCombineCallback(GLdouble coords[3],
+	GLdouble *vertex_data[4], GLfloat weight[4], GLdouble **dataOut);
 
 
-	
-};
 
-#endif	// PROTO_TESSELLATOR
+
+#endif // _TESTING_TESSELLATION_H_
+
+

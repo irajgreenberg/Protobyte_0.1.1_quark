@@ -12,7 +12,22 @@
 using namespace ijg;
 
 
+
 ProtoBaseApp* ProtoBaseApp::baseApp = 0;
+
+
+// for testing only
+GLdouble myStar[5][6] = {
+	0.6f, -0.1f, -2.0f, 1.0f, 1.0f, 1.0f,
+	1.35f, 1.4f, -2.0f, 1.0f, 1.0f, 1.0f,
+	2.1f, -0.1f, -2.0f, 1.0f, 1.0f, 1.0f,
+	0.6f, 0.9f, -2.0f, 1.0f, 1.0f, 1.0f,
+	2.1f, 0.9f, -2.0f, 1.0f, 1.0f, 1.0f };
+
+GLdouble quad[4][6] = { 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, };
 
 // NOTE: called before GL context created
 ProtoBaseApp::ProtoBaseApp() {
@@ -50,6 +65,8 @@ ProtoBaseApp* ProtoBaseApp::getBaseApp() {
 
 
 void ProtoBaseApp::_init(){
+	//trace("GL_TRIANGLES =", GL_TRIANGLES);
+	//trace("GL_TRIANGLE_FAN =", GL_TRIANGLE_FAN);
 	//trace(ProtoBaseApp::baseApp);
 	//areShadowsEnabled = true;
 	//shader = ProtoShader("shader1.vert", "shader1.frag");
@@ -274,8 +291,8 @@ void ProtoBaseApp::_createEllipse() {
 
 	float theta = 0.0;
 	for (int i = 7; i <= ellipseDetail * 7; i += 7){
-		ellipsePrims.push_back(0 + cos(theta)*1 / 2.0);
-		ellipsePrims.push_back(0 + sin(theta)*1 / 2.0);
+		ellipsePrims.push_back(0 + cos(theta) * 1 / 2.0);
+		ellipsePrims.push_back(0 + sin(theta) * 1 / 2.0);
 		ellipsePrims.push_back(0);
 		ellipsePrims.push_back(fillColor.r);
 		ellipsePrims.push_back(fillColor.g);
@@ -375,7 +392,7 @@ void ProtoBaseApp::_createPath(){
 	//GLuint vboID;
 	glGenBuffers(1, &vboPathID); // Create the buffer ID
 	glBindBuffer(GL_ARRAY_BUFFER, vboPathID); // Bind the buffer (vertex array data)
-	int vertsDataSize = sizeof (GLfloat) * 21;
+	int vertsDataSize = sizeof (GLfloat)* 21;
 	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
 	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &pathPrims[0]); // upload the data
 
@@ -996,8 +1013,8 @@ void ProtoBaseApp::strokeWeight() {
 //PRIMITIVES
 void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
 
-	float _x = 0, _y = 0; 
-	
+	float _x = 0, _y = 0;
+
 	switch (reg){
 	case CENTER:
 		_x = x - w / 2;
@@ -1055,18 +1072,18 @@ void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
 	rectPrims[27] = fillColor.a;
 
 
-	glBindBuffer(GL_ARRAY_BUFFER, vboRectID); 
+	glBindBuffer(GL_ARRAY_BUFFER, vboRectID);
 	int vertsDataSize = sizeof (GLfloat)* 28;
 	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &rectPrims[0]); // upload the data
-	
+
 	enable2DRendering();
 	glBindVertexArray(vaoRectID);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
 	disable2DRendering();
-	
+
 	// Disable VAO
-	glBindVertexArray(0); 
-	
+	glBindVertexArray(0);
+
 }
 
 void ProtoBaseApp::rect(const Vec2& pt0, const Vec2& pt1, Registration reg) {
@@ -1076,7 +1093,7 @@ void ProtoBaseApp::rect(float radius1, float radius2, Registration reg) {
 	rect(0, 0, radius1, radius2, reg);
 }
 void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg) {
-float _x = 0, _y = 0;
+	float _x = 0, _y = 0;
 
 	/* CENTER,
 	CORNER, // assumed top left
@@ -1121,7 +1138,7 @@ float _x = 0, _y = 0;
 	ellipsePrims.push_back(fillColor.a);
 
 	float theta = 0.0;
-	for (int i = 7; i <= ellipseDetail*7; i += 7){
+	for (int i = 7; i <= ellipseDetail * 7; i += 7){
 		ellipsePrims.push_back(_x + cos(theta)*w / 2.0);
 		ellipsePrims.push_back(_y + sin(theta)*h / 2.0);
 		ellipsePrims.push_back(0);
@@ -1131,17 +1148,17 @@ float _x = 0, _y = 0;
 		ellipsePrims.push_back(fillColor.a);
 		theta += TWO_PI / ellipseDetail;
 	}
-	for (int i = 0, j = 1; i < ellipseDetail*3; ++j, i+=3){
+	for (int i = 0, j = 1; i < ellipseDetail * 3; ++j, i += 3){
 		ellipseInds.push_back(j);
 		ellipseInds.push_back(0);
-		if (i < ellipseDetail*3 - 3){
+		if (i < ellipseDetail * 3 - 3){
 			ellipseInds.push_back(j + 1);
 		}
 		else {
 			ellipseInds.push_back(1);
 		}
 	}
-	
+
 	glBindBuffer(GL_ARRAY_BUFFER, vboEllipseID);
 	int vertsDataSize = sizeof (GLfloat)* ellipsePrims.size();
 	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &ellipsePrims[0]); // upload the data
@@ -1188,13 +1205,270 @@ void ProtoBaseApp::star(int sides, const Vec2& radiusAndRatio) {
 }
 
 // PATH
-void ProtoBaseApp::beginPath() {
+void ProtoBaseApp::beginPath(PathRenderMode renderMode) {
+	this->pathRenderMode = pathRenderMode;
 	isPathRecording = true;
 }
 void ProtoBaseApp::endPath(bool isClosed) {
+
+	//trace("In here");
 	isPathRecording = false;
 	// now go draw geometry
+
+	switch (pathRenderMode) {
+	case POLYGON:
+		break;
+	case TRIANGLE:
+		break;
+	case TRIANGLE_STRIP:
+		break;
+	case TRIANGLE_FAN:
+		break;
+
+	}
+	//std::cout << "in endPath function" << std::endl;
+	//tess.beginPolygon();
+	//tess.beginContour();
+	////tess.countourVertex(pathPrims);
+	////tess.addContourVertex(quad, 4);
+	//tess.addContourVertex(myStar, 5);
+	//tess.endContour();
+	//tess.endPolygon();
+
+	//struct triangulateio in, mid, out, vorout;
+
+	//int pointCount = static_cast<int>(pathPrims.size());
+	//in.numberofpoints = pointCount / 7;
+	//trace("in.numberofpoints =", in.numberofpoints);
+	//in.numberofpointattributes = 1;
+	//in.pointlist = (REAL *)malloc(in.numberofpoints * 2 * sizeof(REAL));
+	//float theta = 0.0;
+	//int i = 0;
+	//for (i = 0; i < in.numberofpoints * 2; i += 2){
+	//	in.pointlist[i] = cos(theta);
+	//	in.pointlist[i + 1] = sin(theta);
+	//	//printf("theta = %f \n", theta * 180 / 3.14159265);
+	//	theta += PI * 2.0 / in.numberofpoints;
+	//}
+
+
+	//in.pointattributelist = (REAL *)malloc(in.numberofpoints *
+	//	in.numberofpointattributes *
+	//	sizeof(REAL));
+	//in.pointattributelist[0] = 0.0;
+	//in.pointattributelist[1] = 1.0;
+	//in.pointattributelist[2] = 11.0;
+	//in.pointattributelist[3] = 10.0;
+	//in.pointmarkerlist = (int *)malloc(in.numberofpoints * sizeof(int));
+	//in.pointmarkerlist[0] = 0;
+	//in.pointmarkerlist[1] = 2;
+	//in.pointmarkerlist[2] = 0;
+	//in.pointmarkerlist[3] = 0;
+
+	//in.numberofsegments = 0;
+	//in.numberofholes = 0;
+	//in.numberofregions = 1;
+	//in.regionlist = (REAL *)malloc(in.numberofregions * 4 * sizeof(REAL));
+	//in.regionlist[0] = 0.5;
+	//in.regionlist[1] = 5.0;
+	//in.regionlist[2] = 7.0;            /* Regional attribute (for whole mesh). */
+	//in.regionlist[3] = 0.1;          /* Area constraint that will not be used. */
+
+	//printf("Input point set:\n\n");
+	//pathTessellate(&in, 1, 0, 0, 0, 0, 0);
+
+	///* Make necessary initializations so that Triangle can return a */
+	///*   triangulation in `mid' and a voronoi diagram in `vorout'.  */
+
+	//mid.pointlist = (REAL *)NULL;            /* Not needed if -N switch used. */
+	///* Not needed if -N switch used or number of point attributes is zero: */
+	//mid.pointattributelist = (REAL *)NULL;
+	//mid.pointmarkerlist = (int *)NULL; /* Not needed if -N or -B switch used. */
+	//mid.trianglelist = (int *)NULL;          /* Not needed if -E switch used. */
+	///* Not needed if -E switch used or number of triangle attributes is zero: */
+	//mid.triangleattributelist = (REAL *)NULL;
+	//mid.neighborlist = (int *)NULL;         /* Needed only if -n switch used. */
+	///* Needed only if segments are output (-p or -c) and -P not used: */
+	//mid.segmentlist = (int *)NULL;
+	///* Needed only if segments are output (-p or -c) and -P and -B not used: */
+	//mid.segmentmarkerlist = (int *)NULL;
+	//mid.edgelist = (int *)NULL;             /* Needed only if -e switch used. */
+	//mid.edgemarkerlist = (int *)NULL;   /* Needed if -e used and -B not used. */
+
+	//vorout.pointlist = (REAL *)NULL;        /* Needed only if -v switch used. */
+	///* Needed only if -v switch used and number of attributes is not zero: */
+	//vorout.pointattributelist = (REAL *)NULL;
+	//vorout.edgelist = (int *)NULL;          /* Needed only if -v switch used. */
+	//vorout.normlist = (REAL *)NULL;         /* Needed only if -v switch used. */
+
+	///* Triangulate the points.  Switches are chosen to read and write a  */
+	///*   PSLG (p), preserve the convex hull (c), number everything from  */
+	///*   zero (z), assign a regional attribute to each element (A), and  */
+	///*   produce an edge list (e), a Voronoi diagram (v), and a triangle */
+	///*   neighbor list (n).                                              */
+
+	//triangulate("pczAevn", &in, &mid, &vorout);
+
+	//printf("Initial triangulation:\n\n");
+	//pathTessellate(&mid, 1, 1, 1, 1, 1, 0);
+	//printf("Initial Voronoi diagram:\n\n");
+	//pathTessellate(&vorout, 0, 0, 0, 0, 1, 1);
+
+	///* Attach area constraints to the triangles in preparation for */
+	///*   refining the triangulation.                               */
+
+	///* Needed only if -r and -a switches used: */
+	//mid.trianglearealist = (REAL *)malloc(mid.numberoftriangles * sizeof(REAL));
+	//mid.trianglearealist[0] = 3.0;
+	//mid.trianglearealist[1] = 1.0;
+
+	///* Make necessary initializations so that Triangle can return a */
+	///*   triangulation in `out'.                                    */
+
+	//out.pointlist = (REAL *)NULL;            /* Not needed if -N switch used. */
+	///* Not needed if -N switch used or number of attributes is zero: */
+	//out.pointattributelist = (REAL *)NULL;
+	//out.trianglelist = (int *)NULL;          /* Not needed if -E switch used. */
+	///* Not needed if -E switch used or number of triangle attributes is zero: */
+	//out.triangleattributelist = (REAL *)NULL;
+
+	///* Refine the triangulation according to the attached */
+	///*   triangle area constraints.                       */
+
+	//triangulate("prazBP", &mid, &out, (struct triangulateio *) NULL);
+
+	//printf("Refined triangulation:\n\n");
+	//pathTessellate(&out, 0, 1, 0, 0, 0, 0);
+
+	/////* Free all allocated arrays, including those allocated by Triangle. */
+	//free(in.pointlist);
+	////free(in.pointattributelist);
+	////free(in.pointmarkerlist);
+	//free(in.regionlist);
+	//free(mid.pointlist);
+	//free(mid.pointattributelist);
+	//free(mid.pointmarkerlist);
+	//free(mid.trianglelist);
+	//free(mid.triangleattributelist);
+	////free(mid.trianglearealist);
+	//free(mid.neighborlist);
+	//free(mid.segmentlist);
+	//free(mid.segmentmarkerlist);
+	//free(mid.edgelist);
+	//free(mid.edgemarkerlist);
+	//free(vorout.pointlist);
+	//free(vorout.pointattributelist);
+	//free(vorout.edgelist);
+	//free(vorout.normlist);
+	//free(out.pointlist);
+	//free(out.pointattributelist);
+	//free(out.trianglelist);
+	//free(out.triangleattributelist);
+
 }
+
+
+void ProtoBaseApp::pathTessellate(struct triangulateio *io, int markers, int reporttriangles, int reportneighbors, int reportsegments, int reportedges, int reportnorms)
+{
+	//int i, j;
+
+	//printf("PVector[] vecs = {\n");
+	//for (i = 0; i < io->numberofpoints; i++) {
+	//	//printf("Point %4d:", i);
+	//	printf(" new PVector(");
+	//	for (j = 0; j < 2; j++) {
+	//		printf("%.6g", io->pointlist[i * 2 + j]);
+	//		if (j == 0){
+	//			printf(", ");
+	//		}
+	//	}
+	//	if (i < io->numberofpoints - 1) {
+	//		printf("),");
+	//	}
+	//	else {
+	//		printf(")");
+	//	}
+	//	/*if (io->numberofpointattributes > 0) {
+	//	printf("   attributes");
+	//	}
+	//	for (j = 0; j < io->numberofpointattributes; j++) {
+	//	printf("  %.6g",
+	//	io->pointattributelist[i * io->numberofpointattributes + j]);
+	//	}
+	//	if (markers) {
+	//	printf("   marker %d\n", io->pointmarkerlist[i]);
+	//	} else {
+	//	printf("\n");
+	//	}*/
+	//	printf("\n");
+	//}
+	//printf("};");
+	//printf("\nindices: \n");
+
+	//if (reporttriangles || reportneighbors) {
+	//	for (i = 0; i < io->numberoftriangles; i++) {
+	//		if (reporttriangles) {
+	//			//printf("Triangle %4d points:", i);
+	//			for (j = 0; j < io->numberofcorners; j++) {
+	//				printf(" %1d", io->trianglelist[i * io->numberofcorners + j]);
+	//			}
+	//			/*if (io->numberoftriangleattributes > 0) {
+	//			printf("   attributes");
+	//			}
+	//			for (j = 0; j < io->numberoftriangleattributes; j++) {
+	//			printf("  %.6g", io->triangleattributelist[i *
+	//			io->numberoftriangleattributes + j]);
+	//			}*/
+	//			printf("\n");
+	//		}
+	//		/*if (reportneighbors) {
+	//		printf("Triangle %4d neighbors:", i);
+	//		for (j = 0; j < 3; j++) {
+	//		printf("  %4d", io->neighborlist[i * 3 + j]);
+	//		}
+	//		printf("\n");
+	//		}*/
+	//	}
+	//	printf("\n");
+	//}
+
+	///*if (reportsegments) {
+	//for (i = 0; i < io->numberofsegments; i++) {
+	//printf("Segment %4d points:", i);
+	//for (j = 0; j < 2; j++) {
+	//printf("  %4d", io->segmentlist[i * 2 + j]);
+	//}
+	//if (markers) {
+	//printf("   marker %d\n", io->segmentmarkerlist[i]);
+	//} else {
+	//printf("\n");
+	//}
+	//}
+	//printf("\n");
+	//}*/
+
+	///* if (reportedges) {
+	//for (i = 0; i < io->numberofedges; i++) {
+	//printf("Edge %4d points:", i);
+	//for (j = 0; j < 2; j++) {
+	//printf("  %4d", io->edgelist[i * 2 + j]);
+	//}
+	//if (reportnorms && (io->edgelist[i * 2 + 1] == -1)) {
+	//for (j = 0; j < 2; j++) {
+	//printf("  %.6g", io->normlist[i * 2 + j]);
+	//}
+	//}
+	//if (markers) {
+	//printf("   marker %d\n", io->edgemarkerlist[i]);
+	//} else {
+	//printf("\n");
+	//}
+	//}
+	//printf("\n");
+	//}*/
+}
+
+
 void ProtoBaseApp::vertex(const Vec2f& vec) {
 	vertex(vec.x, vec.y, 0);
 }
@@ -1205,10 +1479,17 @@ void ProtoBaseApp::vertex(float x, float y) {
 	vertex(x, y, 0);
 }
 void ProtoBaseApp::vertex(float x, float y, float z) {
+	//static int vertexCounter = 0;
+	//trace(vertexCounter++);
+	//std::cout << "in vertex function" << std::endl;
 	if (isPathRecording){
-		ellipsePrims.push_back(x);
-		ellipsePrims.push_back(y);
-		ellipsePrims.push_back(z);
+		pathPrims.push_back(x);
+		pathPrims.push_back(y);
+		pathPrims.push_back(z);
+		pathPrims.push_back(fillColor.r);
+		pathPrims.push_back(fillColor.g);
+		pathPrims.push_back(fillColor.b);
+		pathPrims.push_back(fillColor.a);
 	}
 	else {
 		trace("Path Recording Failure: You must precede vertex() calls with beginPath()");

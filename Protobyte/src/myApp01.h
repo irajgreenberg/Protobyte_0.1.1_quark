@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "appProtobyte/ProtoBaseApp.h"
+//#include "Testing_Tessellation.h"
 
 
 using namespace ijg;
@@ -27,7 +28,6 @@ private:
 	//ProtoEllipse ellipse;
 
 	//ProtoPath3 myPath;
-	GLUtesselator* tesselator;
 
 	static const int W = 400;
 	static const int H = 400;

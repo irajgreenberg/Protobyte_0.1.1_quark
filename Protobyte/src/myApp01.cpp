@@ -83,7 +83,7 @@ void myApp01::init() {
 	//shader3D.bind();
 	//_initUniforms(&shader3D);
 
-	tesselator = gluNewTess();
+	//tesselator = gluNewTess();
 
 	for (int i = 0, ind = 0; i < ROWS; ++i){
 		for (int j = 0; j < COLUMNS; ++j){
@@ -94,8 +94,41 @@ void myApp01::init() {
 			}
 		}
 	}
+	//fill(.5, .75, .34);
+	//beginPath();
+	//vertex(23, 45, 104);
+	//vertex(223, 45, 104);
 
+	//vertex(23, 45, 104);
+	//vertex(23, 345, 104);
+	//vertex(3, 45, -104);
+	//endPath();
 	// 
+
+	// for testing only
+	//GLdouble myStar[5][6] = {
+	//	0.6f, -0.1f, -2.0f, 1.0f, 1.0f, 1.0f,
+	//	1.35f, 1.4f, -2.0f, 1.0f, 1.0f, 1.0f,
+	//	2.1f, -0.1f, -2.0f, 1.0f, 1.0f, 1.0f,
+	//	0.6f, 0.9f, -2.0f, 1.0f, 1.0f, 1.0f,
+	//	2.1f, 0.9f, -2.0f, 1.0f, 1.0f, 1.0f };
+
+	//GLdouble quad[4][6] = { 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+	//	1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+	//	1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+	//	0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, };
+
+	//
+	//iraInit();
+	//iraBeginPolygon();
+	//iraBeginContour();
+	//iraAddContourVertex(quad, 4);
+	//iraEndContour();
+	//iraEndPolygon();
+	//iraEnd();
+
+
+
 }
 
 void myApp01::run() {
@@ -207,9 +240,14 @@ void myApp01::display() {
 
 
 
+
 	endArcball();
 
-
+	beginPath();
+	vertex(0, 0, 0);
+	vertex(10, 10, 10);
+	vertex(5, 20, 1);
+	endPath(1);
 
 }
 
