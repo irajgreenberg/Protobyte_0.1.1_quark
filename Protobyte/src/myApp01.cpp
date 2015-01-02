@@ -127,6 +127,12 @@ void myApp01::init() {
 	//iraEndPolygon();
 	//iraEnd();
 
+	path.noStroke();
+	path.fill(0, .5, .75);
+	path.moveTo(0, 0);
+	path.lineTo(20, 20);
+	path.end(CLOSE);
+
 
 
 }
@@ -243,12 +249,19 @@ void myApp01::display() {
 
 	endArcball();
 
-	beginPath();
-	vertex(0, 0, 0);
-	vertex(10, 10, 10);
-	vertex(5, 20, 1);
-	endPath(1);
+	//beginPath();
+	//vertex(0, 0, 0);
+	//vertex(10, 10, 10);
+	//vertex(5, 20, 1);
+	//endPath(1);
+	//path.moveTo();
+	//path.lineTo();
+	//path.curveTo();
+	//path.end();
 
+
+	//...
+	//	path.display();
 }
 
 void myApp01::mousePressed(){

@@ -90,7 +90,7 @@
 //#include <stdio.h>
 //#include <stdlib.h>
 //#include <math.h>
-#include "triangle.h"
+//#include "triangle.h"
 
 //extern "C" void triangulate(char *, struct triangulateio *, struct triangulateio *,
 //struct triangulateio *);
@@ -243,6 +243,7 @@ namespace ijg {
 		*beginPath(), endPath(), closePath()
 		***********************************/
 		std::vector<Vec3f> path;
+
 		/***************END****************/
 
 		/***********************************
