@@ -22,6 +22,8 @@ This class is part of the group common (update)
 */
 
 #include "ProtoPath2.h"
+// forward declared in .h to avoid circular dependency
+#include "../appProtobyte/ProtoBaseApp.h"
 
 using namespace ijg;
 
@@ -29,12 +31,30 @@ using namespace ijg;
 ProtoPath2::ProtoPath2() {
 }
 
+ProtoPath2::ProtoPath2(ProtoBaseApp* baseApp){
+	this->baseApp = baseApp;
+	// default style state
+	fillCol = Col4f(1);
+	strokeCol = Col4f(0);
+}
+
+ProtoPath2::ProtoPath2(const std::vector<Vec2f>& path) {
+}
+
+ProtoPath2::ProtoPath2(const std::vector<Vec2f>& path, const std::vector<Col4f>& cols) {
+}
 
 ProtoPath2::~ProtoPath2() {
 }
 
 
+//void ProtoPath2::setShader(const ProtoShader* shader) {
+//	this->shader = shader;
+//}
+
 void ProtoPath2::init() {
+
+
 	// 1. Create and bind VAO
 	//GLuint vaoID;
 	glGenVertexArrays(1, &vaoPathID); // Create VAO
@@ -54,7 +74,8 @@ void ProtoPath2::init() {
 	glGenBuffers(1, &indexVboPathID); // Generate buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboPathID); // Bind element buffer
 
-	int indsDataSize = pathDetail * 3 * sizeof(GL_UNSIGNED_INT);
+	//int indsDataSize = pathDetail * 3 * sizeof(GL_UNSIGNED_INT);
+	int indsDataSize = 1 * 3 * sizeof(GL_UNSIGNED_INT); // pathDetail or 1 in this case just a placeholder for now
 
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indsDataSize, NULL, GL_STATIC_DRAW); // allocate
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indsDataSize, &pathInds[0]); // upload data
@@ -81,7 +102,124 @@ void ProtoPath2::init() {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	pathPrims.clear();
-	pathInds.clear();
+	//pathPrims.clear();
+	//pathInds.clear();
 
+	glLineWidth(2.5);
+}
+
+void ProtoPath2::moveTo(float x, float y) {
+	pathVecs.clear();
+	pathVecs.push_back(Vec2f(x, y));
+}
+void ProtoPath2::moveTo(const Vec2f& v){
+	pathVecs.clear(); 
+	pathVecs.push_back(v);
+
+}
+void ProtoPath2::lineTo(float x, float y){
+	pathVecs.push_back(Vec2f(x, y));
+}
+void ProtoPath2::lineTo(const Vec2f& v){
+	pathVecs.push_back(v);
+}
+void ProtoPath2::curveTo(float x, float y){
+
+}
+void ProtoPath2::curveTo(const Vec2f& v){
+
+}
+void ProtoPath2::end(int pathEndState){
+	this->pathEndState = pathEndState;
+
+	// process vertices
+	for (int i = 0; i < pathVecs.size(); ++i){
+		pathPrims.push_back(pathVecs.at(i).x); // x
+		pathPrims.push_back(pathVecs.at(i).y); // y
+		pathPrims.push_back(0); // z
+		pathPrims.push_back(strokeCol.r); // r
+		pathPrims.push_back(strokeCol.g); // g
+		pathPrims.push_back(strokeCol.b); // b
+		pathPrims.push_back(strokeCol.a); // a
+	}
+
+	init();
+}
+
+void ProtoPath2::fill(const Col4f& col){
+	fillCol = col;
+
+	if (pathVecs.size() > 1){
+		for (int i = 0; i < pathPrims.size(); i += 7){
+			pathPrims.at(i + 3) = fillCol.r; // r
+			pathPrims.at(i + 4) = fillCol.g; // g
+			pathPrims.at(i + 5) = fillCol.b; // b
+			pathPrims.at(i + 6) = fillCol.a; // a
+		}
+	}
+}
+
+void ProtoPath2::fill(float r, float g, float b, float a){
+	fill(Col4f(r, g, b, a));
+}
+
+void ProtoPath2::fill(float r, float g, float b){
+	fill(Col4f(r, g, b, 1.0));
+}
+
+void ProtoPath2::fill(const std::vector<Col4f>& cols){
+	fillCols = cols;
+}
+
+void ProtoPath2::stroke(const Col4f& col){
+	strokeCol = col;
+}
+
+void ProtoPath2::stroke(float r, float g, float b, float a){
+	strokeCol = Col4f(r, g, b, a);
+}
+
+void ProtoPath2::stroke(float r, float g, float b){
+	strokeCol = Col4f(r, g, b, 1.0);
+}
+
+void ProtoPath2::stroke(const std::vector<Col4f>& cols) {
+	strokeCols = cols;
+}
+
+void ProtoPath2::noFill() {
+}
+
+void ProtoPath2::noStroke() {
+}
+
+void ProtoPath2::display() {
+	glBindBuffer(GL_ARRAY_BUFFER, vboPathID);
+	int vertsDataSize = sizeof (GLfloat)* pathPrims.size();
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &pathPrims[0]); // upload the data
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboPathID);
+	int indsDataSize = sizeof (int)* pathInds.size();
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, indsDataSize, &pathInds[0]); // upload the data
+
+	baseApp->enable2DRendering();
+	glBindVertexArray(vaoPathID);
+	//glDrawElements(GL_TRIANGLES, pathInds.size(), GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+	glDrawArrays(GL_POLYGON, 0, pathVecs.size());
+	baseApp->disable2DRendering();
+
+	// Disable VAO
+	glBindVertexArray(0);
+
+	// reenable 3D lighting
+	baseApp->disable2DRendering();
+
+	// clean up vectors between each frame
+	//pathPrims.clear();
+	//pathInds.clear();
+
+}
+
+void ProtoPath2::setBaseApp(ProtoBaseApp* baseApp){
+	this->baseApp = baseApp;
 }

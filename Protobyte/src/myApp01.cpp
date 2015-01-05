@@ -6,22 +6,20 @@ void myApp01::init() {
 
 
 	//_initUniforms(&shader3D);
-	//globalAmbient = Col3f(.3, .3, .3);
+	globalAmbient = Col3f(.7, .7, .7);
 
 
 
 	shadowsOn();
 	// wall
-	//plane = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(0, 0, 0, 1), 1, 1, "linen.jpg"); 
-
-	//plane = GroundPlane(Vec3(), Vec3(), Dim2f(8, 7), Col4f(0, 0, 0, 1), 1, 1, "linen.jpg");
-	//Plane.textureOn();
-	//plane.setBumpMap("linen.jpg");
-	//Plane.loadBumpMapTexture("shipPlate_normal.jpg");
-	//plane.setTextureScale(Vec2f(.5));
-	//Plane.setAmbientMaterial(Col4f(.02, .02, .02, 1.0));
-	//plane.setSpecularMaterial(Col4f(.85, .85, .85, 1.0));
-	//plane.setShininess(45);
+	plane = GroundPlane(Vec3(), Vec3(), Dim2f(800, 700), Col4f(0, 0, 0, 1), 1, 1, "linen.jpg"); 
+	plane.textureOn();
+	plane.setBumpMap("linen.jpg");
+	plane.loadBumpMapTexture("shipPlate_normal.jpg");
+	plane.setTextureScale(Vec2f(.5));
+	plane.setAmbientMaterial(Col4f(.02, .02, .02, 1.0));
+	plane.setSpecularMaterial(Col4f(.85, .85, .85, 1.0));
+	plane.setShininess(45);
 	//trace("GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS =", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
 
@@ -63,11 +61,11 @@ void myApp01::init() {
 	tube.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
 
 	//ProtoCylinder::ProtoCylinder(int detail, Registration reg) :
-	//cylinder = Cylinder(60, "pitted.jpg", ProtoCylinder::CENTER);
-	//cylinder.setShininess(1);
-	//cylinder.setBumpMap("pitted.jpg");
-	//cylinder.setDiffuseMaterial(Col4f(1, 1, 1, 1.0));
-	//cylinder.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
+	cylinder = Cylinder(60, "pitted.jpg", ProtoCylinder::CENTER);
+	cylinder.setShininess(1);
+	cylinder.setBumpMap("pitted.jpg");
+	cylinder.setDiffuseMaterial(Col4f(1, 1, 1, 1.0));
+	cylinder.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
 
 	//ellipse = ProtoEllipse(Vec3f(), Vec3f(), Dim2f(1, 1),
 	//Col4f(1, 0, .75, 1), 24);
@@ -127,11 +125,18 @@ void myApp01::init() {
 	//iraEndPolygon();
 	//iraEnd();
 
-	path.noStroke();
-	path.fill(0, .5, .75);
-	path.moveTo(0, 0);
-	path.lineTo(20, 20);
-	path.end(CLOSE);
+	path1 = ProtoPath2(this);
+	path1.stroke(1.0, .75, .125);
+	path1.fill(0, .5, .75);
+	theta = 0;
+	int sides = 21;
+	path1.moveTo(cos(theta) * random(-13, 13), sin(theta) * random(-13, 13));
+	for (int i = 0; i < sides; ++i){
+		theta += TWO_PI / sides;
+		path1.lineTo(cos(theta) * random(-13, 13), sin(theta) * random(-13, 13));
+		
+	}
+	path1.end(CLOSE);
 
 
 
@@ -180,47 +185,53 @@ void myApp01::display() {
 	//pop();
 
 
-
+	plane.display();
 	//rotate(getFrameCount()*.05f, 1, 0, 0);
 	//rotate(getFrameCount()*.05f, 0, 1, 0);
 	//rotate(getFrameCount()*.065f, 0, 0, 1);
-	//push();
-	//{
-	//	translate(-50, 0, 0);
+	push();
+	{
+		translate(-50, 0, 0);
 
-	//	rotate(getFrameCount()*.05f, 1, 0, 0);
-	//	rotate(getFrameCount()*.05f, 0, 1, 0);
-	//	rotate(getFrameCount()*.065f, 0, 0, 1);
-	//	scale(100);
-	//	
-	//	//tube.display();
-	//}
-	//pop();
+		rotate(getFrameCount()*.05f, 1, 0, 0);
+		rotate(getFrameCount()*.05f, 0, 1, 0);
+		rotate(getFrameCount()*.065f, 0, 0, 1);
+		scale(100);
+		
+		tube.display();
+	}
+	pop();
 	//
 	//
-	//push();
-	//{
-	//	//cylinder.display();
-	//	translate(50, 0, 0);
-	//	rotate(-getFrameCount()*.5f, 1, 0, 0);
-	//	rotate(getFrameCount()*.05f, 0, 1, 0);
-	//	rotate(-getFrameCount()*.065f, 0, 0, 1);
-	//	scale(100);
+	push();
+	{
+		//cylinder.display();
+		/*translate(50, 0, 0);
+		rotate(-getFrameCount()*.5f, 1, 0, 0);
+		rotate(getFrameCount()*.05f, 0, 1, 0);
+		rotate(-getFrameCount()*.065f, 0, 0, 1);
+		scale(100);*/
 
-	//	//shader3D.setShaders("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
-	//	//shader3D.bind();
-	//	//_initUniforms(&shader3D); 
-	//	//ellipse.display();
-	//	//myPath.display();
+		//shader3D.setShaders("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
+		//shader3D.bind();
+		//_initUniforms(&shader3D); 
+		//ellipse.display();
+		//myPath.display();
 
-	//}
-	//pop();
+	}
+	pop();
 	//GLUquadric* quadric = gluNewQuadric();
 	//gluPartialDisk(quadric,50,100,20,5,0,270);
 
 	rotate(-getFrameCount()*.5f, 1, 0, 0);
 	rotate(getFrameCount()*.5f, 0, 1, 0);
 	rotate(-getFrameCount()*.5f, 0, 0, 1);
+
+	push();
+	path1.display();
+	pop();
+
+
 	float xStep = W / float(COLUMNS);
 	float yStep = H / float(ROWS);
 	float zStep = D / float(LAYERS);
@@ -235,7 +246,9 @@ void myApp01::display() {
 					rect(0, 0, 13, 13, CENTER);
 				}
 				else {
-					ellipse(0, 0, 13, 13);
+					//ellipse(0, 0, 13, 13);
+					path1.fill(colors[ind]);
+					path1.display();
 				}
 				pop();
 				rots[ind] += rotSpds[ind];
@@ -243,9 +256,8 @@ void myApp01::display() {
 			}
 		}
 	}
-
-
-
+	// tranform matrix not reset here?
+	
 
 	endArcball();
 

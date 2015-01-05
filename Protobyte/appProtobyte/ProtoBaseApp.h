@@ -56,6 +56,8 @@
 #include "libProtobyte/ProtoEllipse.h"
 #include "libProtobyte/ProtoPath3.h"
 #include "libProtobyte/ProtoTessellator.h"
+#include "libProtobyte/ProtoPath2.h"
+
 
 #include "libProtobyte/ProtoJuncusEffusus.h"
 #include "libProtobyte/ProtoCephalopod.h"
@@ -101,12 +103,14 @@ namespace ijg {
 	
 	// non-member functions
 
+	// forward declares
+	class Protoplasm; 
 
-	class Protoplasm; // forward declare
 	class ProtoBaseApp {
 
-		// enable Protoplasm private access
+		// enable private access
 		friend class ProtoPlasm;
+		friend class ProtoPath2;
 
 	public:
 		ProtoBaseApp();
@@ -243,6 +247,9 @@ namespace ijg {
 		*beginPath(), endPath(), closePath()
 		***********************************/
 		std::vector<Vec3f> path;
+
+		// new approach
+		//ProtoPath2 path;
 
 		/***************END****************/
 
@@ -515,6 +522,8 @@ namespace ijg {
 		void vertex(float x, float y);
 		void vertex(float x, float y, float z);
 		/****END 2D API****/
+
+		//ProtoPath2 protoPath2;
 		
 		/***********BEGIN************
 		       Save/Thread/Other
@@ -613,8 +622,8 @@ namespace ijg {
 #define beginArcBall arcballBegin
 #define endArcBall arcballEnd
 
-#define begin beginPath
-#define end endPath
+//#define begin beginPath
+//#define end endPath
 
 
 	// remove this old stuff

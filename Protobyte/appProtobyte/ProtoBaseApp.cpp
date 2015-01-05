@@ -206,7 +206,8 @@ void ProtoBaseApp::_init(){
 	_createRect();
 	_createEllipse();
 	_createPath();
-
+	//path2 = ProtoPath2(this);
+	//protoPath2.setBaseApp(this);
 
 	shader3D.bind();
 	_initUniforms(&shader3D);

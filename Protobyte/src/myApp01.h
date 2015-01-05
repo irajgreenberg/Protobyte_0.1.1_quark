@@ -22,12 +22,10 @@ void mouseMoved();
 void mouseDragged();
 
 private:
-	//ProtoGroundPlane plane;
+	ProtoGroundPlane plane;
 	ProtoTube tube;
-	//Cylinder cylinder;
+	Cylinder cylinder;
 	//ProtoEllipse ellipse;
-
-	//ProtoPath3 myPath;
 
 	static const int W = 400;
 	static const int H = 400;
@@ -38,6 +36,9 @@ private:
 	Col4f colors[ROWS*COLUMNS*LAYERS];
 	float rots[ROWS*COLUMNS*LAYERS];
 	float rotSpds[ROWS*COLUMNS*LAYERS];
+
+
+	ProtoPath2 path1;
 
 
 	
