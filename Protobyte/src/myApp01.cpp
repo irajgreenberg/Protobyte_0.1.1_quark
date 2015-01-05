@@ -7,7 +7,10 @@ void myApp01::init() {
 
 	//_initUniforms(&shader3D);
 	globalAmbient = Col3f(.7, .7, .7);
-
+	
+	light0.setPosition(Vec3f(.1, 300, .1));
+	//light0.setPosition(Vec3f(-14.2, 2.5, 8));
+	light0.setIntensity(Vec3f(1, 1, 1));
 
 
 	shadowsOn();
@@ -148,7 +151,7 @@ void myApp01::run() {
 
 void myApp01::display() {
 	background(1.0, .5, 0);
-
+	translate(0, 0, -200);
 
 	beginArcball();
 	//push();
@@ -184,8 +187,11 @@ void myApp01::display() {
 	//ellipse(1, 1, .5, .5, CENTER);
 	//pop();
 
-
+	push();
+	translate(0, -300, 0);
+	scale(20, 1, 20);
 	plane.display();
+	pop();
 	//rotate(getFrameCount()*.05f, 1, 0, 0);
 	//rotate(getFrameCount()*.05f, 0, 1, 0);
 	//rotate(getFrameCount()*.065f, 0, 0, 1);
