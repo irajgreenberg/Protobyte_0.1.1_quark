@@ -138,8 +138,8 @@ namespace ijg {
 		//void setViewport(int width, int height);
 		// void concat(); moved down for testing
 
-		void pathTessellate(struct triangulateio *io, int markers, int reporttriangles, int reportneighbors, int reportsegments,
-			int reportedges, int reportnorms);
+		//void pathTessellate(struct triangulateio *io, int markers, int reporttriangles, int reportneighbors, int reportsegments,
+		//	int reportedges, int reportnorms);
 
 		
 
@@ -286,7 +286,10 @@ namespace ijg {
 		Vec4f ltRenderingFactors;
 		GLuint lightRenderingFactors_U;
 
+		// color flags/fields for immediate mode drawing
+		bool isStroke, isFill;
 		Col4f fillColor, strokeColor;
+		float lineWidth;
 
 
 		// shadow mapping texture id's
@@ -466,7 +469,7 @@ namespace ijg {
 		void stroke(float r, float g, float b);
 		void stroke(float r, float g, float b, float a);
 		void noStroke();
-		void strokeWeight();
+		void strokeWeight(float lineWidth = 1.0);
 		
 		// points around ellipse
 		int ellipseDetail;
@@ -489,15 +492,15 @@ namespace ijg {
 
 		// path buffer ids (for begin(), vertex(), end())
 		bool isPathRecording;
-		ProtoTessellator tess;
-		std::vector<GLdouble> pathPrims;
+		//ProtoTessellator tess;
+		std::vector<float> pathPrims;
 		std::vector<GLdouble> tessellatedPrims;
 		std::vector<std::vector<GLdouble>> pathPrimsForTessellator;
 		std::vector<int> pathInds;
 		GLuint vaoPathID, vboPathID, indexVboPathID; 
 		void _createPath();
 		enum PathRenderMode {
-			POLYGON, TRIANGLE, TRIANGLE_STRIP, TRIANGLE_FAN
+			POLYGON, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN, LINES, LINE_STRIP, LINE_LOOP
 		} pathRenderMode;
 
 		void rect(float x, float y, float w, float h, Registration reg = CORNER);
@@ -611,10 +614,12 @@ namespace ijg {
 	}
 
 
+// Rendering display() switches
 #define POINTS ProtoGeom3::POINTS
 #define WIREFRAME ProtoGeom3::WIREFRAME
 #define SURFACE ProtoGeom3::SURFACE
-	// make this intuitive
+
+// make this intuitive
 #define arcBallBegin arcballBegin
 #define arcBallEnd arcballEnd
 #define beginArcball arcballBegin
@@ -622,8 +627,9 @@ namespace ijg {
 #define beginArcBall arcballBegin
 #define endArcBall arcballEnd
 
-//#define begin beginPath
-//#define end endPath
+// immediate mode path plotting
+#define beginShape beginPath // processing style
+#define endShape endPath // processing style
 
 
 	// remove this old stuff
