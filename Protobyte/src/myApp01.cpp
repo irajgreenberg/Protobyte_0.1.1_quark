@@ -6,16 +6,17 @@ void myApp01::init() {
 
 
 	//_initUniforms(&shader3D);
-	globalAmbient = Col3f(.7, .7, .7);
+	globalAmbient = Col3f(0, 0, 1);
 
-	light0.setPosition(Vec3f(.1, 300, .1));
+	light0.setPosition(Vec3f(.1, 300, 0));
 	//light0.setPosition(Vec3f(-14.2, 2.5, 8));
-	light0.setIntensity(Vec3f(1, 1, 1));
+	light0.setIntensity(Vec3f(.75, .75, .8));
 
 
 	shadowsOn();
 	// wall
-	plane = GroundPlane(Vec3(), Vec3(), Dim2f(800, 700), Col4f(0, 0, 0, 1), 1, 1, "linen.jpg");
+	plane = GroundPlane(Vec3(), Vec3(), Dim2f(800, 700), Col4f(0, 0, 0, 1), 1, 1, "linen.jpg", Vec2f(.09, .09));
+	//GroundPlane()
 	plane.textureOn();
 	plane.setBumpMap("linen.jpg");
 	plane.loadBumpMapTexture("shipPlate_normal.jpg");
@@ -128,18 +129,18 @@ void myApp01::init() {
 	//iraEndPolygon();
 	//iraEnd();
 
-	//path1 = ProtoPath2(this);
-	//path1.stroke(1.0, .75, .125);
-	//path1.fill(0, .5, .75);
-	//theta = 0;
-	//int sides = 21;
-	//path1.moveTo(cos(theta) * random(-13, 13), sin(theta) * random(-13, 13));
-	//for (int i = 0; i < sides; ++i){
-	//	theta += TWO_PI / sides;
-	//	path1.lineTo(cos(theta) * random(-13, 13), sin(theta) * random(-13, 13));
-	//	
-	//}
-	//path1.end(CLOSE);
+	path1 = ProtoPath2(this);
+	path1.stroke(1.0, .75, .125);
+	path1.fill(0, .5, .75);
+	theta = 0;
+	int sides = 21;
+	path1.moveTo(cos(theta) * random(-13, 13), sin(theta) * random(-13, 13));
+	for (int i = 0; i < sides; ++i){
+		theta += TWO_PI / sides;
+		path1.lineTo(cos(theta) * random(-13, 13), sin(theta) * random(-13, 13));
+		
+	}
+	path1.end(CLOSE);
 
 
 
@@ -190,7 +191,7 @@ void myApp01::display() {
 	push();
 	translate(0, -300, 0);
 	scale(20, 1, 20);
-	//plane.display();
+	plane.display();
 	pop();
 	//rotate(getFrameCount()*.05f, 1, 0, 0);
 	//rotate(getFrameCount()*.05f, 0, 1, 0);
@@ -204,7 +205,7 @@ void myApp01::display() {
 		rotate(getFrameCount()*.065f, 0, 0, 1);
 		scale(100);
 
-		//tube.display();
+		tube.display();
 	}
 	pop();
 	//
@@ -238,34 +239,34 @@ void myApp01::display() {
 	//pop();
 
 
-	//float xStep = W / float(COLUMNS);
-	//float yStep = H / float(ROWS);
-	//float zStep = D / float(LAYERS);
-	//for (int i = 0, ind = 0; i < ROWS; ++i){
-	//	for (int j = 0; j < COLUMNS; ++j){
-	//		for (int k = 0; k < LAYERS; ++k){
-	//			fill(colors[ind]);
-	//			push();
-	//			translate(-W/2+xStep*j, -H/2+yStep*i, -D/2+zStep*k);
-	//			rotate(rots[ind], 1, 1, 1);
-	//			if (ind % 2 == 0){
-	//				rect(0, 0, 13, 13, CENTER);
-	//			}
-	//			else {
-	//				//ellipse(0, 0, 13, 13);
-	//				path1.fill(colors[ind]);
-	//				path1.display();
-	//			}
-	//			pop();
-	//			rots[ind] += rotSpds[ind];
-	//			ind++;
-	//		}
-	//	}
-	//}
+	float xStep = W / float(COLUMNS);
+	float yStep = H / float(ROWS);
+	float zStep = D / float(LAYERS);
+	for (int i = 0, ind = 0; i < ROWS; ++i){
+		for (int j = 0; j < COLUMNS; ++j){
+			for (int k = 0; k < LAYERS; ++k){
+				fill(colors[ind]);
+				push();
+				translate(-W/2+xStep*j, -H/2+yStep*i, -D/2+zStep*k);
+				rotate(rots[ind], 1, 1, 1);
+				if (ind % 2 == 0){
+					rect(0, 0, 13, 13, CENTER);
+				}
+				else {
+					//ellipse(0, 0, 13, 13);
+					path1.fill(colors[ind]);
+					path1.display();
+				}
+				pop();
+				rots[ind] += rotSpds[ind];
+				ind++;
+			}
+		}
+	}
 	// tranform matrix not reset here?
 
-	//fill(1, 0, .25);
-	//stroke(0, .9, .85);
+	fill(1, 0, .25);
+	stroke(0, .9, .85);
 	//noStroke();
 	//noFill();
 	strokeWeight(3);
@@ -277,7 +278,7 @@ void myApp01::display() {
 		vertex(cos(theta) * abs(sin(theta) * 65), sin(theta) * abs(sin(theta) * 65), sin(theta) * sin(theta)*50);
 		theta += TWO_PI / sides;
 	}
-	endShape(OPEN);
+	endShape();
 	
 	/*fill(0, 0, 1);
 	beginPath();
@@ -288,8 +289,9 @@ void myApp01::display() {
 	}
 	endPath(0);*/
 
+	fill(1, 0, 1); 
 	ellipseDetail = 24;
-	//ellipse(0, 0, 200, 200);
+	ellipse(0, 0, 50, 50);
 	pop();
 
 

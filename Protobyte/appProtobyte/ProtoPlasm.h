@@ -55,6 +55,14 @@ namespace ijg {
             glfwSetWindowShouldClose(window, GL_TRUE);
     }
 
+	static void window_size_callback(GLFWwindow* window, int width, int height) {
+		trace("width =", width);
+		trace("height =", height);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glViewport(0, 0, width*2, height*2);
+	}
+
+	
 	// foward declare
 	//class ProtoBaseApp;
 
@@ -72,7 +80,6 @@ namespace ijg {
         explicit ProtoPlasm(ProtoBaseApp* baseApp);
         ProtoPlasm(int appWidth, int appHeight, std::string appTitle, ProtoBaseApp* baseApp);
         
-
         
     private:
         

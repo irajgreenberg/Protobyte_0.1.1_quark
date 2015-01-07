@@ -1149,22 +1149,11 @@ void ProtoBaseApp::beginPath(PathRenderMode renderMode) {
 void ProtoBaseApp::endPath(bool isClosed) {
 
 	isPathRecording = false;
-	// now go draw geometry
-
-	//// NOTE::this may not be most efficient - eventually refactor
-	//glBindBuffer(GL_ARRAY_BUFFER, vboPathID); // Bind the buffer (vertex array data)
-	//int vertsDataSize = sizeof (GLfloat)* pathPrims.size();
-	//glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
-	//glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &pathPrims[0]); // upload the data
-	//
-	//enable2DRendering();
-	//glBindVertexArray(vaoPathID);
 	int stride = 7;
 	
 	switch (pathRenderMode) {
 	case POLYGON:
 		if (isFill){
-
 			for (int i = 0; i < pathPrims.size(); i += stride){
 				pathPrims.at(i + 3) = fillColor.r;
 				pathPrims.at(i + 4) = fillColor.g;
@@ -1187,7 +1176,6 @@ void ProtoBaseApp::endPath(bool isClosed) {
 			glBindVertexArray(0);
 		}
 		if (isStroke){
-
 			for (int i = 0; i < pathPrims.size(); i += stride){
 				pathPrims.at(i + 3) = strokeColor.r;
 				pathPrims.at(i + 4) = strokeColor.g;
@@ -1234,15 +1222,11 @@ void ProtoBaseApp::endPath(bool isClosed) {
 
 	}
 
-
-	
-
 	// reenable 3D lighting
 	disable2DRendering();
 
 	// clean up vectors between each frame
 	pathPrims.clear();
-
 }
 
 
