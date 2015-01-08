@@ -6,16 +6,16 @@ void myApp01::init() {
 
 
 	//_initUniforms(&shader3D);
-	globalAmbient = Col3f(0, 0, 1);
+	globalAmbient = Col3f(.35, .25, .25);
 
-	light0.setPosition(Vec3f(.1, 300, 0));
+	//light0.setPosition(Vec3f(.1, 300, 0));
 	//light0.setPosition(Vec3f(-14.2, 2.5, 8));
-	light0.setIntensity(Vec3f(.75, .75, .8));
+	light0.setIntensity(Vec3f(.75, .75, .75));
 
 
 	shadowsOn();
 	// wall
-	plane = GroundPlane(Vec3(), Vec3(), Dim2f(800, 700), Col4f(0, 0, 0, 1), 1, 1, "linen.jpg", Vec2f(.09, .09));
+	plane = GroundPlane(Vec3(), Vec3(), Dim2f(800, 700), Col4f(0, 0, 0, 1), 1, 1, "shipPlate_normal.jpg", Vec2f(.09, .09));
 	//GroundPlane()
 	plane.textureOn();
 	plane.setBumpMap("linen.jpg");
@@ -305,7 +305,6 @@ void myApp01::display() {
 }
 
 void myApp01::mousePressed(){
-	//trace("mouse pressed");
 }
 
 void myApp01::mouseReleased(){
