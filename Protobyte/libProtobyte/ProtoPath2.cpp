@@ -36,6 +36,8 @@ ProtoPath2::ProtoPath2(ProtoBaseApp* baseApp){
 	// default style state
 	fillCol = Col4f(1);
 	strokeCol = Col4f(0);
+	isFill = true;
+	isStroke = true;
 }
 
 ProtoPath2::ProtoPath2(const std::vector<Vec2f>& path) {
@@ -130,6 +132,7 @@ void ProtoPath2::curveTo(const Vec2f& v){
 
 }
 void ProtoPath2::end(int pathEndState){
+
 	this->pathEndState = pathEndState;
 
 	// process vertices
@@ -147,6 +150,7 @@ void ProtoPath2::end(int pathEndState){
 }
 
 void ProtoPath2::fill(const Col4f& col){
+	isFill = true; 
 	fillCol = col;
 
 	if (pathVecs.size() > 1){
@@ -172,15 +176,25 @@ void ProtoPath2::fill(const std::vector<Col4f>& cols){
 }
 
 void ProtoPath2::stroke(const Col4f& col){
+	isStroke = true;
 	strokeCol = col;
+
+	if (pathVecs.size() > 1){
+		for (int i = 0; i < pathPrims.size(); i += 7){
+			pathPrims.at(i + 3) = strokeCol.r; // r
+			pathPrims.at(i + 4) = strokeCol.g; // g
+			pathPrims.at(i + 5) = strokeCol.b; // b
+			pathPrims.at(i + 6) = strokeCol.a; // a
+		}
+	}
 }
 
 void ProtoPath2::stroke(float r, float g, float b, float a){
-	strokeCol = Col4f(r, g, b, a);
+	stroke(Col4f(r, g, b, a));
 }
 
 void ProtoPath2::stroke(float r, float g, float b){
-	strokeCol = Col4f(r, g, b, 1.0);
+	stroke(Col4f(r, g, b, 1.0));
 }
 
 void ProtoPath2::stroke(const std::vector<Col4f>& cols) {
@@ -188,9 +202,11 @@ void ProtoPath2::stroke(const std::vector<Col4f>& cols) {
 }
 
 void ProtoPath2::noFill() {
+	isFill = false;
 }
 
 void ProtoPath2::noStroke() {
+	isStroke = false;
 }
 
 void ProtoPath2::display() {
@@ -205,6 +221,7 @@ void ProtoPath2::display() {
 	baseApp->enable2DRendering();
 	glBindVertexArray(vaoPathID);
 	//glDrawElements(GL_TRIANGLES, pathInds.size(), GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glDrawArrays(GL_POLYGON, 0, pathVecs.size());
 	baseApp->disable2DRendering();
 

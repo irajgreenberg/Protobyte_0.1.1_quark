@@ -58,6 +58,7 @@ namespace ijg {
 		std::vector<Vec2f> pathVecs; 
 		std::vector<float> pathPrims;
 		std::vector<int> pathInds;
+		bool isFill, isStroke;
 		Col4f fillCol, strokeCol;
 		std::vector<Col4f> fillCols, strokeCols;
 		int pathEndState;

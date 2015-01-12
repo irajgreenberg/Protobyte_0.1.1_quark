@@ -66,7 +66,10 @@ namespace ijg {
     public:
         friend std::ostream& operator<<(std::ostream& output, const ProtoFace3& face3);
         
-        ProtoFace3(ProtoVertex3* v0_p, ProtoVertex3* v1_p, ProtoVertex3* v2_p);
+		// default cstr
+		ProtoFace3();
+		// overloaded cstr
+		ProtoFace3(ProtoVertex3* v0_p, ProtoVertex3* v1_p, ProtoVertex3* v2_p);
         void display();
         
         Vec3f& getNorm();

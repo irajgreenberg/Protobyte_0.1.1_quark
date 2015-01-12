@@ -1,16 +1,25 @@
 
 #include "myApp01.h"
 
+const int pointCount = 3000;
+Vec3 pts[pointCount];
+
 void myApp01::init() {
 
-
+	for (int i = 0; i < pointCount; i++){
+		pts[i] = Vec3(random(-200, 200), random(-200, 200), random(-200, 200));
+	}
 
 	//_initUniforms(&shader3D);
-	globalAmbient = Col3f(.35, .25, .25);
+	globalAmbient = Col3f(.45, .45, .45);
 
 	//light0.setPosition(Vec3f(.1, 300, 0));
 	//light0.setPosition(Vec3f(-14.2, 2.5, 8));
-	light0.setIntensity(Vec3f(.75, .75, .75));
+	light0.setIntensity(Vec3f(.85, .85, .85));
+
+	light1.setPosition(Vec3f(-10, -400, 0));
+	light1.setIntensity(Vec3f(1, 1, 1));
+	//camera0.setPosition(Vec3f(0, 0, 500));
 
 
 	shadowsOn();
@@ -59,10 +68,13 @@ void myApp01::init() {
 
 	TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(2.2, random(3, 8)), 40/*int(random(3, 25))*/);
 
-	tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(.2, .275, 1, 1), spline, .09, 24, t1, true, "metal_flaky_blue.jpg", Vec2f(1, .01));
-	tube.setShininess(int(random(6, 20)));
-	tube.setBumpMap("metal_flaky_blue.jpg");
-	tube.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
+	//tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(.55, .55, .55, 1), spline, .09, 24, t1, true, "metal_flaky_blue.jpg", Vec2f(1, .01));
+	//tube.setShininess(int(random(6, 20)));
+	//tube.setBumpMap("metal_flaky_blue.jpg");
+	//tube.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
+
+	tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(.55, .55, .55, 1), spline, .09, 24, t1, true);
+
 
 	//ProtoCylinder::ProtoCylinder(int detail, Registration reg) :
 	cylinder = Cylinder(60, "pitted.jpg", ProtoCylinder::CENTER);
@@ -151,42 +163,42 @@ void myApp01::run() {
 }
 
 void myApp01::display() {
-	background(1.0, .5, 0);
-	//translate(0, 0, -200);
+	background(1);
+	translate(0, 0, 0);
 
 	beginArcball();
-	//push();
-	//translate(0, 0, 0);
+	////push();
+	////translate(0, 0, 0);
 
 
-	//fill(0.0, .75, 1);
-	//ellipseDetail = 36;
-	//for (int i = 0; i < 50; i++){
-	//	fill(1.0, 1.0, 0); 
-	//	ellipse(random(-400, 400), random(-300, 300), 75, 75);
-	//	fill(1.0, 0, 1);
-	//	rect(random(-400, 400), random(-300, 300), 75, 75);
-	//}
+	////fill(0.0, .75, 1);
+	////ellipseDetail = 36;
+	////for (int i = 0; i < 50; i++){
+	////	fill(1.0, 1.0, 0); 
+	////	ellipse(random(-400, 400), random(-300, 300), 75, 75);
+	////	fill(1.0, 0, 1);
+	////	rect(random(-400, 400), random(-300, 300), 75, 75);
+	////}
 
 
-	//fill(1.0, .75, 0.0);
-	//ellipse(0, 0, 200, 200, CENTER);
-	//fill(1.0, .75, 1.0);
-	//ellipse(200, 0, 200, 200, CENTER);
-	//fill(.5, .75, 0.5);
-	//ellipse(400, 0, 200, 200, CENTER);
-	//rect(0, 0, 200, 200);
-	//pop();
+	////fill(1.0, .75, 0.0);
+	////ellipse(0, 0, 200, 200, CENTER);
+	////fill(1.0, .75, 1.0);
+	////ellipse(200, 0, 200, 200, CENTER);
+	////fill(.5, .75, 0.5);
+	////ellipse(400, 0, 200, 200, CENTER);
+	////rect(0, 0, 200, 200);
+	////pop();
 
-	//push();
-	//translate(0, 0, 0);
-	//scale(200);
-	//fill(0.0, 1.0, .65); 
-	//rect(1, 1, CENTER);
-	//rect(1, 1.5, 1, 1, CENTER);
-	//fill(1, 1, 0);
-	//ellipse(1, 1, .5, .5, CENTER);
-	//pop();
+	////push();
+	////translate(0, 0, 0);
+	////scale(200);
+	////fill(0.0, 1.0, .65); 
+	////rect(1, 1, CENTER);
+	////rect(1, 1.5, 1, 1, CENTER);
+	////fill(1, 1, 0);
+	////ellipse(1, 1, .5, .5, CENTER);
+	////pop();
 
 	push();
 	translate(0, -300, 0);
@@ -199,17 +211,16 @@ void myApp01::display() {
 	push();
 	{
 		translate(-50, 0, 0);
-
 		rotate(getFrameCount()*.05f, 1, 0, 0);
 		rotate(getFrameCount()*.05f, 0, 1, 0);
 		rotate(getFrameCount()*.065f, 0, 0, 1);
-		scale(100);
-
+		scale(90);
 		tube.display();
 	}
 	pop();
 	//
 	//
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	push();
 	{
 		//cylinder.display();
@@ -242,6 +253,7 @@ void myApp01::display() {
 	float xStep = W / float(COLUMNS);
 	float yStep = H / float(ROWS);
 	float zStep = D / float(LAYERS);
+	strokeWeight(1);
 	for (int i = 0, ind = 0; i < ROWS; ++i){
 		for (int j = 0; j < COLUMNS; ++j){
 			for (int k = 0; k < LAYERS; ++k){
@@ -249,10 +261,15 @@ void myApp01::display() {
 				push();
 				translate(-W/2+xStep*j, -H/2+yStep*i, -D/2+zStep*k);
 				rotate(rots[ind], 1, 1, 1);
+				scale(1.25);
 				if (ind % 2 == 0){
-					rect(0, 0, 13, 13, CENTER);
+					//noFill();
+					stroke(colors[ind]);
+					rect(-5, -5, 10, 10);
 				}
 				else {
+					fill(colors[ind]);
+					stroke(1);
 					//ellipse(0, 0, 13, 13);
 					path1.fill(colors[ind]);
 					path1.display();
@@ -268,9 +285,12 @@ void myApp01::display() {
 	fill(1, 0, .25);
 	stroke(0, .9, .85);
 	//noStroke();
-	//noFill();
+	noFill();
 	strokeWeight(3);
+
 	push();
+	//scale(3);
+	fill(1, 0, 1);
 	beginShape();
 	float theta = 0;
 	int sides = 12;
@@ -280,20 +300,44 @@ void myApp01::display() {
 	}
 	endShape();
 	
-	/*fill(0, 0, 1);
-	beginPath();
-	theta = 0;
-	for (int i = 0; i < sides; ++i){
-		vertex(cos(theta) * abs(sin(theta) * 65), sin(theta) * abs(sin(theta) * 65), 0);
-		theta += TWO_PI / sides;
-	}
-	endPath(0);*/
-
-	fill(1, 0, 1); 
+	noFill();
+	stroke(.5, .45, .6);
+	strokeWeight(6);
 	ellipseDetail = 24;
-	ellipse(0, 0, 50, 50);
+	rect(0, 0, 50, 50);
 	pop();
 
+
+	noFill();
+	push(); 
+	scale(0.5);
+	stroke(1, .5, 0);
+	strokeWeight(.25); 
+	beginShape();
+	for (int i = 0; i < pointCount; ++i){
+		vertex(pts[i].x, pts[i].y, pts[i].z);
+	}
+	endShape(OPEN);
+	pop();
+
+
+	push();
+	strokeWeight(16);
+	stroke(.85, .12, .4);
+	scale(6);
+	quad(0, 0, 0, -40, 40, -40, 40, 0);
+	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_BL);
+	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_BR);
+	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_TR);
+	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER);
+	pop();
+
+	stroke(0);
+	strokeWeight(5);
+	//noFill();
+	fill(.5, .25, .2);
+	scale(300);
+	box(500);
 
 	endArcball();
 
@@ -305,6 +349,7 @@ void myApp01::display() {
 }
 
 void myApp01::mousePressed(){
+	
 }
 
 void myApp01::mouseReleased(){
@@ -313,6 +358,7 @@ void myApp01::mouseReleased(){
 }
 
 void myApp01::mouseMoved() {
+	//glViewport(1000, 1000, 400, 400);
 	//trace("mouse moving");
 }
 

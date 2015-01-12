@@ -117,7 +117,11 @@ namespace ijg {
 		ProtoBaseApp(const ProtoOSC& listener);
 		// void setAppWindowDetails(int appWidth, int appHeight, std::string appTitle);
 
+		// GLFW Mouse events
 		void setMouseButton(int mouseAction, int mouseButton, int mouseMods);
+		
+		// GLFW window events
+		void setWindowFrameSize(const Dim2i& windowFrameSize);
 
 
 		static ProtoBaseApp* baseApp;
@@ -134,7 +138,8 @@ namespace ijg {
 
 		void _init();
 		//void _initUniforms();
-		void _run(const Vec2f& mousePos/*, int mouseBtn, int key*/);
+		//void _run(const Vec2f& mousePos/*, int mouseBtn, int key*/);
+		void _run(const Vec2f& mousePos, const Vec4i& windowCoords = Vec4i(0, 0, 1, 1)/*, int mouseBtn, int key*/);
 		//void setViewport(int width, int height);
 		// void concat(); moved down for testing
 
@@ -157,6 +162,7 @@ namespace ijg {
 		int canvasHeight;
 		int width, height;
 		Dim2i canvasSize;
+		Dim2i windowFrameSize;
 
 		int frameCount;
 		float frameRate;
@@ -177,9 +183,9 @@ namespace ijg {
 		float arcballRotXLast, arcballRotYLast;
 		float mouseXIn, mouseYIn;
 		//bool isArcballOn;
-
-
-		// CAMERAS
+			
+			
+			// CAMERAS
 		// 5 cameras (for now) accessible in world
 		ProtoCamera camera0, camera1, camera2, camera3, camera4;
 
@@ -484,11 +490,21 @@ namespace ijg {
 		GLuint vaoRectID, vboRectID;
 		void _createRect();
 
+		// quad buffer ids
+		float quadPrims[28];
+		GLuint vaoQuadID, vboQuadID;
+		void _createQuad();
+
 		// ellipse buffer ids
 		std::vector<float> ellipsePrims;
 		std::vector<int> ellipseInds;
 		GLuint vaoEllipseID, vboEllipseID, indexVboEllipseID;
 		void _createEllipse();
+
+		// star buffer ids
+		std::vector<float> starPrims;
+		GLuint vaoStarID, vboStarID;
+		void _createStar();
 
 		// path buffer ids (for begin(), vertex(), end())
 		bool isPathRecording;
@@ -503,9 +519,22 @@ namespace ijg {
 			POLYGON, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN, LINES, LINE_STRIP, LINE_LOOP
 		} pathRenderMode;
 
+		//3D
+		// box buffer ids
+		// (x, y, z, nx, ny, nz, r, g, b, a, u, v, tx, ty, tz)
+		Vec2f textureScale;
+		const static int boxPrimCount = 24*15;
+		float boxPrims[boxPrimCount];
+		int boxInds[24]; // 6 faces
+		GLuint vaoBoxID, vboBoxID, indexVboBoxID;
+		void _createBox();
+
+		// primitive funcs
 		void rect(float x, float y, float w, float h, Registration reg = CORNER);
 		void rect(const Vec2& pt0, const Vec2& pt1, Registration reg = CORNER);
 		void rect(float radius1, float radius2, Registration reg = CENTER);
+		void quad(float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3, Registration reg = CENTER);
+		void quad(const Vec2& pt0, const Vec2& pt1, const Vec2& pt2, const Vec2& pt3, Registration reg = CENTER);
 		void ellipse(float x, float y, float w, float h, Registration reg = CENTER);
 		void ellipse(float r0, float r1, Registration reg = CENTER);
 		void ellipse(float r, Registration reg = CENTER);
@@ -516,6 +545,13 @@ namespace ijg {
 		void poly(int sides, float radius1, float radius2);
 		void star(int sides, float innerRadius, float outerRadius);
 		void star(int sides, const Vec2& radiusAndRatio);
+		
+		// 3D Primitives
+		void box(float sz, Registration reg = CENTER);
+		void box(float w, float h, float d, Registration reg = CENTER);
+		void sphere(float sz);
+		void sphere(float w, float h, float d);
+
 
 		// Drawing Methods API
 		void beginPath(PathRenderMode pathRenderMode = POLYGON);

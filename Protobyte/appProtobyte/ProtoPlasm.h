@@ -44,25 +44,16 @@
 
 namespace ijg {
     
-    
-    static void error_callback(int error, const char* description)
-    {
-        fputs(description, stderr);
-    }
-    static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-    {
-        if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-            glfwSetWindowShouldClose(window, GL_TRUE);
-    }
-
-	static void window_size_callback(GLFWwindow* window, int width, int height) {
-		trace("width =", width);
-		trace("height =", height);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glViewport(0, 0, width*2, height*2);
+	static void error_callback(int error, const char* description)
+	{
+		fputs(description, stderr);
+	}
+	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+	{
+		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+			glfwSetWindowShouldClose(window, GL_TRUE);
 	}
 
-	
 	// foward declare
 	//class ProtoBaseApp;
 
@@ -70,8 +61,7 @@ namespace ijg {
         
     public:
 		friend void mouseBtn_callback(GLFWwindow* window, int button, int action, int mods);
-
-		//friend void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+		friend void window_size_callback(GLFWwindow* window, int width, int height);
 
         int frameCount;
         float frameRate;
@@ -102,6 +92,8 @@ namespace ijg {
 
 		
     };
+
+	
 
    
 }
