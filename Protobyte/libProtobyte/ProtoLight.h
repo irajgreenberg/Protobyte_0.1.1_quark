@@ -88,6 +88,10 @@ namespace ijg {
     // accessors/mutators
     inline void ProtoLight::setPosition(const Vec3f& position){
         this->position = position;
+		// avoid division by 0 error (I think)
+		if (this->position.z == 0){
+			this->position.z = .0001;
+		}
     }
     
     inline const Vec3f& ProtoLight::getPosition() const{

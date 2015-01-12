@@ -35,6 +35,14 @@ This class is part of the group common (update)
 #include <fstream>
 
 
+// include GLM
+//#include "glm/gtc/type_ptr.hpp" // matrix copying
+//#include "glm/glm.hpp"
+//#include "glm/gtc/matrix_transform.hpp"
+//#include "glm/gtx/transform2.hpp"
+
+
+
 namespace ijg {
 
 
@@ -64,10 +72,31 @@ namespace ijg {
 		static void setVertexShader(const std::string& vShaderURL);
 		static void setFragmentShader(const std::string& fShaderURL);
 		static void setGeometryShader(const std::string& gShaderURL);
+		void setShaders(const std::string& vShaderURL, const std::string& fShaderURL);
 
 		/******/#define setVertShader setVertexShader;
 		/******/#define setFragShader setFragmentShader;
 		/******/#define setGeomShader setGeometryShader;
+
+
+		bool   isLinked();
+
+		void   bindAttribLocation(GLuint location, const char * name);
+		void   bindFragDataLocation(GLuint location, const char * name);
+
+
+		// from Opengl 4.0 Cookbook
+		//void   setUniform(const char *name, const glm::vec3 & v);
+		//void   setUniform(const char *name, const glm::vec4 & v);
+		//void   setUniform(const char *name, const glm::mat4 & m);
+		//void   setUniform(const char *name, const glm::mat3 & m);
+		//void   setUniform(const char *name, float val);
+		//void   setUniform(const char *name, int val);
+		//void   setUniform(const char *name, bool val);
+
+		void   printActiveUniforms();
+		void   printActiveAttribs();
+
 
 
 	private:
@@ -86,7 +115,6 @@ namespace ijg {
 		static GLuint shader_id_2;
 
 	};
-
 
 	inline const GLuint ProtoShader::getID_2() {
 		trace("in ProtoShader::getID_2()");
@@ -107,6 +135,12 @@ namespace ijg {
 	inline void ProtoShader::unbind() {
 		trace("in ProtoShader::unbind()");
 		glUseProgram(0);
+	}
+
+	inline void ProtoShader::setShaders(const std::string& vShaderURL, const std::string& fShaderURL){
+		vShader = vShaderURL;
+		fShader = fShaderURL;
+		init();
 	}
 
 }

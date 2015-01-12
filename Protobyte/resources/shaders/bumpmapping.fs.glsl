@@ -1,5 +1,6 @@
 #version 430 core
 
+in vec4 vertCol; // orig attribute color set in v. shader
 out vec4 color;
 
 // Texture maps
@@ -40,6 +41,14 @@ uniform float shininess;
 
 //uniform bool isShadowEnabled;
 
+// multiplier to null out lighting factors for 2D rendering
+// diffuse, specular, ambientMat, globalAmbientLight
+// avoids need for conditional testing
+// 3D default: (1,1,1,1)
+// 2D default: (0,0,0,0)
+uniform vec4 lightRenderingFactors;
+
+
 
 
 in VS_OUT
@@ -68,6 +77,7 @@ void main(void)
 		vec3 V = normalize(fs_in.eyeDir);
 		vec3 L = normalize(fs_in.lightDir[i]); // ***********multi here
     
+		// Calculate diffuse color with simple N dot L.
 		// Read the normal from the normal map and normalize it.
 		vec3 N = normalize(texture(bumpMap, fs_in.texcoord).rgb * 2.0 - vec3(1.0));
     
@@ -79,7 +89,6 @@ void main(void)
 
 		// Fetch the diffuse albedo from the texture.
 		vec3 diffuse_albedo = texture(diffuseMap, fs_in.texcoord).rgb;
-		// Calculate diffuse color with simple N dot L.
 		diffuse += max(dot(N, L), 0.0) * diffuse_albedo * vec3(diffuseMaterial) * lights[i].intensity; // ***********multi here
 		// Uncomment this to turn off diffuse shading
 		// diffuse = vec3(0.0);
@@ -106,6 +115,7 @@ void main(void)
 		diffuse = mix(diffuse, diffuse*shadow, 0.4); 
 	}
 
-    // Final color is diffuse + specular
-    color = vec4(diffuse + specular + vec3(ambientMaterial)*globalAmbientLight, 1.0);
+    // Final color is diffuse + specular + ambient with lightRendering Factors enabling/disabling lighting effects for 2D rendering
+
+		color = vertCol*lightRenderingFactors.w + vec4(diffuse*lightRenderingFactors.x + specular*lightRenderingFactors.y + (vec3(ambientMaterial)*globalAmbientLight)*lightRenderingFactors.z, 1.0);
 }

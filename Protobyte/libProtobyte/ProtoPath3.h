@@ -32,7 +32,7 @@ namespace ijg {
 
 	// forward declare & create namespace safe shortname
 	class ProtoPath3;
-	typedef ProtoPath3 Path;
+	typedef ProtoPath3 Path3;
 
 	class ProtoPath3 {
 	protected:
