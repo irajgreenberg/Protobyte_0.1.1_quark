@@ -87,14 +87,14 @@ void main(void)
 		// Calculate R ready for use in Phong lighting.
 		vec3 R = reflect(-L, N); // ***********multi here
 
-		// Fetch the diffuse albedo from the texture.
-		vec3 diffuse_albedo = texture(diffuseMap, fs_in.texcoord).rgb;
-		diffuse += max(dot(N, L), 0.0) * diffuse_albedo * vec3(diffuseMaterial) * lights[i].intensity; // ***********multi here
+		// Fetch the diffuse color from the texture.
+		vec3 diffuse_color = texture(diffuseMap, fs_in.texcoord).rgb;
+		diffuse += max(dot(N, L), 0.0) * diffuse_color * vec3(diffuseMaterial) * lights[i].intensity; // ***********multi here
 		// Uncomment this to turn off diffuse shading
 		// diffuse = vec3(0.0);
 
-		// Assume that specular albedo is white - it could also come from a texture
-		//vec3 specular_albedo = vec3(1.0);
+		// Assume that specular color is white - it could also come from a texture
+		//vec3 specular_color = vec3(1.0);
 		// Calculate Phong specular highlight
 		specular += max(pow(dot(R, V), shininess), 0.0) * vec3(specularMaterial) * lights[i].intensity;
 		// Uncomment this to turn off specular highlights
@@ -105,8 +105,7 @@ void main(void)
 	
 	
 	// shadow map
-	if(shadowMapCoords.w>1) 
-	{
+	if(shadowMapCoords.w>1) {
 		//check the shadow map texture to see if the fragment is in shadow
 		float shadow = textureProj(shadowMap, shadowMapCoords);
 		//darken the diffuse component apprpriately
@@ -117,5 +116,9 @@ void main(void)
 
     // Final color is diffuse + specular + ambient with lightRendering Factors enabling/disabling lighting effects for 2D rendering
 
-		color = vertCol*lightRenderingFactors.w + vec4(diffuse*lightRenderingFactors.x + specular*lightRenderingFactors.y + (vec3(ambientMaterial)*globalAmbientLight)*lightRenderingFactors.z, 1.0);
+	color = vertCol*lightRenderingFactors.w + vec4(diffuse*lightRenderingFactors.x + specular*lightRenderingFactors.y + (vec3(ambientMaterial)*globalAmbientLight)*lightRenderingFactors.z, 1.0);
+
+	color.a = vertCol.a;
+
+
 }

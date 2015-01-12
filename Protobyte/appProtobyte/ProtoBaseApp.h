@@ -562,6 +562,13 @@ namespace ijg {
 		void vertex(float x, float y, float z);
 		/****END 2D API****/
 
+		// Lighting and Materials
+		void setSpecular(const Col4f& spec);
+		void setShininess(float shininess);
+		void setDiffuseMaterial(const Col4f& diff);
+		void setAmbientMaterial(const Col4f& amb);
+
+
 		//ProtoPath2 protoPath2;
 		
 		/***********BEGIN************

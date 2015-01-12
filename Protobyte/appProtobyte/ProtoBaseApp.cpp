@@ -508,7 +508,7 @@ void ProtoBaseApp::_createBox() {
 	verts[4] = ProtoVertex3(boxVecs[2], fillColor, Tup2f(0.0, 1.0 * textureScale.y));
 	verts[5] = ProtoVertex3(boxVecs[5], fillColor, Tup2f(1.0 * textureScale.x, 1.0 * textureScale.y));
 	verts[6] = ProtoVertex3(boxVecs[4], fillColor, Tup2f(1.0 * textureScale.x, 0.0));
-	verts[7] = ProtoVertex3(boxVecs[3], fillColor, Tup2f(0.0, 1.0 * textureScale.y));
+	verts[7] = ProtoVertex3(boxVecs[3], fillColor, Tup2f(0.0, 0.0 * textureScale.y));
 
 	// B
 	verts[8] = ProtoVertex3(boxVecs[4], fillColor, Tup2f(0.0, 0.0));
@@ -520,7 +520,7 @@ void ProtoBaseApp::_createBox() {
 	verts[12] = ProtoVertex3(boxVecs[0], fillColor, Tup2f(1.0 * textureScale.x, 0.0));
 	verts[13] = ProtoVertex3(boxVecs[7], fillColor, Tup2f(0.0, 0.0));
 	verts[14] = ProtoVertex3(boxVecs[6], fillColor, Tup2f(0.0, 1.0 * textureScale.y));
-	verts[15] = ProtoVertex3(boxVecs[1], fillColor, Tup2f(1.0 * textureScale.x, 0.0));
+	verts[15] = ProtoVertex3(boxVecs[1], fillColor, Tup2f(1.0 * textureScale.x, 1.0));
 
 	// Top
 	verts[16] = ProtoVertex3(boxVecs[0], fillColor, Tup2f(0.0, 1.0 * textureScale.y));
@@ -607,6 +607,20 @@ void ProtoBaseApp::_createBox() {
 	// Disable buffers
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+}
+
+// immediate drawing mode lighting and materials
+void ProtoBaseApp::setSpecular(const Col4f& spec) {
+
+}
+void ProtoBaseApp::setShininess(float shininess) {
+
+}
+void ProtoBaseApp::setDiffuseMaterial(const Col4f& diff) {
+
+}
+void ProtoBaseApp::setAmbientMaterial(const Col4f& amb) {
+
 }
 
 bool ProtoBaseApp::createShadowMap(){
@@ -1779,7 +1793,7 @@ void ProtoBaseApp::box(float w, float h, float d, Registration reg) {
 			boxPrims[i + 9] = strokeColor.a;
 		}
 
-		//enable2DRendering();
+		enable2DRendering();
 		glBindVertexArray(vaoBoxID);
 		// NOTE::this may not be most efficient - eventually refactor
 		glBindBuffer(GL_ARRAY_BUFFER, vboBoxID); // Bind the buffer (vertex array data)
@@ -1791,7 +1805,7 @@ void ProtoBaseApp::box(float w, float h, float d, Registration reg) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDrawArrays(GL_QUADS, 0, boxPrimCount / stride);
 
-		//disable2DRendering();
+		disable2DRendering();
 
 		// Disable VAO
 		glBindVertexArray(0);
