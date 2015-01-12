@@ -33,6 +33,5 @@ int main(int argc, char const** argv)
 	
 	
 	ijg::ProtoPlasm p(1300, 800, "Happy ThanksgivingBeast", new myApp01());
-	//ijg::ProtoPlasm p(1200, 900, "shadow test", new shadowTest());
 	return EXIT_SUCCESS;
 }
