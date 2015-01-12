@@ -564,7 +564,7 @@ namespace ijg {
 
 		// Lighting and Materials
 		void setSpecular(const Col4f& spec);
-		void setSpecular(const Col4f& spec);
+		void setShininess(float shininess);
 		void setDiffuseMaterial(const Col4f& diff);
 		void setAmbientMaterial(const Col4f& amb);
 

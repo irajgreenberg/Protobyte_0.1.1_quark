@@ -609,6 +609,20 @@ void ProtoBaseApp::_createBox() {
 	glBindVertexArray(0);
 }
 
+// immediate drawing mode lighting and materials
+void ProtoBaseApp::setSpecular(const Col4f& spec) {
+
+}
+void ProtoBaseApp::setShininess(float shininess) {
+
+}
+void ProtoBaseApp::setDiffuseMaterial(const Col4f& diff) {
+
+}
+void ProtoBaseApp::setAmbientMaterial(const Col4f& amb) {
+
+}
+
 bool ProtoBaseApp::createShadowMap(){
 
 	//set up shadow texture object
