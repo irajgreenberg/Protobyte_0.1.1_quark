@@ -155,7 +155,7 @@ void myApp01::init() {
 	}
 	path1.end(CLOSE);
 
-
+	trace("GL_MAX_TEXTURE_UNITS =", GL_MAX_TEXTURE_UNITS);
 
 }
 
@@ -216,7 +216,7 @@ void myApp01::display() {
 		rotate(getFrameCount()*.05f, 0, 1, 0);
 		rotate(getFrameCount()*.065f, 0, 0, 1);
 		scale(90);
-		//tube.display();
+		tube.display();
 	}
 	pop();
 	////
@@ -336,15 +336,11 @@ void myApp01::display() {
 	stroke(0);
 	strokeWeight(1);
 	//noFill();
-	fill(.5, .25, .2, .5);
+	fill(1, .25, .2, 1);
 	scale(200);
 	box(500);
 
 	endArcball();
-
-
-
-
 	//...
 	//	path.display();
 }

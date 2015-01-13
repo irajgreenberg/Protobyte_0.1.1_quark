@@ -274,6 +274,10 @@ void ProtoPlasm::initGLFW(){
 	// Activate init function in user derived class.n.
 	baseApp->_init(); // base class
 	//baseApp->init(); // derived class
+
+
+	//baseApp->_resetBuffers();
+
 }
 
 

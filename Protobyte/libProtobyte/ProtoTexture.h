@@ -58,16 +58,16 @@ namespace ijg {
 		friend class ProtoGeom3;
 	private:
 		// used by ProtoGeom3 only
-		enum TextureMapType{
+		/*enum TextureMapType{
 			DIFFUSE_MAP,
 			BUMP_MAP,
 			NORMAL_MAP,
 			REFLECTION_MAP,
 			REFRACTION_MAP,
 			SPECULAR_MAP
-		};
+		};*/
 
-		TextureMapType textureMapType;
+		//TextureMapType textureMapType;
 
 		std::string textureMapImage;
 		GLenum image_format;
@@ -91,7 +91,17 @@ namespace ijg {
 	
 	public:
 
-        
+		// used by ProtoGeom3 only
+		enum TextureMapType{
+			DIFFUSE_MAP,
+			BUMP_MAP,
+			NORMAL_MAP,
+			REFLECTION_MAP,
+			REFRACTION_MAP,
+			SPECULAR_MAP
+		};
+
+		TextureMapType textureMapType;
         
         friend std::ostream& operator<<(std::ostream& output, const ProtoTexture& texture);
 
