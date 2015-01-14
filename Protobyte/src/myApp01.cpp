@@ -11,10 +11,10 @@ void myApp01::init() {
 	}
 
 	//_initUniforms(&shader3D);
-	globalAmbient = Col3f(.45, .45, .45);
+	globalAmbient = Col3f(.65, .65, .65);
 
 	//light0.setPosition(Vec3f(.1, 300, 0));
-	//light0.setPosition(Vec3f(-14.2, 2.5, 8));
+	light0.setPosition(Vec3f(0, 3, 1));
 	light0.setIntensity(Vec3f(.85, .85, .85));
 
 	/*light1.setPosition(Vec3f(-10, -400, 0));
@@ -68,10 +68,10 @@ void myApp01::init() {
 
 	TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(2.2, random(3, 8)), 40/*int(random(3, 25))*/);
 
-	tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(1, 0, 0, .2), spline, .09, 24, t1, true, "metal_flaky_blue.jpg", Vec2f(1, .01));
-	tube.setShininess(int(random(6, 20)));
+	tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(1, 1, 1, .85), spline, .09, 24, t1, true, "metal_panel01.jpg", Vec2f(3, .025));
+	tube.setShininess(int(random(6, 27)));
 	tube.setDiffuseMaterial(Col4f(1, 1, 1, .2));
-	tube.setBumpMap("metal_flaky_blue.jpg");
+	tube.setBumpMap("metal_panel01.jpg");
 	tube.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
 
 	//tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(.55, .55, .55, 1), spline, .09, 24, t1, true);
@@ -165,7 +165,7 @@ void myApp01::run() {
 
 void myApp01::display() {
 	background(0.2);
-	translate(0, 0, 0);
+	translate(0, 0, -100);
 
 	beginArcball();
 	////push();
@@ -242,101 +242,101 @@ void myApp01::display() {
 	////GLUquadric* quadric = gluNewQuadric();
 	////gluPartialDisk(quadric,50,100,20,5,0,270);
 
-	//rotate(-getFrameCount()*.5f, 1, 0, 0);
-	//rotate(getFrameCount()*.5f, 0, 1, 0);
-	//rotate(-getFrameCount()*.5f, 0, 0, 1);
-
-	////push();
-	////path1.display();
-	////pop();
-
-
-	//float xStep = W / float(COLUMNS);
-	//float yStep = H / float(ROWS);
-	//float zStep = D / float(LAYERS);
-	//strokeWeight(1);
-	//for (int i = 0, ind = 0; i < ROWS; ++i){
-	//	for (int j = 0; j < COLUMNS; ++j){
-	//		for (int k = 0; k < LAYERS; ++k){
-	//			fill(colors[ind]);
-	//			push();
-	//			translate(-W/2+xStep*j, -H/2+yStep*i, -D/2+zStep*k);
-	//			rotate(rots[ind], 1, 1, 1);
-	//			scale(1.25);
-	//			if (ind % 2 == 0){
-	//				//noFill();
-	//				stroke(colors[ind]);
-	//				rect(-5, -5, 10, 10);
-	//			}
-	//			else {
-	//				fill(colors[ind]);
-	//				stroke(1);
-	//				//ellipse(0, 0, 13, 13);
-	//				path1.fill(colors[ind]);
-	//				path1.display();
-	//			}
-	//			pop();
-	//			rots[ind] += rotSpds[ind];
-	//			ind++;
-	//		}
-	//	}
-	//}
-	//// tranform matrix not reset here?
-
-	//fill(1, 0, .25);
-	//stroke(0, .9, .85);
-	////noStroke();
-	//noFill();
-	//strokeWeight(3);
+	rotate(-getFrameCount()*.5f, 1, 0, 0);
+	rotate(getFrameCount()*.5f, 0, 1, 0);
+	rotate(-getFrameCount()*.5f, 0, 0, 1);
 
 	//push();
-	////scale(3);
-	//fill(1, 0, 1);
-	//beginShape();
-	//float theta = 0;
-	//int sides = 12;
-	//for (int i = 0; i < sides; ++i){
-	//	vertex(cos(theta) * abs(sin(theta) * 65), sin(theta) * abs(sin(theta) * 65), sin(theta) * sin(theta)*50);
-	//	theta += TWO_PI / sides;
-	//}
-	//endShape();
-	//
-	//noFill();
-	//stroke(.5, .45, .6);
-	//strokeWeight(6);
-	//ellipseDetail = 24;
-	//rect(0, 0, 50, 50);
+	//path1.display();
 	//pop();
 
 
-	//noFill();
-	//push(); 
-	//scale(0.5);
-	//stroke(1, .5, 0);
-	//strokeWeight(.25); 
-	//beginShape();
-	//for (int i = 0; i < pointCount; ++i){
-	//	vertex(pts[i].x, pts[i].y, pts[i].z);
-	//}
-	//endShape(OPEN);
-	//pop();
+	float xStep = W / float(COLUMNS);
+	float yStep = H / float(ROWS);
+	float zStep = D / float(LAYERS);
+	strokeWeight(1);
+	for (int i = 0, ind = 0; i < ROWS; ++i){
+		for (int j = 0; j < COLUMNS; ++j){
+			for (int k = 0; k < LAYERS; ++k){
+				fill(colors[ind]);
+				push();
+				translate(-W/2+xStep*j, -H/2+yStep*i, -D/2+zStep*k);
+				rotate(rots[ind], 1, 1, 1);
+				scale(1.25);
+				if (ind % 2 == 0){
+					//noFill();
+					stroke(colors[ind]);
+					rect(-5, -5, 10, 10);
+				}
+				else {
+					fill(colors[ind]);
+					stroke(1);
+					//ellipse(0, 0, 13, 13);
+					path1.fill(colors[ind]);
+					path1.display();
+				}
+				pop();
+				rots[ind] += rotSpds[ind];
+				ind++;
+			}
+		}
+	}
+	// tranform matrix not reset here?
+
+	fill(1, 0, .25);
+	stroke(0, .9, .85);
+	//noStroke();
+	noFill();
+	strokeWeight(3);
+
+	push();
+	//scale(3);
+	fill(1, 0, 1);
+	beginShape();
+	float theta = 0;
+	int sides = 12;
+	for (int i = 0; i < sides; ++i){
+		vertex(cos(theta) * abs(sin(theta) * 65), sin(theta) * abs(sin(theta) * 65), sin(theta) * sin(theta)*50);
+		theta += TWO_PI / sides;
+	}
+	endShape();
+	
+	noFill();
+	stroke(.5, .45, .6);
+	strokeWeight(6);
+	ellipseDetail = 24;
+	rect(0, 0, 50, 50);
+	pop();
 
 
-	//push();
-	//strokeWeight(16);
-	//stroke(.85, .12, .4);
-	//scale(6);
-	//quad(0, 0, 0, -40, 40, -40, 40, 0);
-	//quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_BL);
-	//quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_BR);
-	//quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_TR);
-	//quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER);
-	//pop();
+	noFill();
+	push(); 
+	scale(0.5);
+	stroke(1, .5, 0);
+	strokeWeight(.25); 
+	beginShape();
+	for (int i = 0; i < pointCount; ++i){
+		vertex(pts[i].x, pts[i].y, pts[i].z);
+	}
+	endShape(OPEN);
+	pop();
+
+
+	push();
+	strokeWeight(16);
+	stroke(.85, .12, .4);
+	scale(6);
+	quad(0, 0, 0, -40, 40, -40, 40, 0);
+	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_BL);
+	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_BR);
+	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_TR);
+	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER);
+	pop();
 
 	stroke(0);
 	strokeWeight(1);
 	//noFill();
-	fill(1, .25, .2, 1);
+	fill(1, .25, .2, .65);
 	scale(200);
 	box(500);
 
