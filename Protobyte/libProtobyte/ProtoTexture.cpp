@@ -323,7 +323,7 @@ bool ProtoTexture::init() {
 			};
 
 			// smoother <-  .5  -> bumpier - eventually obviously paramerterize
-			float bumpinessFactor = .625;
+			float bumpinessFactor = .975;
 
 			// allocate for normal map
 			FIBITMAP* normalMap = FreeImage_Allocate(width, height, 24);

@@ -37,6 +37,7 @@
 #include "libProtobyte/ProtoPlane.h"
 #include "libProtobyte/ProtoGroundPlane.h"
 #include "libProtobyte/ProtoTransformFunction.h"
+#include "libProtobyte/ProtoTexture.h"
 #include "libProtobyte/ProtoShader.h"
 #include "libProtobyte/ProtoWorld.h"
 #include "libProtobyte/ProtoColor3.h"
@@ -137,6 +138,7 @@ namespace ijg {
 		void setSize(const Dim2i& canvasSize);
 
 		void _init();
+		//void _resetBuffers();
 		//void _initUniforms();
 		//void _run(const Vec2f& mousePos/*, int mouseBtn, int key*/);
 		void _run(const Vec2f& mousePos, const Vec4i& windowCoords = Vec4i(0, 0, 1, 1)/*, int mouseBtn, int key*/);
