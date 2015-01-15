@@ -250,21 +250,18 @@ void ProtoGeom3::setSpecularMap(const std::string& specularMapImage){
 void ProtoGeom3::createDiffuseMapTexture(const std::string& diffuseMapImage){// create default texture for diffuseMap
 	diffuseMapTexture = ProtoTexture(diffuseMapImage, ProtoTexture::DIFFUSE_MAP, GL_RGB, GL_RGB, 0, 0);
 	diffuseMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "diffuseMap");
-	
 	glUniform1i(diffuseMapLoc, 0); // bind to sampler location 0 // not needed glsl >=4.2
 } 
 
 void ProtoGeom3::createBumpMapTexture(const std::string& bumpMapImage){
 	bumpMapTexture = ProtoTexture(bumpMapImage, ProtoTexture::BUMP_MAP, GL_RGB, GL_RGB, 0, 0);
 	bumpMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "bumpMap");
-	
 	glUniform1i(bumpMapLoc, 1); // bind to sampler location 1 // not needed glsl >=4.2
 } 
 
 void ProtoGeom3::loadBumpMapTexture(const std::string& bumpMapImage){
 	bumpMapTexture = ProtoTexture(bumpMapImage, ProtoTexture::NORMAL_MAP, GL_RGB, GL_RGB, 0, 0);
 	bumpMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "bumpMap");
-	
 	glUniform1i(bumpMapLoc, 1); // bind to sampler location 0 // not needed glsl >=4.2
 }
 void ProtoGeom3::createReflectionMapTexture(const std::string& reflectionMapImage){

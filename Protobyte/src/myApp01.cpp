@@ -155,7 +155,17 @@ void myApp01::init() {
 	}
 	path1.end(CLOSE);
 
-	trace("GL_MAX_TEXTURE_UNITS =", GL_MAX_TEXTURE_UNITS);
+	//trace("GL_MAX_TEXTURE_UNITS =", GL_MAX_TEXTURE_UNITS);
+
+	// pre-load textures for box TEST
+
+	boxDiffuseMapTexture = ProtoTexture("corrogated_metal2_color.jpg", ProtoTexture::DIFFUSE_MAP, GL_RGB, GL_RGB, 0, 0);
+	boxDiffuseMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "diffuseMap");
+	glUniform1i(boxDiffuseMapLoc, 0);
+
+	boxBumpMapTexture = ProtoTexture("corrogated_metal2_color.jpg", ProtoTexture::BUMP_MAP, GL_RGB, GL_RGB, 0, 0);
+	boxBumpMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "bumpMap");
+	glUniform1i(boxBumpMapLoc, 1);
 
 }
 
@@ -251,36 +261,36 @@ void myApp01::display() {
 	//pop();
 
 
-	float xStep = W / float(COLUMNS);
-	float yStep = H / float(ROWS);
-	float zStep = D / float(LAYERS);
-	strokeWeight(1);
-	for (int i = 0, ind = 0; i < ROWS; ++i){
-		for (int j = 0; j < COLUMNS; ++j){
-			for (int k = 0; k < LAYERS; ++k){
-				fill(colors[ind]);
-				push();
-				translate(-W/2+xStep*j, -H/2+yStep*i, -D/2+zStep*k);
-				rotate(rots[ind], 1, 1, 1);
-				scale(1.25);
-				if (ind % 2 == 0){
-					//noFill();
-					stroke(colors[ind]);
-					rect(-5, -5, 10, 10);
-				}
-				else {
-					fill(colors[ind]);
-					stroke(1);
-					//ellipse(0, 0, 13, 13);
-					path1.fill(colors[ind]);
-					path1.display();
-				}
-				pop();
-				rots[ind] += rotSpds[ind];
-				ind++;
-			}
-		}
-	}
+	//float xStep = W / float(COLUMNS);
+	//float yStep = H / float(ROWS);
+	//float zStep = D / float(LAYERS);
+	//strokeWeight(1);
+	//for (int i = 0, ind = 0; i < ROWS; ++i){
+	//	for (int j = 0; j < COLUMNS; ++j){
+	//		for (int k = 0; k < LAYERS; ++k){
+	//			fill(colors[ind]);
+	//			push();
+	//			translate(-W/2+xStep*j, -H/2+yStep*i, -D/2+zStep*k);
+	//			rotate(rots[ind], 1, 1, 1);
+	//			scale(1.25);
+	//			if (ind % 2 == 0){
+	//				//noFill();
+	//				stroke(colors[ind]);
+	//				rect(-5, -5, 10, 10);
+	//			}
+	//			else {
+	//				fill(colors[ind]);
+	//				stroke(1);
+	//				//ellipse(0, 0, 13, 13);
+	//				path1.fill(colors[ind]);
+	//				path1.display();
+	//			}
+	//			pop();
+	//			rots[ind] += rotSpds[ind];
+	//			ind++;
+	//		}
+	//	}
+	//}
 	// tranform matrix not reset here?
 
 	fill(1, 0, .25);
@@ -323,7 +333,7 @@ void myApp01::display() {
 
 
 	push();
-	strokeWeight(16);
+	strokeWeight(3);
 	stroke(.85, .12, .4);
 	scale(6);
 	quad(0, 0, 0, -40, 40, -40, 40, 0);
@@ -333,12 +343,16 @@ void myApp01::display() {
 	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER);
 	pop();
 
-	stroke(0);
-	strokeWeight(1);
+	strokeWeight(1); 
+	stroke(1, 1, 0);
 	//noFill();
-	fill(1, .25, .2, .65);
+	//noStroke();
+	fill(.4, .3, .1, .85);
+	//noFill();
 	scale(200);
+	//enable2DRendering();
 	box(500);
+	//disable2DRendering();
 
 	endArcball();
 	//...
@@ -348,7 +362,7 @@ void myApp01::display() {
 }
 
 void myApp01::mousePressed(){
-	save("Test_image01", 4);
+	//save("Test_image01", 4);
 }
 
 void myApp01::mouseReleased(){

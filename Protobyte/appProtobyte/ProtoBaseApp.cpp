@@ -1760,17 +1760,7 @@ void ProtoBaseApp::box(float w, float h, float d, Registration reg) {
 
 	//}
 
-	//ProtoTexture diffuseMapTexture = ProtoTexture("tile_white.jpg", ProtoTexture::DIFFUSE_MAP, GL_RGB, GL_RGB, 0, 0);
-	//GLint diffuseMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "diffuseMap");
-	//glUniform1i(diffuseMapLoc, 0); // bind to sampler location 0 // not needed glsl >=4.2
-
-	//ProtoTexture bumpMapTexture = ProtoTexture("tile)white.jpg", ProtoTexture::BUMP_MAP, GL_RGB, GL_RGB, 0, 0);
-	//GLint bumpMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "bumpMap");
-	//glUniform1i(bumpMapLoc, 1); // bind to sampler location 1 // not needed glsl >=4.2
 	
-	//glActiveTexture(GL_TEXTURE3);
-	//glBindTexture(GL_TEXTURE_2D, shader);
-	//glActiveTexture(GL_TEXTURE3);
 
 	int stride = 15;
 	//for (int i = 0; i < boxPrimCount; i+=15){
@@ -1780,6 +1770,16 @@ void ProtoBaseApp::box(float w, float h, float d, Registration reg) {
 	//}
 
 	if (isFill){
+
+		GLuint diffMap = boxDiffuseMapTexture.getTextureID();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffMap);
+
+		GLuint bumpMap = boxBumpMapTexture.getTextureID();
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, bumpMap);
+
+		
 		for (int i = 0; i < boxPrimCount; i += stride){
 			boxPrims[i + 6] = fillColor.r;
 			boxPrims[i + 7] = fillColor.g;
@@ -1801,7 +1801,12 @@ void ProtoBaseApp::box(float w, float h, float d, Registration reg) {
 		// Disable VAO
 		glBindVertexArray(0);
 	}
+
+	
+
+
 	if (isStroke){
+		trace("in here");
 		for (int i = 0; i < boxPrimCount; i += stride){
 			boxPrims[i + 6] = strokeColor.r;
 			boxPrims[i + 7] = strokeColor.g;

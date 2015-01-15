@@ -585,6 +585,13 @@ namespace ijg {
 		bool stitchTiles(std::string url, int tiles);
 		/****END Save/Thread/Other****/
 
+		// FOR TESTING ONLY
+		ProtoTexture boxDiffuseMapTexture;
+		GLint boxDiffuseMapLoc;
+
+		ProtoTexture boxBumpMapTexture;
+		GLint boxBumpMapLoc;
+
 	};
 
 	// inline methods
