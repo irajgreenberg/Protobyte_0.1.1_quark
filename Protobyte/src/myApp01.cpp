@@ -343,10 +343,12 @@ void myApp01::display() {
 	endArcball();
 	//...
 	//	path.display();
+
+	
 }
 
 void myApp01::mousePressed(){
-	
+	save("Test_image01", 4);
 }
 
 void myApp01::mouseReleased(){

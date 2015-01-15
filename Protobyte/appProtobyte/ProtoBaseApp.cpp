@@ -959,7 +959,7 @@ void ProtoBaseApp::render(int x, int y, int scaleFactor) {
 		glViewport(x*width, y*height, scaleFactor * width, scaleFactor * height);
 		//glViewport(-2 * width, -2 * height, 6 * width, 6 * height);
 
-		// rest backface culling
+		// reset backface culling
 		glCullFace(GL_BACK);
 		//
 
@@ -1917,7 +1917,8 @@ void ProtoBaseApp::export(std::vector<Tup4v> vs, Format type){
 //}
 
 void ProtoBaseApp::save(std::string name, int scaleFactor){
-	if (getFrameCount() < 1){
+	trace("ProtoUtility::getPathToOutput() =", ProtoUtility::getPathToOutput());
+	//if (getFrameCount() < 1){
 
 		//ProtoBaseApp pba;
 		//std::thread t(&ProtoBaseApp::threadSave, &pba, name, scaleFactor);
@@ -1938,7 +1939,7 @@ void ProtoBaseApp::save(std::string name, int scaleFactor){
 		std::stringstream stream;
 		stream << (ltm.tm_year + 1900) << "_" << (ltm.tm_mon + 1) << "_" << ltm.tm_mday << "_" << ltm.tm_hour << "_" << ltm.tm_min << "_" << ltm.tm_sec;
 
-
+		
 
 		std::string url = ProtoUtility::getPathToOutput();
 		std::string directory = url + name + "_" + stream.str();
@@ -2030,7 +2031,7 @@ void ProtoBaseApp::save(std::string name, int scaleFactor){
 		}
 		//trace("ProtoUtility::getPath() =", ProtoUtility::getPath());
 		bool isOk = stitchTiles(directory, scaleFactor);
-	}
+	//}
 }
 
 //void ProtoBaseApp::threadSave(std::string name, int scaleFactor){
