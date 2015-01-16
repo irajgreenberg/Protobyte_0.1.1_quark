@@ -159,11 +159,13 @@ void myApp01::init() {
 
 	// pre-load textures for box TEST
 
-	boxDiffuseMapTexture = ProtoTexture("corrogated_metal2_color.jpg", ProtoTexture::DIFFUSE_MAP, GL_RGB, GL_RGB, 0, 0);
+	textureScale.x = .3;
+	textureScale.y = .3;
+	boxDiffuseMapTexture = ProtoTexture("metal_grate.jpg", ProtoTexture::DIFFUSE_MAP, GL_RGB, GL_RGB, 0, 0);
 	boxDiffuseMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "diffuseMap");
 	glUniform1i(boxDiffuseMapLoc, 0);
 
-	boxBumpMapTexture = ProtoTexture("corrogated_metal2_color.jpg", ProtoTexture::BUMP_MAP, GL_RGB, GL_RGB, 0, 0);
+	boxBumpMapTexture = ProtoTexture("metal_grate.jpg", ProtoTexture::BUMP_MAP, GL_RGB, GL_RGB, 0, 0);
 	boxBumpMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "bumpMap");
 	glUniform1i(boxBumpMapLoc, 1);
 
@@ -174,6 +176,7 @@ void myApp01::run() {
 }
 
 void myApp01::display() {
+
 	background(0.2);
 	translate(0, 0, -100);
 

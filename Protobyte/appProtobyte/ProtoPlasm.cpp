@@ -107,7 +107,7 @@ void ProtoPlasm::initGLFW(){
 	glfwWindowHint(GLFW_SAMPLES, 8);
 
 	window = glfwCreateWindow(appWidth, appHeight, appTitle.c_str(), /*glfwGetPrimaryMonitor()*/ NULL, NULL);
-	glfwSetWindowPos(window, -1920 + (1920 - appWidth) / 2, (1080-appHeight) / 2);
+	glfwSetWindowPos(window, (1920 - appWidth) / 2, -1080 + (1080-appHeight) / 2);
 
 	glfwSetWindowUserPointer(window, baseApp); // enable callback funcs to speak to baseApp
 	glfwSetWindowSizeCallback(window, window_size_callback); // dynamically change viewport on resize
