@@ -29,6 +29,14 @@
 
 namespace ijg {
 
+	template <class T> class ProtoColor4;
+	typedef ProtoColor4<float> Col4f;
+	typedef Col4f Col4; // most common usage
+	typedef ProtoColor4<double> Col4d;
+	typedef ProtoColor4<int> Col4i;
+	typedef ProtoColor4<long> Col4L;
+	typedef ProtoColor4<short> Col4s;
+
     template <class T>
     class ProtoColor4 {
     private:

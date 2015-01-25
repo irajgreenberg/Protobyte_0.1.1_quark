@@ -37,6 +37,7 @@
 #include "libProtobyte/ProtoPlane.h"
 #include "libProtobyte/ProtoGroundPlane.h"
 #include "libProtobyte/ProtoTransformFunction.h"
+#include "libProtobyte/ProtoTexture.h"
 #include "libProtobyte/ProtoShader.h"
 #include "libProtobyte/ProtoWorld.h"
 #include "libProtobyte/ProtoColor3.h"
@@ -55,6 +56,9 @@
 #include "libProtobyte/ProtoTuple4.h"
 #include "libProtobyte/ProtoEllipse.h"
 #include "libProtobyte/ProtoPath3.h"
+#include "libProtobyte/ProtoTessellator.h"
+#include "libProtobyte/ProtoPath2.h"
+
 
 #include "libProtobyte/ProtoJuncusEffusus.h"
 #include "libProtobyte/ProtoCephalopod.h"
@@ -73,27 +77,56 @@
 // end relative loading proproc dir
 
 
+// for offset into the FBO interleaved buffer (ugly I know!)
 #define BUFFER_OFFSET(i) ((void*)(i))
+
 #include <iostream>
 #include <stack>
 
-namespace ijg {
 
+// for triangle.c tessellation
+#ifdef SINGLE
+#define REAL float
+#else /* not SINGLE */
+#define REAL double
+#endif /* not SINGLE */
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <math.h>
+//#include "triangle.h"
+
+//extern "C" void triangulate(char *, struct triangulateio *, struct triangulateio *,
+//struct triangulateio *);
+
+namespace ijg {
+	
+	
+	
 	// non-member functions
 
+	// forward declares
+	class Protoplasm; 
 
-	class Protoplasm; // forward declare
 	class ProtoBaseApp {
 
-		// enable Protoplasm private access
+		// enable private access
 		friend class ProtoPlasm;
+		friend class ProtoPath2;
 
 	public:
 		ProtoBaseApp();
 		ProtoBaseApp(const ProtoOSC& listener);
 		// void setAppWindowDetails(int appWidth, int appHeight, std::string appTitle);
 
+		// GLFW Mouse events
 		void setMouseButton(int mouseAction, int mouseButton, int mouseMods);
+		
+		// GLFW window events
+		void setWindowFrameSize(const Dim2i& windowFrameSize);
+
+
+		static ProtoBaseApp* baseApp;
+		static ProtoBaseApp* getBaseApp();
 
 	private:
 		// only needed to be called by ProtoPlasm class - a friend
@@ -105,10 +138,17 @@ namespace ijg {
 		void setSize(const Dim2i& canvasSize);
 
 		void _init();
+		//void _resetBuffers();
 		//void _initUniforms();
-		void _run(const Vec2f& mousePos/*, int mouseBtn, int key*/);
+		//void _run(const Vec2f& mousePos/*, int mouseBtn, int key*/);
+		void _run(const Vec2f& mousePos, const Vec4i& windowCoords = Vec4i(0, 0, 1, 1)/*, int mouseBtn, int key*/);
 		//void setViewport(int width, int height);
 		// void concat(); moved down for testing
+
+		//void pathTessellate(struct triangulateio *io, int markers, int reporttriangles, int reportneighbors, int reportsegments,
+		//	int reportedges, int reportnorms);
+
+		
 
 	protected:
 		void _initUniforms(ProtoShader* shader_ptr); // temporarily here. put back in private eventually
@@ -124,6 +164,7 @@ namespace ijg {
 		int canvasHeight;
 		int width, height;
 		Dim2i canvasSize;
+		Dim2i windowFrameSize;
 
 		int frameCount;
 		float frameRate;
@@ -144,9 +185,9 @@ namespace ijg {
 		float arcballRotXLast, arcballRotYLast;
 		float mouseXIn, mouseYIn;
 		//bool isArcballOn;
-
-
-		// CAMERAS
+			
+			
+			// CAMERAS
 		// 5 cameras (for now) accessible in world
 		ProtoCamera camera0, camera1, camera2, camera3, camera4;
 
@@ -214,6 +255,10 @@ namespace ijg {
 		*beginPath(), endPath(), closePath()
 		***********************************/
 		std::vector<Vec3f> path;
+
+		// new approach
+		//ProtoPath2 path;
+
 		/***************END****************/
 
 		/***********************************
@@ -243,6 +288,17 @@ namespace ijg {
 
 		// Uniform Shadow Map
 		GLuint shadowMap_U;
+
+		// Uniform Lighting factors
+		// enable/disable lighting factors for 2D rendering
+		Vec4f ltRenderingFactors;
+		GLuint lightRenderingFactors_U;
+
+		// color flags/fields for immediate mode drawing
+		bool isStroke, isFill;
+		Col4f fillColor, strokeColor;
+		float lineWidth;
+
 
 		// shadow mapping texture id's
 		GLuint shadowBufferID, shadowTextureID;
@@ -360,33 +416,7 @@ namespace ijg {
 		void push();
 		void pop();
 		
-		/****************************************
-		*        convenience plotting api       *
-		****************************************/
-		void beginPath();
-		void endPath();
-		void closePath(); // avoid passing flag
-
-		// enable syle states between beginPath() ... endPath()
-		void fill(const Col4f& col);
-		void fill(float gray);
-		void fill(float gray, float a); 
-		void fill(float r, float g, float b);
-		void fill(float r, float g, float b, float a);
-		void noFill();
 		
-		void stroke(const Col4f& col);
-		void stroke(float gray);
-		void stroke(float gray, float a);
-		void stroke(float r, float g, float b);
-		void stroke(float r, float g, float b, float a);
-		void noStroke();
-		void strokeWeight();
-		
-		void vertex(const Vec2f& vec); 
-		void vertex(const Vec3f& vec);
-		void vertex(float x, float y);
-		void vertex(float x, float y, float z);
 		
 
 
@@ -415,8 +445,8 @@ namespace ijg {
 		// WORLD
 		void printMatrix(Matrix m = MODEL_VIEW);
 
-		/****************************
-		 2d Automatic Procedural API
+		/***********BEGIN************
+		 2D Automatic Procedural API
 		 ***************************/
 		enum Registration{
 			CENTER,
@@ -427,7 +457,125 @@ namespace ijg {
 			RANDOM
 		};
 
+		// functions that flag  enable/disable 2D lighting
+		void enable2DRendering();
+		void disable2DRendering();
 
+		void calculate2DBuffers(float prims[], int inds[], int primsCount, int indsCount);
+
+		// Styles API
+		void fill(const Col4f& col);
+		void fill(float gray);
+		void fill(float gray, float a);
+		void fill(float r, float g, float b);
+		void fill(float r, float g, float b, float a);
+		void noFill();
+
+		void stroke(const Col4f& col);
+		void stroke(float gray);
+		void stroke(float gray, float a);
+		void stroke(float r, float g, float b);
+		void stroke(float r, float g, float b, float a);
+		void noStroke();
+		void strokeWeight(float lineWidth = 1.0);
+		
+		// points around ellipse
+		int ellipseDetail;
+
+		
+		// Primitives API
+		// Precalculating buffers for 2D primitives for efficiency
+		// updated with glBufferSubData and binding vbo/vao
+		
+		// rect buffer ids
+		float rectPrims[28];
+		GLuint vaoRectID, vboRectID;
+		void _createRect();
+
+		// quad buffer ids
+		float quadPrims[28];
+		GLuint vaoQuadID, vboQuadID;
+		void _createQuad();
+
+		// ellipse buffer ids
+		std::vector<float> ellipsePrims;
+		std::vector<int> ellipseInds;
+		GLuint vaoEllipseID, vboEllipseID, indexVboEllipseID;
+		void _createEllipse();
+
+		// star buffer ids
+		std::vector<float> starPrims;
+		GLuint vaoStarID, vboStarID;
+		void _createStar();
+
+		// path buffer ids (for begin(), vertex(), end())
+		bool isPathRecording;
+		//ProtoTessellator tess;
+		std::vector<float> pathPrims;
+		std::vector<GLdouble> tessellatedPrims;
+		std::vector<std::vector<GLdouble>> pathPrimsForTessellator;
+		std::vector<int> pathInds;
+		GLuint vaoPathID, vboPathID, indexVboPathID; 
+		void _createPath();
+		enum PathRenderMode {
+			POLYGON, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN, LINES, LINE_STRIP, LINE_LOOP
+		} pathRenderMode;
+
+		//3D
+		// box buffer ids
+		// (x, y, z, nx, ny, nz, r, g, b, a, u, v, tx, ty, tz)
+		Vec2f textureScale;
+		const static int boxPrimCount = 24*15;
+		float boxPrims[boxPrimCount];
+		int boxInds[24]; // 6 faces
+		GLuint vaoBoxID, vboBoxID, indexVboBoxID;
+		void _createBox();
+
+		// primitive funcs
+		void rect(float x, float y, float w, float h, Registration reg = CORNER);
+		void rect(const Vec2& pt0, const Vec2& pt1, Registration reg = CORNER);
+		void rect(float radius1, float radius2, Registration reg = CENTER);
+		void quad(float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3, Registration reg = CENTER);
+		void quad(const Vec2& pt0, const Vec2& pt1, const Vec2& pt2, const Vec2& pt3, Registration reg = CENTER);
+		void ellipse(float x, float y, float w, float h, Registration reg = CENTER);
+		void ellipse(float r0, float r1, Registration reg = CENTER);
+		void ellipse(float r, Registration reg = CENTER);
+		void ellipse(float x, float y, float r, Registration reg = CENTER);
+		void triangle(const Vec2& pt0, const Vec2& pt1, const Vec2& pt2);
+		void triangle(float x0, float y0, float x1, float y1, float x2, float y2);
+		void poly(int sides, float radius);
+		void poly(int sides, float radius1, float radius2);
+		void star(int sides, float innerRadius, float outerRadius);
+		void star(int sides, const Vec2& radiusAndRatio);
+		
+		// 3D Primitives
+		void box(float sz, Registration reg = CENTER);
+		void box(float w, float h, float d, Registration reg = CENTER);
+		void sphere(float sz);
+		void sphere(float w, float h, float d);
+
+
+		// Drawing Methods API
+		void beginPath(PathRenderMode pathRenderMode = POLYGON);
+		void endPath(bool isClosed = 1);
+		void vertex(const Vec2f& vec);
+		void vertex(const Vec3f& vec);
+		void vertex(float x, float y);
+		void vertex(float x, float y, float z);
+		/****END 2D API****/
+
+		// Lighting and Materials
+		void setSpecular(const Col4f& spec);
+		void setShininess(float shininess);
+		void setDiffuseMaterial(const Col4f& diff);
+		void setAmbientMaterial(const Col4f& amb);
+
+
+		//ProtoPath2 protoPath2;
+		
+		/***********BEGIN************
+		       Save/Thread/Other
+		***************************/
 		// saving stuff
 		virtual void render(int x = 0, int y = 0, int scaleFactor = 1); // eventually maybe make pure virtual (ehhh, maybe not)
 		void save(std::string name = "img", int scaleFactor = 1);
@@ -435,17 +583,14 @@ namespace ijg {
 		std::mutex mtx;
 		//void saveTiles(int rows, int columns);
 		bool stitchTiles(std::string url, int tiles);
+		/****END Save/Thread/Other****/
 
+		// FOR TESTING ONLY
+		ProtoTexture boxDiffuseMapTexture;
+		GLint boxDiffuseMapLoc;
 
-
-
-		void rect(float x, float y, float w, float h, Registration reg = CORNER);
-		void rect(Vec2 pt0, Vec2 pt1, Registration reg = CORNER);
-		void ellipse(float x, float y, float w, float h, Registration reg = CENTER);
-		void ellipse(Vec2 pt0, Vec2 pt1, Registration reg = CENTER);
-		void ellipse(float x, float y, float r, Registration reg = CENTER);
-
-
+		ProtoTexture boxBumpMapTexture;
+		GLint boxBumpMapLoc;
 
 	};
 
@@ -521,16 +666,22 @@ namespace ijg {
 	}
 
 
+// Rendering display() switches
 #define POINTS ProtoGeom3::POINTS
 #define WIREFRAME ProtoGeom3::WIREFRAME
 #define SURFACE ProtoGeom3::SURFACE
-	// make this intuitive
+
+// make this intuitive
 #define arcBallBegin arcballBegin
 #define arcBallEnd arcballEnd
 #define beginArcball arcballBegin
 #define endArcball arcballEnd
 #define beginArcBall arcballBegin
 #define endArcBall arcballEnd
+
+// immediate mode path plotting
+#define beginShape beginPath // processing style
+#define endShape endPath // processing style
 
 
 	// remove this old stuff

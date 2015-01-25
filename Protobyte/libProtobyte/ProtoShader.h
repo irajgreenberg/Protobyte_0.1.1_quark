@@ -1,8 +1,11 @@
 /*!  \brief  ProtoShader.h: class for managing shaders
 ProtoShader.h
 Protobyte Library v02
+
 Created by Ira on 7/23/13.
+Revised 12/5/2015
 Copyright (c) 2013 Ira Greenberg. All rights reserved.
+
 Library Usage:
 This work is licensed under the Creative Commons
 Attribution-NonCommercial-ShareAlike 3.0 Unported License.
@@ -11,7 +14,9 @@ http://creativecommons.org/licenses/by-nc-sa/3.0/
 or send a letter to Creative Commons,
 444 Castro Street, Suite 900,
 Mountain View, California, 94041, USA.
+
 This notice must be retained any source distribution.
+
 \ingroup common
 This class is templated to allow for varied single collection types
 This class is part of the group common (update)
@@ -33,6 +38,12 @@ This class is part of the group common (update)
 
 #include <sstream>
 #include <fstream>
+
+// include GLM
+//#include "glm/gtc/type_ptr.hpp" // matrix copying
+//#include "glm/glm.hpp"
+//#include "glm/gtc/matrix_transform.hpp"
+//#include "glm/gtx/transform2.hpp"
 
 
 namespace ijg {
@@ -64,10 +75,29 @@ namespace ijg {
 		static void setVertexShader(const std::string& vShaderURL);
 		static void setFragmentShader(const std::string& fShaderURL);
 		static void setGeometryShader(const std::string& gShaderURL);
+		void setShaders(const std::string& vShaderURL, const std::string& fShaderURL);
 
 		/******/#define setVertShader setVertexShader;
 		/******/#define setFragShader setFragmentShader;
 		/******/#define setGeomShader setGeometryShader;
+
+		bool   isLinked();
+
+		void   bindAttribLocation(GLuint location, const char * name);
+		void   bindFragDataLocation(GLuint location, const char * name);
+
+
+		// from Opengl 4.0 Cookbook
+		//void   setUniform(const char *name, const glm::vec3 & v);
+		//void   setUniform(const char *name, const glm::vec4 & v);
+		//void   setUniform(const char *name, const glm::mat4 & m);
+		//void   setUniform(const char *name, const glm::mat3 & m);
+		//void   setUniform(const char *name, float val);
+		//void   setUniform(const char *name, int val);
+		//void   setUniform(const char *name, bool val);
+
+		void   printActiveUniforms();
+		void   printActiveAttribs();
 
 
 	private:
@@ -82,21 +112,17 @@ namespace ijg {
 		std::vector<GLuint> attribLocs, uniformLocs;
 
 		// used for access in Geom3 class
-		// Shader object is essentially a singleton, so the id will remain unchanged throughout program
+		// Shader object is essentily a singleton, so the id will remain unchanged throughout program
 		static GLuint shader_id_2;
 
 	};
 
-
-	inline const GLuint ProtoShader::getID_2() {
-		trace("in ProtoShader::getID_2()");
-		return shader_id_2;
+	inline GLuint ProtoShader::getID() {
+		return shader_id;
 	}
 
-
-	inline GLuint ProtoShader::getID() {
-		trace("in ProtoShader::getID()");
-		return shader_id;
+	inline const GLuint ProtoShader::getID_2() {
+		return shader_id_2;
 	}
 
 	inline void ProtoShader::bind() {
@@ -107,6 +133,12 @@ namespace ijg {
 	inline void ProtoShader::unbind() {
 		trace("in ProtoShader::unbind()");
 		glUseProgram(0);
+	}
+
+	inline void ProtoShader::setShaders(const std::string& vShaderURL, const std::string& fShaderURL){
+		vShader = vShaderURL;
+		fShader = fShaderURL;
+		init();
 	}
 
 }

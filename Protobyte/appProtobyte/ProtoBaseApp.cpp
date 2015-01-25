@@ -12,6 +12,23 @@
 using namespace ijg;
 
 
+
+ProtoBaseApp* ProtoBaseApp::baseApp = 0;
+
+
+// for testing only
+GLdouble myStar[5][6] = {
+	0.6f, -0.1f, -2.0f, 1.0f, 1.0f, 1.0f,
+	1.35f, 1.4f, -2.0f, 1.0f, 1.0f, 1.0f,
+	2.1f, -0.1f, -2.0f, 1.0f, 1.0f, 1.0f,
+	0.6f, 0.9f, -2.0f, 1.0f, 1.0f, 1.0f,
+	2.1f, 0.9f, -2.0f, 1.0f, 1.0f, 1.0f };
+
+GLdouble quad[4][6] = { 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, };
+
 // NOTE: called before GL context created
 ProtoBaseApp::ProtoBaseApp() {
 
@@ -24,6 +41,7 @@ ProtoBaseApp::ProtoBaseApp() {
 	lights.push_back(ProtoLight());
 	lights.push_back(ProtoLight());
 
+	ProtoBaseApp::baseApp = this;
 }
 
 ProtoBaseApp::ProtoBaseApp(const ProtoOSC& listener) :
@@ -37,15 +55,29 @@ listener(listener){
 	lights.push_back(ProtoLight());
 	lights.push_back(ProtoLight());
 	lights.push_back(ProtoLight());
+
+	ProtoBaseApp::baseApp = this;
 }
 
+ProtoBaseApp* ProtoBaseApp::getBaseApp() {
+	return ProtoBaseApp::baseApp;
+}
+
+void ProtoBaseApp::setWindowFrameSize(const Dim2i& windowFrameSize) {
+	this->windowFrameSize = windowFrameSize;
+}
+
+
 void ProtoBaseApp::_init(){
+	//trace("GL_TRIANGLES =", GL_TRIANGLES);
+	//trace("GL_TRIANGLE_FAN =", GL_TRIANGLE_FAN);
+	//trace(ProtoBaseApp::baseApp);
 	//areShadowsEnabled = true;
 	//shader = ProtoShader("shader1.vert", "shader1.frag");
 	//shader = ProtoShader("protoShader.vert", "protoShader.frag");
-	shader2D = ProtoShader("colorOnlyShader.vert.glsl", "colorOnlyShader.frag.glsl");
+	//shader2D = ProtoShader("colorOnlyShader.vert.glsl", "colorOnlyShader.frag.glsl");
 	shader3D = ProtoShader("bumpmapping.vs.glsl", "bumpmapping.fs.glsl");
-	
+
 
 
 	// default global ambient
@@ -54,7 +86,7 @@ void ProtoBaseApp::_init(){
 	// camera at 11
 	// default inital light
 	//light0.setPosition(Vec3f(-1.9, .9, 8));
-	light0.setPosition(Vec3f(0, 0, .1));
+	light0.setPosition(Vec3f(-90, 200, 40));
 	//light0.setPosition(Vec3f(-14.2, 2.5, 8));
 	light0.setIntensity(Vec3f(1, 1, 1));
 
@@ -95,7 +127,7 @@ void ProtoBaseApp::_init(){
 
 	// projection matrix and MVP Matrix
 	// perspective
-	viewAngle = 65.0f;
+	viewAngle = 75.0f;
 	aspect = float(width) / float(height);
 	// ortho
 	//trace("width = ", width);
@@ -106,7 +138,7 @@ void ProtoBaseApp::_init(){
 	top = height / 2;
 
 	nearDist = .1f;
-	farDist = 500.0f;
+	farDist = 1500.0f;
 
 	P = glm::perspective(viewAngle, aspect, nearDist, farDist);
 	MVP = P * MV;
@@ -160,15 +192,435 @@ void ProtoBaseApp::_init(){
 	// END Shadow Matrices
 
 	createShadowMap();
-	
-	shader2D.bind(); 
-	_initUniforms(&shader2D);
-	
+
+	// for 2D rendering - enables/disables lighting effects
+	ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 0.0);
+
+	// default 2D style states
+	fillColor = Col4f(1, 1, 1, 1);
+	strokeColor = Col4f(0, 0, 0, 1);
+	isFill = true;
+	isStroke = true;
+	lineWidth = 1.0;
+
+	// default number of points around ellipse
+	ellipseDetail = 36;
+
+	// drawing methods path
+	isPathRecording = false;
+
+	// create primitives for immediate drawing
+
+	// for primitives
+	textureScale.x = textureScale.y = 1.0;
+	//2D
+	_createRect();
+	_createQuad();
+	_createEllipse();
+	_createPath();
+
+	//3D
+	_createBox();
+	//path2 = ProtoPath2(this);
+	//protoPath2.setBaseApp(this);
+
 	shader3D.bind();
 	_initUniforms(&shader3D);
-	
+
 	init();
+
+}
+
+// create default buffers for rect function
+void ProtoBaseApp::_createRect(){
+
+	// interleaved float[] (x, y, 0, r, g, b, a) 7*4 pts
+	float prims[] = {
+		0, 0, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
+		0, 0 - 1, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
+		0 + 1, 0 - 1, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
+		0 + 1, 0, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a
+	};
+	for (int i = 0; i < 28; ++i){
+		rectPrims[i] = prims[i];
+	}
+
+	// vert data
+	// 1. Create and bind VAO
+	glGenVertexArrays(1, &vaoRectID); // Create VAO
+	glBindVertexArray(vaoRectID); // Bind VAO (making it active)
+
+	// 2. Create and bind VBO
+	// a. Vertex attributes vboID;
+	//GLuint vboID;
+	glGenBuffers(1, &vboRectID); // Create the buffer ID
+	glBindBuffer(GL_ARRAY_BUFFER, vboRectID); // Bind the buffer (vertex array data)
+	int vertsDataSize = sizeof (GLfloat)* 28;
+	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &rectPrims[0]); // upload the data
+
+	// fill state is true - need to create this
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glPolygonMode(GL_BACK, GL_FILL);
+
+	// draw rect
+	glBindBuffer(GL_ARRAY_BUFFER, vboRectID);
+
+	glEnableVertexAttribArray(0); // vertices
+	glEnableVertexAttribArray(2); // color
+	// stride is 7: pos(3) + col(4)
+	// (x, y, z, r, g, b, a)
+	int stride = 7;
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(0)); // pos
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(12)); // col
+
+	// Disable buffers
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+// create default buffers for rect function
+void ProtoBaseApp::_createQuad(){
+
+	// interleaved float[] (x, y, 0, r, g, b, a) 7*4 pts
+	float prims[] = {
+		0, 0, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
+		0, 0 - 1, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
+		0 + 1, 0 - 1, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a,
+		0 + 1, 0, 0, fillColor.r, fillColor.g, fillColor.b, fillColor.a
+	};
+	for (int i = 0; i < 28; ++i){
+		quadPrims[i] = prims[i];
+	}
+
+	// vert data
+	// 1. Create and bind VAO
+	glGenVertexArrays(1, &vaoQuadID); // Create VAO
+	glBindVertexArray(vaoQuadID); // Bind VAO (making it active)
+
+	// 2. Create and bind VBO
+	// a. Vertex attributes vboID;
+	//GLuint vboID;
+	glGenBuffers(1, &vboQuadID); // Create the buffer ID
+	glBindBuffer(GL_ARRAY_BUFFER, vboQuadID); // Bind the buffer (vertex array data)
+	int vertsDataSize = sizeof (GLfloat)* 28;
+	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &quadPrims[0]); // upload the data
+
+	// fill state is true - need to create this
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glPolygonMode(GL_BACK, GL_FILL);
+
+	// draw rect
+	glBindBuffer(GL_ARRAY_BUFFER, vboQuadID);
+
+	glEnableVertexAttribArray(0); // vertices
+	glEnableVertexAttribArray(2); // color
+	// stride is 7: pos(3) + col(4)
+	// (x, y, z, r, g, b, a)
+	int stride = 7;
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(0)); // pos
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(12)); // col
+
+
+	// Disable buffers
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+
+// create default buffers for ellipse function
+void ProtoBaseApp::_createEllipse() {
+	float theta = 0.0;
+	for (int i = 0; i < ellipseDetail; i++){
+		ellipsePrims.push_back(0 + cos(theta));
+		ellipsePrims.push_back(0 + sin(theta));
+		ellipsePrims.push_back(0);
+		ellipsePrims.push_back(fillColor.r);
+		ellipsePrims.push_back(fillColor.g);
+		ellipsePrims.push_back(fillColor.b);
+		ellipsePrims.push_back(fillColor.a);
+		theta += TWO_PI / ellipseDetail;
+	}
+
+	// vert data
+	// 1. Create and bind VAO
+	glGenVertexArrays(1, &vaoEllipseID); // Create VAO
+	glBindVertexArray(vaoEllipseID); // Bind VAO (making it active)
+
+	// 2. Create and bind VBO
+	// a. Vertex attributes vboID;
+	glGenBuffers(1, &vboEllipseID); // Create the buffer ID
+	glBindBuffer(GL_ARRAY_BUFFER, vboEllipseID); // Bind the buffer (vertex array data)
+	int vertsDataSize = sizeof (GLfloat)* ellipsePrims.size();
+	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &ellipsePrims[0]); // upload the data
+
+	// fill state is true - need to create this
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	glEnableVertexAttribArray(0); // vertices
+	glEnableVertexAttribArray(2); // color
 	
+	// stride is 7: pos(3) + col(4)
+	// (x, y, z, r, g, b, a)
+	int stride = 7;
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(0)); // pos
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(12)); // col
+
+	// Disable buffers
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	ellipsePrims.clear();
+}
+
+// create default buffers for ellipse function
+// TO DO: Finish
+void ProtoBaseApp::_createStar() {
+	int starDetail = 3;
+	float theta = 0.0;
+	for (int i = 0; i < starDetail; i++){
+		starPrims.push_back(0 + cos(theta));
+		starPrims.push_back(0 + sin(theta));
+		starPrims.push_back(0);
+		starPrims.push_back(fillColor.r);
+		starPrims.push_back(fillColor.g);
+		starPrims.push_back(fillColor.b);
+		starPrims.push_back(fillColor.a);
+		theta += TWO_PI / starDetail;
+	}
+
+	// vert data
+	// 1. Create and bind VAO
+	glGenVertexArrays(1, &vaoStarID); // Create VAO
+	glBindVertexArray(vaoStarID); // Bind VAO (making it active)
+
+	// 2. Create and bind VBO
+	// a. Vertex attributes vboID;
+	glGenBuffers(1, &vboStarID); // Create the buffer ID
+	glBindBuffer(GL_ARRAY_BUFFER, vboStarID); // Bind the buffer (vertex array data)
+	int vertsDataSize = sizeof (GLfloat)* starPrims.size();
+	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &starPrims[0]); // upload the data
+
+	// fill state is true - need to create this
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	glEnableVertexAttribArray(0); // vertices
+	glEnableVertexAttribArray(2); // color
+
+	// stride is 7: pos(3) + col(4)
+	// (x, y, z, r, g, b, a)
+	int stride = 7;
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(0)); // pos
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(12)); // col
+
+	// Disable buffers
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	starPrims.clear();
+}
+
+// create default buffers for easy path
+// Enables begin/vertex/end immediate mode drawing
+// Use ProtoPath2 for higher performance path drawing
+void ProtoBaseApp::_createPath(){
+	/*int pathDetail = 1;
+	float theta = 0.0;
+	for (int i = 0; i < pathDetail; i++){
+		pathPrims.push_back(0 + cos(theta));
+		pathPrims.push_back(0 + sin(theta));
+		pathPrims.push_back(0);
+		pathPrims.push_back(fillColor.r);
+		pathPrims.push_back(fillColor.g);
+		pathPrims.push_back(fillColor.b);
+		pathPrims.push_back(fillColor.a);
+		theta += TWO_PI / ellipseDetail;
+	}*/
+
+	// vert data
+	// 1. Create and bind VAO
+	glGenVertexArrays(1, &vaoPathID); // Create VAO
+	glBindVertexArray(vaoPathID); // Bind VAO (making it active)
+
+	// 2. Create and bind VBO
+	// a. Vertex attributes vboID;
+	glGenBuffers(1, &vboPathID); // Create the buffer ID
+	glBindBuffer(GL_ARRAY_BUFFER, vboPathID); // Bind the buffer (vertex array data)
+	int vertsDataSize = 0;// sizeof (GLfloat)* pathPrims.size();
+	glBufferData(GL_ARRAY_BUFFER, 0, NULL, GL_DYNAMIC_DRAW);// allocate space
+	//glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &pathPrims[0]); // upload the data
+
+	// fill state is true - need to create this
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	glEnableVertexAttribArray(0); // vertices
+	glEnableVertexAttribArray(2); // color
+
+	// stride is 7: pos(3) + col(4)
+	// (x, y, z, r, g, b, a)
+	int stride = 7;
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(0)); // pos
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(12)); // col
+
+	// Disable buffers
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	pathPrims.clear();
+}
+
+// start 3D prmitive funcs
+// create default buffers for ellipse function
+// TO DO: Finish
+void ProtoBaseApp::_createBox() {
+	Vec3f boxVecs[8];
+	boxVecs[0] = Vec3f(-.5, .5, .5);
+	boxVecs[1] = Vec3f(-.5, -.5, .5);
+	boxVecs[2] = Vec3f(.5, -.5, .5);
+	boxVecs[3] = Vec3f(.5, .5, .5);
+	boxVecs[4] = Vec3f(.5, .5, -.5);
+	boxVecs[5] = Vec3f(.5, -.5, -.5);
+	boxVecs[6] = Vec3f(-.5, -.5, -.5);
+	boxVecs[7] = Vec3f(-.5, .5, -.5);
+
+	Tup4i indices[6];
+	indices[0] = Tup4i(0, 1, 2, 3); //F
+	indices[1] = Tup4i(2, 5, 4, 3); //R
+	indices[2] = Tup4i(4, 5, 6, 7); //B
+	indices[3] = Tup4i(0, 7, 6, 1); //L
+	indices[4] = Tup4i(0, 3, 4, 7); //Top
+	indices[5] = Tup4i(1, 6, 5, 2); //Bot
+
+	Vertex3 verts[24];
+	Vec3 norms[6];
+	Vec3 tans[6];
+	
+	// F
+	verts[0] = ProtoVertex3(boxVecs[0], fillColor, Tup2f(0.0, 0.0));
+	verts[1] = ProtoVertex3(boxVecs[1], fillColor, Tup2f(0.0, 1.0 * textureScale.y));
+	verts[2] = ProtoVertex3(boxVecs[2], fillColor, Tup2f(1.0 * textureScale.x, 1.0 * textureScale.y));
+	verts[3] = ProtoVertex3(boxVecs[3], fillColor, Tup2f(1.0 * textureScale.x, 0.0));
+	
+	// R
+	verts[4] = ProtoVertex3(boxVecs[2], fillColor, Tup2f(0.0, 1.0 * textureScale.y));
+	verts[5] = ProtoVertex3(boxVecs[5], fillColor, Tup2f(1.0 * textureScale.x, 1.0 * textureScale.y));
+	verts[6] = ProtoVertex3(boxVecs[4], fillColor, Tup2f(1.0 * textureScale.x, 0.0));
+	verts[7] = ProtoVertex3(boxVecs[3], fillColor, Tup2f(0.0, 0.0 * textureScale.y));
+
+	// B
+	verts[8] = ProtoVertex3(boxVecs[4], fillColor, Tup2f(0.0, 0.0));
+	verts[9] = ProtoVertex3(boxVecs[5], fillColor, Tup2f(0.0, 1.0 * textureScale.y));
+	verts[10] = ProtoVertex3(boxVecs[6], fillColor, Tup2f(1.0 * textureScale.x, 1.0 * textureScale.y));
+	verts[11] = ProtoVertex3(boxVecs[7], fillColor, Tup2f(1.0 * textureScale.x, 0.0));
+
+	// L
+	verts[12] = ProtoVertex3(boxVecs[0], fillColor, Tup2f(1.0 * textureScale.x, 0.0));
+	verts[13] = ProtoVertex3(boxVecs[7], fillColor, Tup2f(0.0, 0.0));
+	verts[14] = ProtoVertex3(boxVecs[6], fillColor, Tup2f(0.0, 1.0 * textureScale.y));
+	verts[15] = ProtoVertex3(boxVecs[1], fillColor, Tup2f(1.0 * textureScale.x, 1.0));
+
+	// Top
+	verts[16] = ProtoVertex3(boxVecs[0], fillColor, Tup2f(0.0, 1.0 * textureScale.y));
+	verts[17] = ProtoVertex3(boxVecs[3], fillColor, Tup2f(1.0 * textureScale.x, 1.0 * textureScale.y));
+	verts[18] = ProtoVertex3(boxVecs[4], fillColor, Tup2f(1.0 * textureScale.x, 0.0));
+	verts[19] = ProtoVertex3(boxVecs[7], fillColor, Tup2f(0.0, 0.0));
+
+	// Bot
+	verts[20] = ProtoVertex3(boxVecs[1], fillColor, Tup2f(0.0, 0.0));
+	verts[21] = ProtoVertex3(boxVecs[6], fillColor, Tup2f(0.0, 1.0 * textureScale.y));
+	verts[22] = ProtoVertex3(boxVecs[5], fillColor, Tup2f(1.0 * textureScale.x, 1.0 * textureScale.y));
+	verts[23] = ProtoVertex3(boxVecs[2], fillColor, Tup2f(1.0 * textureScale.x, 0.0));
+	
+	// calc normals and tangents and add to box vertices
+	for (int i = 0; i < 6; ++i){
+		Face3 f = Face3(&verts[0 + i * 4], &verts[1 + i * 4], &verts[2 + i * 4]);
+		norms[i] = f.getNorm();
+		norms[i].normalize();
+		tans[i] = f.getTangent();
+		tans[i].normalize();
+		
+		for (int j = 0; j < 4; ++j){
+			int k = i * 4 + j;
+			verts[k].setNormal(norms[i]);
+			verts[k].setTangent(tans[i]);
+			//trace("verts[",k,"] =", verts[k]);
+		}
+	}
+
+	// calc prims
+	// (x, y, z, nx, ny, nz, r, g, b, a, u, v, tx, ty, tz)
+	for (int i = 0, j = 0;  i < 24; i++, j+=15){
+		boxPrims[j] = verts[i].pos.x;
+		boxPrims[j + 1] = verts[i].pos.y;
+		boxPrims[j + 2] = verts[i].pos.z;
+		boxPrims[j + 3] = verts[i].getNormal().x;
+		boxPrims[j + 4] = verts[i].getNormal().y;
+		boxPrims[j + 5] = verts[i].getNormal().z;
+		boxPrims[j + 6] = fillColor.r;
+		boxPrims[j + 7] = fillColor.g;
+		boxPrims[j + 8] = fillColor.b;
+		boxPrims[j + 9] = fillColor.a;
+		boxPrims[j + 10] = verts[i].getUV().elem0;
+		boxPrims[j + 11] = verts[i].getUV().elem1;
+		boxPrims[j + 12] = verts[i].getTangent().x;
+		boxPrims[j + 13] = verts[i].getTangent().y;
+		boxPrims[j + 14] = verts[i].getTangent().z;
+	}
+
+	for (int i = 0; i < boxPrimCount; ++i){
+		std::cout << boxPrims[i] << ", ";
+	}
+
+	// vert data
+	// 1. Create and bind VAO
+	glGenVertexArrays(1, &vaoBoxID); // Create VAO
+	glBindVertexArray(vaoBoxID); // Bind VAO (making it active)
+
+	// 2. Create and bind VBO
+	// a. Vertex attributes vboID;
+	glGenBuffers(1, &vboBoxID); // Create the buffer ID
+	glBindBuffer(GL_ARRAY_BUFFER, vboBoxID); // Bind the buffer (vertex array data)
+	int vertsDataSize = sizeof (GLfloat)* boxPrimCount;
+	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &boxPrims[0]); // upload the data
+
+	// fill state is true - need to create this
+	glPolygonMode(GL_FRONT, GL_FILL);
+
+	glEnableVertexAttribArray(0); // vertices
+	glEnableVertexAttribArray(1); // normals
+	glEnableVertexAttribArray(2); // color
+	glEnableVertexAttribArray(3); // uvs
+	glEnableVertexAttribArray(4); // tangents
+
+	// (x, y, z, nx, ny, nz, r, g, b, a, u, v, tx, ty, tz)
+	const int STRIDE = 15;
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, STRIDE * sizeof (GLfloat), BUFFER_OFFSET(0)); // pos
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, STRIDE * sizeof (GLfloat), BUFFER_OFFSET(12)); // norm
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, STRIDE * sizeof (GLfloat), BUFFER_OFFSET(24)); // col
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, STRIDE * sizeof (GLfloat), BUFFER_OFFSET(40)); // uv
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, STRIDE * sizeof (GLfloat), BUFFER_OFFSET(48)); // tangent
+
+	// Disable buffers
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+// immediate drawing mode lighting and materials
+void ProtoBaseApp::setSpecular(const Col4f& spec) {
+
+}
+void ProtoBaseApp::setShininess(float shininess) {
+
+}
+void ProtoBaseApp::setDiffuseMaterial(const Col4f& diff) {
+
+}
+void ProtoBaseApp::setAmbientMaterial(const Col4f& amb) {
+
 }
 
 bool ProtoBaseApp::createShadowMap(){
@@ -212,6 +664,10 @@ bool ProtoBaseApp::createShadowMap(){
 	return false;
 }
 
+//void ProtoBaseApp::_resetBuffers(){
+//	
+//}
+
 void ProtoBaseApp::_initUniforms(ProtoShader* shader_ptr){
 	//shader = _shader;
 	//bind shaders
@@ -254,10 +710,23 @@ void ProtoBaseApp::_initUniforms(ProtoShader* shader_ptr){
 	glUniform1i(shaderPassFlag_U, 1); // controls render pass in shader
 	glUniform1i(shadowMap_U, 5);
 
+	// enable/disable lighting factors for 2D rendering
+	// default is all on
+	lightRenderingFactors_U = glGetUniformLocation(shader_ptr->getID(), "lightRenderingFactors");
+	//glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
+
+
 	//shader_ptr->unbind();
 }
 
-void ProtoBaseApp::_run(const Vec2f& mousePos/*, int mouseBtn, int key*/){
+void ProtoBaseApp::_run(const Vec2f& mousePos, const Vec4i& windowCoords/*, int mouseBtn, int key*/){
+
+	// reset state
+	fillColor = Col4f(1, 1, 1, 1); // white fill
+	strokeColor = Col4f(0, 0, 0, 1); // black stroke
+	
+
+
 	mouseX = mousePos.x;
 	mouseY = mousePos.y;
 	// mouse is moving/dragging
@@ -291,8 +760,8 @@ void ProtoBaseApp::_run(const Vec2f& mousePos/*, int mouseBtn, int key*/){
 
 	// I thought I needed this to reset matrix each frame?
 	M = glm::mat4(1.0f);
-
-	V = glm::lookAt(glm::vec3(0.0, 0.0, 18.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	// was 18
+	V = glm::lookAt(glm::vec3(0.0, 0.0, 500.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 	//M = T * R * S;
 	MV = V * M;
 	MVP = P * MV;
@@ -315,6 +784,10 @@ void ProtoBaseApp::_run(const Vec2f& mousePos/*, int mouseBtn, int key*/){
 	glUniformMatrix4fv(MVP_U, 1, GL_FALSE, &MVP[0][0]);
 	glUniformMatrix3fv(N_U, 1, GL_FALSE, &N[0][0]);
 
+	// enable  /disable lighting effects ofr 2D rendering
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
+
+
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	//glViewport(0, 0, width, height);
 
@@ -329,6 +802,9 @@ void ProtoBaseApp::_run(const Vec2f& mousePos/*, int mouseBtn, int key*/){
 	display();
 	pop();
 	render();
+
+	//ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 0.0);
+	//glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 
 	//if (isArcballOn){
 	//pop();
@@ -419,6 +895,9 @@ void ProtoBaseApp::render(int x, int y, int scaleFactor) {
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowBufferID);
 		//clear depth buffer
 		glClear(GL_DEPTH_BUFFER_BIT);
+
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 		//set viewport to the shadow map view size
 		//glViewport(-i*width, -j*height, scaleFactor * width, scaleFactor * height);
 		//glViewport(-i*width, -j*height, scaleFactor * width, scaleFactor * height);
@@ -432,10 +911,10 @@ void ProtoBaseApp::render(int x, int y, int scaleFactor) {
 		// enables shadow blending in fragment shader
 		glUniform1i(shaderPassFlag_U, 1); // controls render pass in shader
 
-		// render shadow in firdt pass
+		// render shadow in first pass
 		display();
 
-		// rest backface culling
+		// reset backface culling
 		//glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		//glDisable(GL_CULL_FACE);
@@ -448,7 +927,10 @@ void ProtoBaseApp::render(int x, int y, int scaleFactor) {
 
 		// reset default view
 		////glViewport(-i*width, -j*height, scaleFactor * width, scaleFactor * height);
-		glViewport(x*width, y*height, scaleFactor * width, scaleFactor * height);
+		//glViewport(x*width, y*height, scaleFactor * width, scaleFactor * height);
+		//trace("windowFrameSize =", windowFrameSize);
+		glViewport(x*windowFrameSize.w, y*windowFrameSize.h, scaleFactor * windowFrameSize.w, scaleFactor * windowFrameSize.h);
+		//windowFrameSize
 
 
 
@@ -477,7 +959,7 @@ void ProtoBaseApp::render(int x, int y, int scaleFactor) {
 		glViewport(x*width, y*height, scaleFactor * width, scaleFactor * height);
 		//glViewport(-2 * width, -2 * height, 6 * width, 6 * height);
 
-		// rest backface culling
+		// reset backface culling
 		glCullFace(GL_BACK);
 		//
 
@@ -567,11 +1049,13 @@ void ProtoBaseApp::lightsOff(){
 void ProtoBaseApp::setWidth(int canvasWidth){
 	this->canvasWidth = canvasWidth;
 	width = canvasWidth;
+	windowFrameSize.w = width;
 }
 
 void ProtoBaseApp::setHeight(int canvasHeight){
 	this->canvasHeight = canvasHeight;
 	height = canvasHeight;
+	windowFrameSize.h = height;
 }
 
 void ProtoBaseApp::setSize(const Dim2i& canvasSize){
@@ -626,99 +1110,7 @@ void ProtoBaseApp::loadImage(std::string imageName){
 //	std::cout << matrix[3] << " | " << matrix[7] << " | " << matrix[11] << " | " << matrix[15] << std::endl;
 //}
 
-// 2D api  ********************NOTE: This is not really implemented!**********************
-void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
-	float _x = 0, _y = 0;
-	// initialize glew for Windows
-#if defined(_WIN32) || defined(__linux__)
-	GLenum err = glewInit();
-	if (GLEW_OK != err)
-	{
-		/* Problem: glewInit failed, something is seriously wrong. */
-		fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
-	}
-#endif
-
-	/* CENTER,
-	CORNER, // assumed top left
-	CORNER_TR,
-	CORNER_BR,
-	CORNER_BL,
-	RANDOM
-	*/
-
-	switch (reg){
-	case CENTER:
-		_x = x - w / 2;
-		_y = y + h / 2;
-		break;
-	case CORNER:
-		_x = x;
-		_y = y;
-		break;
-	case CORNER_TR:
-		_x = x - w;
-		_y = y;
-		break;
-	case CORNER_BR:
-		_x = x - w;
-		_y = y + h;
-		break;
-	case CORNER_BL:
-		_x = x;
-		_y = y + h;
-		break;
-	case RANDOM:
-		// to do
-		break;
-
-	}
-
-
-	float vecs[] = { _x, _y, _x, _y - h, _x + w, _y - h, _x + w, _y };
-	int inds[] = { 0, 1, 2, 0, 2, 3 };
-
-	// vert data
-	GLuint vboID;
-	glGenBuffers(1, &vboID); // Create the buffer ID
-	glBindBuffer(GL_ARRAY_BUFFER, vboID); // Bind the buffer (vertex array data)
-	int vertsDataSize = sizeof (GLfloat)* 8;
-	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STATIC_DRAW); // allocate space
-	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &vecs[0]); // upload the data
-
-	// indices data
-	GLuint indexVboID;
-	glGenBuffers(1, &indexVboID); // Generate buffer
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboID); // Bind the element array buffer
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GL_UNSIGNED_INT)* 6, NULL, GL_STATIC_DRAW); // allocate
-	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GL_UNSIGNED_INT)* 6, &inds[0]); // upload the data
-
-
-	// fill state is true - need to create this
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-
-	// draw rect
-	glBindBuffer(GL_ARRAY_BUFFER, vboID);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexVboID);
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(2, GL_FLOAT, 2 * sizeof(GLfloat), BUFFER_OFFSET(0));
-
-
-	glDisable(GL_LIGHTING);
-
-	//pushMatrix();
-	//translatef(0, 0, -500); // set camera to -500 default to get close to pixel accurate coords
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
-	//popMatrix();
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	// reenable lighting
-	//glEnable(GL_LIGHTING);
-}
+// 2D api 
 
 
 
@@ -757,94 +1149,689 @@ void ProtoBaseApp::GLSLInfo(ProtoShader* shader){
 }
 
 
-/****************************************
-*        convenience plotting api       *
-****************************************/
+/***********BEGIN************
+2D Automatic Procedural API
+***************************/
 
-// PATH
-void ProtoBaseApp::beginPath() {
-
+// flag  enable/disable 2D lighting
+void ProtoBaseApp::enable2DRendering() {
+	ltRenderingFactors = Vec4f(0.0, 0.0, 0.0, 1.0);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
-void ProtoBaseApp::endPath() {
-
-}
-void ProtoBaseApp::closePath() {
-
-}
-
-//PRIMITIVES
-void ProtoBaseApp::rect(Vec2 pt0, Vec2 pt1, Registration reg){
-	rect(pt0.x, pt0.y, pt1.x - pt0.x, pt1.y - pt0.y, reg);
-}
-
-void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg){
-
-}
-
-void ProtoBaseApp::ellipse(Vec2 pt0, Vec2 pt1, Registration reg){
-
-}
-
-void ProtoBaseApp::ellipse(float x, float y, float r, Registration reg){
-
+void ProtoBaseApp::disable2DRendering(){
+	ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 0.0);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 
 
-// FILL
+// Styles API
 void ProtoBaseApp::fill(const Col4f& col) {
-
+	isFill = true;
+	fillColor = col;
+	ltRenderingFactors = Vec4f(0.0, 0.0, 0.0, 1.0);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 void ProtoBaseApp::fill(float gray) {
-
+	isFill = true; 
+	fillColor = Col4f(gray, gray, gray, 1);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 void ProtoBaseApp::fill(float gray, float a) {
-
+	isFill = true; 
+	fillColor = Col4f(gray, gray, gray, a);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 void ProtoBaseApp::fill(float r, float g, float b) {
-
+	isFill = true; 
+	fillColor = Col4f(r, g, b, 1);
+	ltRenderingFactors = Vec4f(0.0, 0.0, 0.0, 1.0);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 void ProtoBaseApp::fill(float r, float g, float b, float a) {
-
+	isFill = true; 
+	fillColor = Col4f(r, g, b, a);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 void ProtoBaseApp::noFill() {
+	isFill = false;
 
 }
-// STROKE
+// begin STROKE
 void ProtoBaseApp::stroke(const Col4f& col) {
-
+	isStroke = true;
+	strokeColor = col;
 }
 void ProtoBaseApp::stroke(float gray) {
-
+	isStroke = true; 
+	strokeColor = Col4f(gray, gray, gray, 1);
 }
 void ProtoBaseApp::stroke(float gray, float a) {
-
+	isStroke = true; 
+	strokeColor = Col4f(gray, gray, gray, a);
 }
 void ProtoBaseApp::stroke(float r, float g, float b) {
 
+	isStroke = true; strokeColor = Col4f(r, g, b, 1);
 }
 void ProtoBaseApp::stroke(float r, float g, float b, float a) {
-
+	isStroke = true; 
+	strokeColor = Col4f(r, g, b, a);
 }
 void ProtoBaseApp::noStroke() {
+	isStroke = false;
+}
+void ProtoBaseApp::strokeWeight(float lineWidth) {
+	this->lineWidth = lineWidth;
+}
+
+//PRIMITIVES
+void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
+
+	float _x = 0, _y = 0;
+
+	switch (reg){
+	case CENTER:
+		_x = x - w / 2;
+		_y = y + h / 2;
+		break;
+	case CORNER:
+		_x = x;
+		_y = y;
+		break;
+	case CORNER_TR:
+		_x = x - w;
+		_y = y;
+		break;
+	case CORNER_BR:
+		_x = x - w;
+		_y = y + h;
+		break;
+	case CORNER_BL:
+		_x = x;
+		_y = y + h;
+		break;
+	case RANDOM:
+		// to do
+		break;
+
+	}
+
+	rectPrims[0] = _x;
+	rectPrims[1] = _y;
+	//rectPrims[2] = 0;
+	rectPrims[3] = fillColor.r;
+	rectPrims[4] = fillColor.g;
+	rectPrims[5] = fillColor.b;
+	rectPrims[6] = fillColor.a;
+	rectPrims[7] = _x;
+	rectPrims[8] = _y - h;
+	//rectPrims[9] = 0;
+	rectPrims[10] = fillColor.r;
+	rectPrims[11] = fillColor.g;
+	rectPrims[12] = fillColor.b;
+	rectPrims[13] = fillColor.a;
+	rectPrims[14] = _x + w;
+	rectPrims[15] = _y - h;
+	//rectPrims[16] = 0;
+	rectPrims[17] = fillColor.r;
+	rectPrims[18] = fillColor.g;
+	rectPrims[19] = fillColor.b;
+	rectPrims[20] = fillColor.a;
+	rectPrims[21] = _x + w;
+	rectPrims[22] = _y;
+	//rectPrims[23] = 0;
+	rectPrims[24] = fillColor.r;
+	rectPrims[25] = fillColor.g;
+	rectPrims[26] = fillColor.b;
+	rectPrims[27] = fillColor.a;
+
+	int stride = 7;
+	int rectPrimCount = 28;
+
+	if (isFill){
+		for (int i = 0; i < rectPrimCount; i += stride){
+			rectPrims[i + 3] = fillColor.r;
+			rectPrims[i + 4] = fillColor.g;
+			rectPrims[i + 5] = fillColor.b;
+			rectPrims[i + 6] = fillColor.a;
+		}
+
+		enable2DRendering();
+		glBindVertexArray(vaoRectID);
+		// NOTE::this may not be most efficient - eventually refactor
+		glBindBuffer(GL_ARRAY_BUFFER, vboRectID); // Bind the buffer (vertex array data)
+		int vertsDataSize = sizeof (GLfloat)* rectPrimCount;
+		glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+		glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &rectPrims[0]); // upload the data
+
+		glDrawArrays(GL_POLYGON, 0, rectPrimCount / stride);
+		disable2DRendering();
+
+		// Disable VAO
+		glBindVertexArray(0);
+	}
+	if (isStroke){
+		for (int i = 0; i < rectPrimCount; i += stride){
+			rectPrims[i + 3] = strokeColor.r;
+			rectPrims[i + 4] = strokeColor.g;
+			rectPrims[i + 5] = strokeColor.b;
+			rectPrims[i + 6] = strokeColor.a;
+		}
+
+		enable2DRendering();
+		glBindVertexArray(vaoRectID);
+		// NOTE::this may not be most efficient - eventually refactor
+		glBindBuffer(GL_ARRAY_BUFFER, vboRectID); // Bind the buffer (vertex array data)
+		int vertsDataSize = sizeof (GLfloat)* rectPrimCount;
+		glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+		glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &rectPrims[0]); // upload the data
+
+		glLineWidth(lineWidth);
+		glDrawArrays(GL_LINE_LOOP, 0, rectPrimCount / stride);
+
+		disable2DRendering();
+
+		// Disable VAO
+		glBindVertexArray(0);
+	}
 
 }
-void ProtoBaseApp::strokeWeight() {
 
+void ProtoBaseApp::rect(const Vec2& pt0, const Vec2& pt1, Registration reg) {
+	rect(pt0.x, pt0.y, pt1.x - pt0.x, pt1.y - pt0.y, reg);
 }
+void ProtoBaseApp::rect(float radius1, float radius2, Registration reg) {
+	rect(0, 0, radius1, radius2, reg);
+}
+
+// point order: tl, bl, br, tr
+void ProtoBaseApp::quad(float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3, Registration reg){
+	Vec2f sz = Vec2f(getMax(x3, x2) - getMin(x1, y0), getMax(y0, y3) - getMin(y1, y2));
+	switch (reg){
+	case CENTER:
+		quadPrims[0] = x0 - sz.x/2;
+		quadPrims[1] = y0 +  sz.y / 2;
+		quadPrims[2] = 0;
+		quadPrims[7] = x1 - sz.x / 2;
+		quadPrims[8] = y1 + sz.y / 2;
+		quadPrims[9] = 0;
+		quadPrims[14] = x2 - sz.x / 2;
+		quadPrims[15] = y2 + sz.y / 2;
+		quadPrims[16] = 0;
+		quadPrims[21] = x3 - sz.x / 2;
+		quadPrims[22] = y3 + sz.y / 2;
+		quadPrims[23] = 0;
+		break;
+	case CORNER:
+		quadPrims[0] = x0;
+		quadPrims[1] = y0;
+		quadPrims[2] = 0;
+		quadPrims[7] = x1;
+		quadPrims[8] = y1;
+		quadPrims[9] = 0;
+		quadPrims[14] = x2;
+		quadPrims[15] = y2;
+		quadPrims[16] = 0;
+		quadPrims[21] = x3;
+		quadPrims[22] = y3;
+		quadPrims[23] = 0;
+		break;
+	case CORNER_TR:
+		quadPrims[0] = x0 - sz.x;
+		quadPrims[1] = y0;
+		quadPrims[2] = 0;
+		quadPrims[7] = x1 - sz.x;
+		quadPrims[8] = y1;
+		quadPrims[9] = 0;
+		quadPrims[14] = x2 - sz.x;
+		quadPrims[15] = y2;
+		quadPrims[16] = 0;
+		quadPrims[21] = x3 - sz.x;
+		quadPrims[22] = y3;
+		quadPrims[23] = 0;
+		break;
+	case CORNER_BR:
+		quadPrims[0] = x0 - sz.x;
+		quadPrims[1] = y0 + sz.y;
+		quadPrims[2] = 0;
+		quadPrims[7] = x1 - sz.x;
+		quadPrims[8] = y1 + sz.y;
+		quadPrims[9] = 0;
+		quadPrims[14] = x2 - sz.x;
+		quadPrims[15] = y2 + sz.y;
+		quadPrims[16] = 0;
+		quadPrims[21] = x3 - sz.x;
+		quadPrims[22] = y3 + sz.y;
+		quadPrims[23] = 0;
+		break;
+	case CORNER_BL:
+		quadPrims[0] = x0;
+		quadPrims[1] = y0 + sz.y;
+		quadPrims[2] = 0;
+		quadPrims[7] = x1;
+		quadPrims[8] = y1 + sz.y;
+		quadPrims[9] = 0;
+		quadPrims[14] = x2;
+		quadPrims[15] = y2 + sz.y;
+		quadPrims[16] = 0;
+		quadPrims[21] = x3;
+		quadPrims[22] = y3 + sz.y;
+		quadPrims[23] = 0;
+		break;
+	case RANDOM:
+		// to do
+		break;
+	}
+
+	int stride = 7;
+	int quadPrimCount = 28;
+
+	if (isFill){
+		for (int i = 0; i < quadPrimCount; i += stride){
+			quadPrims[i + 3] = fillColor.r;
+			quadPrims[i + 4] = fillColor.g;
+			quadPrims[i + 5] = fillColor.b;
+			quadPrims[i + 6] = fillColor.a;
+		}
+
+		enable2DRendering();
+		glBindVertexArray(vaoQuadID);
+		// NOTE::this may not be most efficient - eventually refactor
+		glBindBuffer(GL_ARRAY_BUFFER, vboQuadID); // Bind the buffer (vertex array data)
+		int vertsDataSize = sizeof (GLfloat)* quadPrimCount;
+		glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+		glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &quadPrims[0]); // upload the data
+
+		glDrawArrays(GL_POLYGON, 0, quadPrimCount / stride);
+		disable2DRendering();
+
+		// Disable VAO
+		glBindVertexArray(0);
+	}
+	if (isStroke){
+		for (int i = 0; i < quadPrimCount; i += stride){
+			quadPrims[i + 3] = strokeColor.r;
+			quadPrims[i + 4] = strokeColor.g;
+			quadPrims[i + 5] = strokeColor.b;
+			quadPrims[i + 6] = strokeColor.a;
+		}
+
+		enable2DRendering();
+		glBindVertexArray(vaoQuadID);
+		// NOTE::this may not be most efficient - eventually refactor
+		glBindBuffer(GL_ARRAY_BUFFER, vboQuadID); // Bind the buffer (vertex array data)
+		int vertsDataSize = sizeof (GLfloat)* quadPrimCount;
+		glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+		glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &quadPrims[0]); // upload the data
+
+		glLineWidth(lineWidth);
+		glDrawArrays(GL_LINE_LOOP, 0, quadPrimCount / stride);
+
+		disable2DRendering();
+
+		// Disable VAO
+		glBindVertexArray(0);
+	}
+}
+
+void ProtoBaseApp::quad(const Vec2& pt0, const Vec2& pt1, const Vec2& pt2, const Vec2& pt3, Registration reg) {
+	quad(pt0.x, pt0.y, pt1.x, pt1.y, pt2.x, pt2.y, pt3.x, pt3.y, reg);
+}
+
+
+void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg) {
+	float _x = 0, _y = 0;
+
+	/* CENTER,
+	CORNER, // assumed top left
+	CORNER_TR,
+	CORNER_BR,
+	CORNER_BL,
+	RANDOM
+	*/
+
+	switch (reg){
+	case CENTER:
+		_x = x;
+		_y = y;
+		break;
+	case CORNER: // TL
+		_x = x + w / 2;
+		_y = y - h / 2;
+		break;
+	case CORNER_TR:
+		_x = x - w / 2;
+		_y = y - h / 2;
+		break;
+	case CORNER_BR:
+		_x = x - w / 2;
+		_y = y + h / 2;
+		break;
+	case CORNER_BL:
+		_x = x + w / 2;
+		_y = y + h / 2;
+		break;
+	case RANDOM:
+		// to do
+		break;
+
+	}
+
+	int stride = 7;
+	float theta = 0.0;
+	for (int i = 0; i < ellipseDetail; i ++){
+		ellipsePrims.push_back(_x + cos(theta)*w / 2.0);
+		ellipsePrims.push_back(_y + sin(theta)*h / 2.0);
+		ellipsePrims.push_back(0);
+		ellipsePrims.push_back(fillColor.r);
+		ellipsePrims.push_back(fillColor.g);
+		ellipsePrims.push_back(fillColor.b);
+		ellipsePrims.push_back(fillColor.a);
+		theta += TWO_PI / ellipseDetail;
+	}
+
+	if (isFill){
+		for (int i = 0; i < ellipsePrims.size(); i += stride){
+			ellipsePrims.at(i + 3) = fillColor.r;
+			ellipsePrims.at(i + 4) = fillColor.g;
+			ellipsePrims.at(i + 5) = fillColor.b;
+			ellipsePrims.at(i + 6) = fillColor.a;
+		}
+
+		enable2DRendering();
+		glBindVertexArray(vaoEllipseID);
+		// NOTE::this may not be most efficient - eventually refactor
+		glBindBuffer(GL_ARRAY_BUFFER, vboEllipseID); // Bind the buffer (vertex array data)
+		int vertsDataSize = sizeof (GLfloat)* ellipsePrims.size();
+		glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+		glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &ellipsePrims[0]); // upload the data
+
+		glDrawArrays(GL_POLYGON, 0, ellipsePrims.size() / stride);
+		disable2DRendering();
+
+		// Disable VAO
+		glBindVertexArray(0);
+	}
+	if (isStroke){
+		for (int i = 0; i < ellipsePrims.size(); i += stride){
+			ellipsePrims.at(i + 3) = strokeColor.r;
+			ellipsePrims.at(i + 4) = strokeColor.g;
+			ellipsePrims.at(i + 5) = strokeColor.b;
+			ellipsePrims.at(i + 6) = strokeColor.a;
+		}
+
+		enable2DRendering();
+		glBindVertexArray(vaoEllipseID);
+		// NOTE::this may not be most efficient - eventually refactor
+		glBindBuffer(GL_ARRAY_BUFFER, vboEllipseID); // Bind the buffer (vertex array data)
+		int vertsDataSize = sizeof (GLfloat)* ellipsePrims.size();
+		glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+		glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &ellipsePrims[0]); // upload the data
+
+		glLineWidth(lineWidth);
+		glDrawArrays(GL_LINE_LOOP, 0, ellipsePrims.size() / stride);
+
+		disable2DRendering();
+
+		// Disable VAO
+		glBindVertexArray(0);
+	}
+}
+void ProtoBaseApp::ellipse(float r, Registration reg) {
+	ellipse(0, 0, r, r, reg);
+}
+void ProtoBaseApp::ellipse(float r0, float r1, Registration reg) {
+	ellipse(0, 0, r0, r1, reg);
+}
+void ProtoBaseApp::ellipse(float x, float y, float r, Registration reg) {
+	ellipse(x, y, r, r, reg);
+}
+void ProtoBaseApp::triangle(const Vec2& pt0, const Vec2& pt1, const Vec2& pt2) {
+}
+void ProtoBaseApp::triangle(float x0, float y0, float x1, float y1, float x2, float y2) {
+}
+void ProtoBaseApp::poly(int sides, float radius) {
+}
+void ProtoBaseApp::poly(int sides, float radius1, float radius2) {
+}
+void ProtoBaseApp::star(int sides, float innerRadius, float outerRadius) {
+}
+void ProtoBaseApp::star(int sides, const Vec2& radiusAndRatio) {
+}
+
+// PATH
+void ProtoBaseApp::beginPath(PathRenderMode renderMode) {
+	this->pathRenderMode = pathRenderMode;
+	isPathRecording = true;
+	pathPrims.clear();
+	//pathInds.clear();
+}
+void ProtoBaseApp::endPath(bool isClosed) {
+
+	isPathRecording = false;
+	int stride = 7;
+	
+	switch (pathRenderMode) {
+	case POLYGON:
+		if (isFill){
+			for (int i = 0; i < pathPrims.size(); i += stride){
+				pathPrims.at(i + 3) = fillColor.r;
+				pathPrims.at(i + 4) = fillColor.g;
+				pathPrims.at(i + 5) = fillColor.b;
+				pathPrims.at(i + 6) = fillColor.a;
+			}
+
+			enable2DRendering();
+			glBindVertexArray(vaoPathID);
+			// NOTE::this may not be most efficient - eventually refactor
+			glBindBuffer(GL_ARRAY_BUFFER, vboPathID); // Bind the buffer (vertex array data)
+			int vertsDataSize = sizeof (GLfloat)* pathPrims.size();
+			glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+			glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &pathPrims[0]); // upload the data
+			
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+			glDrawArrays(GL_POLYGON, 0, pathPrims.size() / stride);
+			disable2DRendering();
+
+			// Disable VAO
+			glBindVertexArray(0);
+		}
+		if (isStroke){
+			for (int i = 0; i < pathPrims.size(); i += stride){
+				pathPrims.at(i + 3) = strokeColor.r;
+				pathPrims.at(i + 4) = strokeColor.g;
+				pathPrims.at(i + 5) = strokeColor.b;
+				pathPrims.at(i + 6) = strokeColor.a;
+			}
+
+			enable2DRendering();
+			glBindVertexArray(vaoPathID);
+			// NOTE::this may not be most efficient - eventually refactor
+			glBindBuffer(GL_ARRAY_BUFFER, vboPathID); // Bind the buffer (vertex array data)
+			int vertsDataSize = sizeof (GLfloat)* pathPrims.size();
+			glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+			glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &pathPrims[0]); // upload the data
+			
+			glLineWidth(lineWidth);
+			
+			// closed path
+			if (pathRenderMode){
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				glDrawArrays(GL_LINE_LOOP, 0, pathPrims.size() / stride);
+			}
+			// open path
+			else {
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				glDrawArrays(GL_LINE_STRIP, 0, pathPrims.size() / stride);
+			}
+
+			disable2DRendering();
+
+			// Disable VAO
+			glBindVertexArray(0);
+		}
+		break;
+	case TRIANGLES:
+		glDrawArrays(GL_TRIANGLES, 0, pathPrims.size() / stride);
+		break;
+	case TRIANGLE_STRIP:
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, pathPrims.size() / stride);
+		break;
+	case TRIANGLE_FAN:
+		glDrawArrays(GL_TRIANGLE_FAN, 0, pathPrims.size() / stride);
+		break;
+	default:
+		glDrawArrays(GL_POLYGON, 0, pathPrims.size() / stride);
+
+	}
+
+	// reenable 3D lighting
+	disable2DRendering();
+
+	// clean up vectors between each frame
+	pathPrims.clear();
+}
+
 
 void ProtoBaseApp::vertex(const Vec2f& vec) {
-
+	vertex(vec.x, vec.y, 0);
 }
 void ProtoBaseApp::vertex(const Vec3f& vec) {
-
+	vertex(vec.x, vec.y, vec.z);
 }
 void ProtoBaseApp::vertex(float x, float y) {
-
+	vertex(x, y, 0);
 }
 void ProtoBaseApp::vertex(float x, float y, float z) {
-
+	if (isPathRecording){
+		pathPrims.push_back(x);
+		pathPrims.push_back(y);
+		pathPrims.push_back(z);
+		pathPrims.push_back(fillColor.r);
+		pathPrims.push_back(fillColor.g);
+		pathPrims.push_back(fillColor.b);
+		pathPrims.push_back(fillColor.a);
+	}
+	else {
+		trace("Path Recording Failure: You must precede vertex() calls with beginPath()");
+	}
+}
+/****END 2D API****/
+//3D
+void ProtoBaseApp::box(float sz, Registration reg) {
+	box(sz, sz, sz, CENTER);
 }
 
+void ProtoBaseApp::box(float w, float h, float d, Registration reg) {
+	//float _x = 0, _y = 0;
+
+	///* CENTER,
+	//CORNER, // assumed top left
+	//CORNER_TR,
+	//CORNER_BR,
+	//CORNER_BL,
+	//RANDOM
+	//*/
+
+	//switch (reg){
+	//case CENTER:
+	//	_x = x;
+	//	_y = y;
+	//	break;
+	//case CORNER: // TL
+	//	_x = x + w / 2;
+	//	_y = y - h / 2;
+	//	break;
+	//case CORNER_TR:
+	//	_x = x - w / 2;
+	//	_y = y - h / 2;
+	//	break;
+	//case CORNER_BR:
+	//	_x = x - w / 2;
+	//	_y = y + h / 2;
+	//	break;
+	//case CORNER_BL:
+	//	_x = x + w / 2;
+	//	_y = y + h / 2;
+	//	break;
+	//case RANDOM:
+	//	// to do
+	//	break;
+
+	//}
+
+	
+
+	int stride = 15;
+	//for (int i = 0; i < boxPrimCount; i+=15){
+	//	boxPrims[i] *= w;
+	//	boxPrims[i + 1] *= h;
+	//	boxPrims[i + 2] *= d;
+	//}
+
+	if (isFill){
+
+		GLuint diffMap = boxDiffuseMapTexture.getTextureID();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffMap);
+
+		GLuint bumpMap = boxBumpMapTexture.getTextureID();
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, bumpMap);
+
+		
+		for (int i = 0; i < boxPrimCount; i += stride){
+			boxPrims[i + 6] = fillColor.r;
+			boxPrims[i + 7] = fillColor.g;
+			boxPrims[i + 8] = fillColor.b;
+			boxPrims[i + 9] = fillColor.a;
+		}
+
+		//enable2DRendering();
+		glBindVertexArray(vaoBoxID);
+		// NOTE::this may not be most efficient - eventually refactor
+		glBindBuffer(GL_ARRAY_BUFFER, vboBoxID); // Bind the buffer (vertex array data)
+		int vertsDataSize = sizeof (GLfloat)* boxPrimCount;
+		glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+		glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &boxPrims[0]); // upload the data
+		glPolygonMode(GL_FRONT, GL_FILL);
+		glDrawArrays(GL_QUADS, 0, boxPrimCount / stride);
+		//disable2DRendering();
+
+		// Disable VAO
+		glBindVertexArray(0);
+	}
+
+	
+
+
+	if (isStroke){
+		trace("in here");
+		for (int i = 0; i < boxPrimCount; i += stride){
+			boxPrims[i + 6] = strokeColor.r;
+			boxPrims[i + 7] = strokeColor.g;
+			boxPrims[i + 8] = strokeColor.b;
+			boxPrims[i + 9] = strokeColor.a;
+		}
+
+		enable2DRendering();
+		glBindVertexArray(vaoBoxID);
+		// NOTE::this may not be most efficient - eventually refactor
+		glBindBuffer(GL_ARRAY_BUFFER, vboBoxID); // Bind the buffer (vertex array data)
+		int vertsDataSize = sizeof (GLfloat)* boxPrimCount;
+		glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+		glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &boxPrims[0]); // upload the data
+		
+		glLineWidth(lineWidth);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glDrawArrays(GL_QUADS, 0, boxPrimCount / stride);
+
+		disable2DRendering();
+
+		// Disable VAO
+		glBindVertexArray(0);
+	}
+}
 
 
 
@@ -935,7 +1922,8 @@ void ProtoBaseApp::export(std::vector<Tup4v> vs, Format type){
 //}
 
 void ProtoBaseApp::save(std::string name, int scaleFactor){
-	if (getFrameCount() < 1){
+	trace("ProtoUtility::getPathToOutput() =", ProtoUtility::getPathToOutput());
+	//if (getFrameCount() < 1){
 
 		//ProtoBaseApp pba;
 		//std::thread t(&ProtoBaseApp::threadSave, &pba, name, scaleFactor);
@@ -956,7 +1944,7 @@ void ProtoBaseApp::save(std::string name, int scaleFactor){
 		std::stringstream stream;
 		stream << (ltm.tm_year + 1900) << "_" << (ltm.tm_mon + 1) << "_" << ltm.tm_mday << "_" << ltm.tm_hour << "_" << ltm.tm_min << "_" << ltm.tm_sec;
 
-
+		
 
 		std::string url = ProtoUtility::getPathToOutput();
 		std::string directory = url + name + "_" + stream.str();
@@ -1048,7 +2036,7 @@ void ProtoBaseApp::save(std::string name, int scaleFactor){
 		}
 		//trace("ProtoUtility::getPath() =", ProtoUtility::getPath());
 		bool isOk = stitchTiles(directory, scaleFactor);
-	}
+	//}
 }
 
 //void ProtoBaseApp::threadSave(std::string name, int scaleFactor){
@@ -1294,7 +2282,8 @@ void ProtoBaseApp::scale(const Vec3f& sXYZ){
 
 // concatenate MV, N, and MVP matrices and update values on GPU
 void ProtoBaseApp::concat(){
-	push();
+	//M = glm::mat4(1.0f);
+	//push();
 	MV = V * M;
 	N = glm::transpose(glm::inverse(glm::mat3(MV)));
 	MVP = P * MV;
@@ -1312,24 +2301,27 @@ void ProtoBaseApp::concat(){
 
 	glm::mat4 shaderMat = L_MVBP*M; // new 
 	glUniformMatrix4fv(L_MVBP_U, 1, GL_FALSE, &shaderMat[0][0]);
-	pop();
+	//pop();
 }
 
 // implements transform matrix stack
 void ProtoBaseApp::push(){
-	// save current transformation matrix to stack
-
+	// push current transformation matrix onto stack
 	matrixStack.push(M);
 
 }
 
 // reset transformation matrix with stored matrix on stack
 void ProtoBaseApp::pop(){
-	// reset current transformation matrix with matrix on top of stack
+
+	// reset current transformation matrix with one on top of stack
 	M = matrixStack.top();
 
-	// remove matrix on top of stack
+	// pop transformation matrix off top of stack
 	matrixStack.pop();
+	
+	// rebuild matrices and update on GPU
+	concat();
 }
 
 

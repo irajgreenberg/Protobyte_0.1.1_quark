@@ -215,10 +215,12 @@ namespace ijg {
             z = ijg::random(zMax);
             w = ijg::random(wMax);
         } else {
+			
             x = xMax;
             y = yMax;
             z = zMax;
             w = wMax;
+			//trace("x: ", x, "y: ", y, "z: ", z, "w: ", w);
         }
     }
     

@@ -41,9 +41,15 @@ struct Light {
 };
 uniform Light lights[8];
 
+ // to pass color through, in addition to maps
+ out vec4 vertCol;
+
 void main(void)
 {
-    // Calculate vertex position in view space.
+   
+	vertCol = vertexColor;
+
+	// Calculate vertex position in view space.
     vec4 P = modelViewMatrix * vec4(vertexPosition, 1.0);
 
     // Calculate normal (N) and tangent (T) vectors in view space from

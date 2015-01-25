@@ -30,6 +30,11 @@ namespace ijg {
 		ProtoBaseApp* ba = (ProtoBaseApp*)glfwGetWindowUserPointer(window);
 		ba->setMouseButton(action, button, mods);
 	}
+
+	void window_size_callback(GLFWwindow* window, int width, int height) {
+		ProtoBaseApp* ba = (ProtoBaseApp*)glfwGetWindowUserPointer(window);
+		ba->setWindowFrameSize(Dim2i(width, height));
+	}
 }
 
 using namespace ijg;
@@ -102,8 +107,10 @@ void ProtoPlasm::initGLFW(){
 	glfwWindowHint(GLFW_SAMPLES, 8);
 
 	window = glfwCreateWindow(appWidth, appHeight, appTitle.c_str(), /*glfwGetPrimaryMonitor()*/ NULL, NULL);
+	glfwSetWindowPos(window, (1920 - appWidth) / 2, -1080 + (1080-appHeight) / 2);
 
 	glfwSetWindowUserPointer(window, baseApp); // enable callback funcs to speak to baseApp
+	glfwSetWindowSizeCallback(window, window_size_callback); // dynamically change viewport on resize
 
 	if (!window)
 	{
@@ -267,7 +274,13 @@ void ProtoPlasm::initGLFW(){
 	// Activate init function in user derived class.n.
 	baseApp->_init(); // base class
 	//baseApp->init(); // derived class
+
+
+	//baseApp->_resetBuffers();
+
 }
+
+
 
 
 //void framebuffer_size_callback(GLFWwindow* window, int width, int height){
