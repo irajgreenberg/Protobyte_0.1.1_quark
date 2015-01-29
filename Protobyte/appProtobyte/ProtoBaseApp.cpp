@@ -1741,12 +1741,12 @@ void ProtoBaseApp::box(float w, float h, float d, Registration reg) {
 	//case CORNER: // TL
 	//	_x = x + w / 2;
 	//	_y = y - h / 2;
+	//case CORNER_BR:
 	//	break;
 	//case CORNER_TR:
 	//	_x = x - w / 2;
 	//	_y = y - h / 2;
 	//	break;
-	//case CORNER_BR:
 	//	_x = x - w / 2;
 	//	_y = y + h / 2;
 	//	break;

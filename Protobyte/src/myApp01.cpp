@@ -24,11 +24,11 @@ void myApp01::init() {
 
 	shadowsOn();
 	// wall
-	plane = GroundPlane(Vec3(), Vec3(), Dim2f(800, 700), Col4f(0, 0, 0, 1), 1, 1, "shipPlate_normal.jpg", Vec2f(.09, .09));
+	plane = GroundPlane(Vec3(), Vec3(), Dim2f(800, 700), Col4f(0, 0, 0, 1), 1, 1, "pitted.jpg", Vec2f(.09, .09));
 	//GroundPlane()
 	plane.textureOn();
 	plane.setBumpMap("linen.jpg");
-	plane.loadBumpMapTexture("shipPlate_normal.jpg");
+	plane.loadBumpMapTexture("pitted.jpg");
 	plane.setTextureScale(Vec2f(.5));
 	plane.setAmbientMaterial(Col4f(.02, .02, .02, 1.0));
 	plane.setSpecularMaterial(Col4f(.85, .85, .85, 1.0));
@@ -161,11 +161,11 @@ void myApp01::init() {
 
 	textureScale.x = .3;
 	textureScale.y = .3;
-	boxDiffuseMapTexture = ProtoTexture("metal_grate.jpg", ProtoTexture::DIFFUSE_MAP, GL_RGB, GL_RGB, 0, 0);
+	boxDiffuseMapTexture = ProtoTexture("pitted.jpg", ProtoTexture::DIFFUSE_MAP, GL_RGB, GL_RGB, 0, 0);
 	boxDiffuseMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "diffuseMap");
 	glUniform1i(boxDiffuseMapLoc, 0);
 
-	boxBumpMapTexture = ProtoTexture("metal_grate.jpg", ProtoTexture::BUMP_MAP, GL_RGB, GL_RGB, 0, 0);
+	boxBumpMapTexture = ProtoTexture("pitted.jpg", ProtoTexture::BUMP_MAP, GL_RGB, GL_RGB, 0, 0);
 	boxBumpMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "bumpMap");
 	glUniform1i(boxBumpMapLoc, 1);
 
@@ -352,7 +352,7 @@ void myApp01::display() {
 	//noStroke();
 	fill(.4, .3, .1, .85);
 	//noFill();
-	scale(200);
+	scale(400);
 	//enable2DRendering();
 	box(500);
 	//disable2DRendering();
