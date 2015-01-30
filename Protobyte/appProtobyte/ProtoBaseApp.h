@@ -588,9 +588,14 @@ namespace ijg {
 		// FOR TESTING ONLY
 		ProtoTexture boxDiffuseMapTexture;
 		GLint boxDiffuseMapLoc;
+		GLint diffuseMapLocation;
 
 		ProtoTexture boxBumpMapTexture;
 		GLint boxBumpMapLoc;
+		GLint bumpMapLocation;
+
+		void diffuseTexture(const ProtoTexture& diffuseTexture);
+		void bumpTexture(const ProtoTexture& bumpTexture);
 
 	};
 

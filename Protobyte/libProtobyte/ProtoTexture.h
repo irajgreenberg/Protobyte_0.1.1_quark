@@ -52,6 +52,9 @@ namespace ijg {
 
     // NOTE to do: add multiple maps to each texture: diffuse, bump and gloss at least.
 	
+	class ProtoTexture;
+	typedef ProtoTexture Texture;
+	
 	class ProtoTexture {
 
 		friend class ProtoGeom2;
@@ -106,6 +109,8 @@ namespace ijg {
         friend std::ostream& operator<<(std::ostream& output, const ProtoTexture& texture);
 
         ProtoTexture(); // default
+
+		// overloaded: assumption: image_format:RGB, internal_Forma:RGB, level:0, border0
 		ProtoTexture(const std::string& textureMapImage, TextureMapType textureMapType, GLenum image_format = GL_RGB, GLint internal_format = GL_RGB, GLint level = 0, GLint border = 0); // initialized
     
 //        ProtoTexture(const std::string& textureURL, GLuint w, GLuint h, bool isWrap);

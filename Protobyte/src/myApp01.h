@@ -40,6 +40,11 @@ private:
 
 	ProtoPath2 path1;
 
+	Texture tex1;
+	Texture tex2;
+	Texture tex3;
+	Texture tex4;
+
 
 	
 };

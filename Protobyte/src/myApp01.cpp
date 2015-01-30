@@ -151,7 +151,7 @@ void myApp01::init() {
 	for (int i = 0; i < sides; ++i){
 		theta += TWO_PI / sides;
 		path1.lineTo(cos(theta) * random(-13, 13), sin(theta) * random(-13, 13));
-		
+
 	}
 	path1.end(CLOSE);
 
@@ -161,16 +161,15 @@ void myApp01::init() {
 
 	textureScale.x = .3;
 	textureScale.y = .3;
-	boxDiffuseMapTexture = ProtoTexture("pitted.jpg", ProtoTexture::DIFFUSE_MAP, GL_RGB, GL_RGB, 0, 0);
-	boxDiffuseMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "diffuseMap");
-	glUniform1i(boxDiffuseMapLoc, 0);
 
-	boxBumpMapTexture = ProtoTexture("pitted.jpg", ProtoTexture::BUMP_MAP, GL_RGB, GL_RGB, 0, 0);
-	boxBumpMapLoc = glGetUniformLocation(ProtoShader::getID_2(), "bumpMap");
-	glUniform1i(boxBumpMapLoc, 1);
+	tex1 = Texture("pitted.jpg", ProtoTexture::DIFFUSE_MAP);
+	tex2 = Texture("pitted.jpg", ProtoTexture::BUMP_MAP);
+
+	tex1 = Texture("metal_blue.jpg", ProtoTexture::DIFFUSE_MAP);
+	tex2 = Texture("metal_blue.jpg", ProtoTexture::BUMP_MAP);
+
 
 }
-
 void myApp01::run() {
 
 }
@@ -354,7 +353,25 @@ void myApp01::display() {
 	//noFill();
 	scale(400);
 	//enable2DRendering();
-	box(500);
+
+	
+
+	//GLuint bumpMap = boxBumpMapTexture.getTextureID();
+	
+
+	//push();
+	//translate(-50, 0, 0); 
+	//diffuseTexture(tex1);
+	//bumpTexture(tex2);
+	//box(200);
+	//pop();
+
+	push();
+	translate(1, 0, 0);
+	diffuseTexture(tex3);
+	bumpTexture(tex4);
+	box(200);
+	pop();
 	//disable2DRendering();
 
 	endArcball();

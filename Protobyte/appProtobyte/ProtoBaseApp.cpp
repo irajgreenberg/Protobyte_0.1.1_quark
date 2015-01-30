@@ -1224,6 +1224,24 @@ void ProtoBaseApp::strokeWeight(float lineWidth) {
 	this->lineWidth = lineWidth;
 }
 
+
+//TEXTURES
+void ProtoBaseApp::diffuseTexture(const ProtoTexture& diffuseTexture) {
+	diffuseMapLocation = glGetUniformLocation(ProtoShader::getID_2(), "diffuseMap");
+	glUniform1i(boxDiffuseMapLoc, 0);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, diffuseTexture.getTextureID());
+}
+void ProtoBaseApp::bumpTexture(const ProtoTexture& bumpTexture) {
+	bumpMapLocation = glGetUniformLocation(ProtoShader::getID_2(), "bumpMap");
+	glUniform1i(boxBumpMapLoc, 1); 
+	
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, bumpTexture.getTextureID());
+}
+
+
 //PRIMITIVES
 void ProtoBaseApp::rect(float x, float y, float w, float h, Registration reg){
 
@@ -1771,13 +1789,13 @@ void ProtoBaseApp::box(float w, float h, float d, Registration reg) {
 
 	if (isFill){
 
-		GLuint diffMap = boxDiffuseMapTexture.getTextureID();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, diffMap);
+		//GLuint diffMap = boxDiffuseMapTexture.getTextureID();
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_2D, diffMap);
 
-		GLuint bumpMap = boxBumpMapTexture.getTextureID();
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, bumpMap);
+		//GLuint bumpMap = boxBumpMapTexture.getTextureID();
+		//glActiveTexture(GL_TEXTURE1);
+		//glBindTexture(GL_TEXTURE_2D, bumpMap);
 
 		
 		for (int i = 0; i < boxPrimCount; i += stride){
