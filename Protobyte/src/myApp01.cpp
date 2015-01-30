@@ -14,7 +14,7 @@ void myApp01::init() {
 	globalAmbient = Col3f(.65, .65, .65);
 
 	//light0.setPosition(Vec3f(.1, 300, 0));
-	light0.setPosition(Vec3f(0, 3, 1));
+	light0.setPosition(Vec3f(0, 150, 0));
 	light0.setIntensity(Vec3f(.85, .85, .85));
 
 	/*light1.setPosition(Vec3f(-10, -400, 0));
@@ -24,15 +24,15 @@ void myApp01::init() {
 
 	shadowsOn();
 	// wall
-	plane = GroundPlane(Vec3(), Vec3(), Dim2f(800, 700), Col4f(0, 0, 0, 1), 1, 1, "pitted.jpg", Vec2f(.09, .09));
+	plane = GroundPlane(Vec3(), Vec3(), Dim2f(200, 200), Col4f(1, 1, 1, 1), 1, 1, "corroded_red.jpg", Vec2f(1, 1));
 	//GroundPlane()
 	plane.textureOn();
-	plane.setBumpMap("linen.jpg");
-	plane.loadBumpMapTexture("pitted.jpg");
+	plane.setBumpMap("corroded_red.jpg");
+	plane.loadBumpMapTexture("corroded_red.jpg");
 	plane.setTextureScale(Vec2f(.5));
-	plane.setAmbientMaterial(Col4f(.02, .02, .02, 1.0));
+	plane.setAmbientMaterial(Col4f(.3, .3, .3, 1.0));
 	plane.setSpecularMaterial(Col4f(.85, .85, .85, 1.0));
-	plane.setShininess(45);
+	plane.setShininess(15);
 	//trace("GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS =", GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 
 
@@ -165,8 +165,8 @@ void myApp01::init() {
 	tex1 = Texture("pitted.jpg", ProtoTexture::DIFFUSE_MAP);
 	tex2 = Texture("pitted.jpg", ProtoTexture::BUMP_MAP);
 
-	tex1 = Texture("metal_blue.jpg", ProtoTexture::DIFFUSE_MAP);
-	tex2 = Texture("metal_blue.jpg", ProtoTexture::BUMP_MAP);
+	tex3 = Texture("metal_blue.jpg", ProtoTexture::DIFFUSE_MAP);
+	tex4 = Texture("metal_blue.jpg", ProtoTexture::BUMP_MAP);
 
 
 }
@@ -351,7 +351,7 @@ void myApp01::display() {
 	//noStroke();
 	fill(.4, .3, .1, .85);
 	//noFill();
-	scale(400);
+	
 	//enable2DRendering();
 
 	
@@ -359,18 +359,26 @@ void myApp01::display() {
 	//GLuint bumpMap = boxBumpMapTexture.getTextureID();
 	
 
-	//push();
-	//translate(-50, 0, 0); 
-	//diffuseTexture(tex1);
-	//bumpTexture(tex2);
-	//box(200);
-	//pop();
 
 	push();
-	translate(1, 0, 0);
-	diffuseTexture(tex3);
-	bumpTexture(tex4);
-	box(200);
+	translate(-150, 0, 0); 
+	scale(100);
+	//diffuseTexture(tex3);
+	//bumpTexture(tex2);
+	noTexture();
+	box(20);
+	pop();
+
+	push();
+	stroke(1, 0, 1);
+	fill(1, 1, 0);
+	strokeWeight(2);
+	translate(150, 0, 0);
+	scale(100);
+	//diffuseTexture(tex1);
+	//bumpTexture(tex4);
+	noTexture();
+	box(20);
 	pop();
 	//disable2DRendering();
 

@@ -212,7 +212,13 @@ void ProtoBaseApp::_init(){
 	// create primitives for immediate drawing
 
 	// for primitives
+	
 	textureScale.x = textureScale.y = 1.0;
+
+	// default no texture
+	noDiffuseTexture = Texture("white_tile.jpg", ProtoTexture::DIFFUSE_MAP);
+	noBumpTexture = Texture("white_tile.jpg", ProtoTexture::BUMP_MAP);
+
 	//2D
 	_createRect();
 	_createQuad();
@@ -570,9 +576,9 @@ void ProtoBaseApp::_createBox() {
 		boxPrims[j + 14] = verts[i].getTangent().z;
 	}
 
-	for (int i = 0; i < boxPrimCount; ++i){
-		std::cout << boxPrims[i] << ", ";
-	}
+	//for (int i = 0; i < boxPrimCount; ++i){
+	//	std::cout << boxPrims[i] << ", ";
+	//}
 
 	// vert data
 	// 1. Create and bind VAO
@@ -1226,6 +1232,20 @@ void ProtoBaseApp::strokeWeight(float lineWidth) {
 
 
 //TEXTURES
+void ProtoBaseApp::noTexture() {
+	diffuseMapLocation = glGetUniformLocation(ProtoShader::getID_2(), "diffuseMap");
+	glUniform1i(boxDiffuseMapLoc, 0);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, noDiffuseTexture.getTextureID());
+
+	bumpMapLocation = glGetUniformLocation(ProtoShader::getID_2(), "bumpMap");
+	glUniform1i(boxBumpMapLoc, 1);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, noBumpTexture.getTextureID());
+
+}
 void ProtoBaseApp::diffuseTexture(const ProtoTexture& diffuseTexture) {
 	diffuseMapLocation = glGetUniformLocation(ProtoShader::getID_2(), "diffuseMap");
 	glUniform1i(boxDiffuseMapLoc, 0);
@@ -1824,7 +1844,7 @@ void ProtoBaseApp::box(float w, float h, float d, Registration reg) {
 
 
 	if (isStroke){
-		trace("in here");
+		//trace("in here");
 		for (int i = 0; i < boxPrimCount; i += stride){
 			boxPrims[i + 6] = strokeColor.r;
 			boxPrims[i + 7] = strokeColor.g;

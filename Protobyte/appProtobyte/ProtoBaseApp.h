@@ -586,6 +586,8 @@ namespace ijg {
 		/****END Save/Thread/Other****/
 
 		// FOR TESTING ONLY
+		// default no Texture (white_tile.jpg)
+		Texture noDiffuseTexture, noBumpTexture;
 		ProtoTexture boxDiffuseMapTexture;
 		GLint boxDiffuseMapLoc;
 		GLint diffuseMapLocation;
@@ -594,6 +596,7 @@ namespace ijg {
 		GLint boxBumpMapLoc;
 		GLint bumpMapLocation;
 
+		void noTexture();
 		void diffuseTexture(const ProtoTexture& diffuseTexture);
 		void bumpTexture(const ProtoTexture& bumpTexture);
 
