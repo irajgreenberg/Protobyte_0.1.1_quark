@@ -527,6 +527,7 @@ namespace ijg {
 		Vec2f textureScale;
 		const static int boxPrimCount = 24*15;
 		float boxPrims[boxPrimCount];
+		float boxPrimsOrig[boxPrimCount]; 
 		int boxInds[24]; // 6 faces
 		GLuint vaoBoxID, vboBoxID, indexVboBoxID;
 		void _createBox();

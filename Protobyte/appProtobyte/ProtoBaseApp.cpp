@@ -576,9 +576,9 @@ void ProtoBaseApp::_createBox() {
 		boxPrims[j + 14] = verts[i].getTangent().z;
 	}
 
-	//for (int i = 0; i < boxPrimCount; ++i){
-	//	std::cout << boxPrims[i] << ", ";
-	//}
+	for (int i = 0; i < boxPrimCount; ++i){
+		boxPrimsOrig[i] = boxPrims[i];
+	}
 
 	// vert data
 	// 1. Create and bind VAO
@@ -1801,6 +1801,12 @@ void ProtoBaseApp::box(float w, float h, float d, Registration reg) {
 	
 
 	int stride = 15;
+
+	for (int i = 0; i < boxPrimCount; i += stride){
+		boxPrims[i] = boxPrimsOrig[i] * w;
+		boxPrims[i + 1] = boxPrimsOrig[i + 1] * h;
+		boxPrims[i + 2] = boxPrimsOrig[i + 2] * d;
+	}
 	//for (int i = 0; i < boxPrimCount; i+=15){
 	//	boxPrims[i] *= w;
 	//	boxPrims[i + 1] *= h;

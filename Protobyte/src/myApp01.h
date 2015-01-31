@@ -45,6 +45,8 @@ private:
 	Texture tex3;
 	Texture tex4;
 
+	Vec3 boxPos[40][10];
+
 
 	
 };

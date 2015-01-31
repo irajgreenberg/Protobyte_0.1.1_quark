@@ -362,23 +362,21 @@ void myApp01::display() {
 
 	push();
 	translate(-150, 0, 0); 
-	scale(100);
-	//diffuseTexture(tex3);
-	//bumpTexture(tex2);
-	noTexture();
-	box(20);
+	diffuseTexture(tex3);
+	bumpTexture(tex2);
+	//noTexture();
+	box(120, 20, 60);
 	pop();
 
 	push();
 	stroke(1, 0, 1);
-	fill(1, 1, 0);
+	//fill(1, 1, 0, .5);
 	strokeWeight(2);
 	translate(150, 0, 0);
-	scale(100);
-	//diffuseTexture(tex1);
-	//bumpTexture(tex4);
-	noTexture();
-	box(20);
+	diffuseTexture(tex1);
+	bumpTexture(tex4);
+	//noTexture();
+	box(120, 40, 200);
 	pop();
 	//disable2DRendering();
 
