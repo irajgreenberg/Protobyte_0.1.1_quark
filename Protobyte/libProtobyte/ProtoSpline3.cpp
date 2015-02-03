@@ -1,4 +1,4 @@
-/*!  \brief  ProtoSpline3.cpp: Catmull-Rom spline class implementation
+ /*!  \brief  ProtoSpline3.cpp: Catmull-Rom spline class implementation
  ProtoSpline3.cpp
  Protobyte Library v02
  

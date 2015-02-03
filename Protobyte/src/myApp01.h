@@ -47,8 +47,6 @@ private:
 
 	Vec3 boxPos[40][10];
 
-
-	
 };
 
 #endif //__MYAPP01_H__

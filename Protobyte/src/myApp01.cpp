@@ -168,7 +168,6 @@ void myApp01::init() {
 	tex3 = Texture("metal_blue.jpg", ProtoTexture::DIFFUSE_MAP);
 	tex4 = Texture("metal_blue.jpg", ProtoTexture::BUMP_MAP);
 
-
 }
 void myApp01::run() {
 
