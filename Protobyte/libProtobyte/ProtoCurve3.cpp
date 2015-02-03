@@ -1,10 +1,10 @@
 /*!  \brief  ProtoCurve3.cpp: Abstract base class for all curves
  ProtoCurve3.cpp
  Protobyte Library v02
- 
+
  Created by Ira on 7/23/13.
  Copyright (c) 2013 Ira Greenberg. All rights reserved.
- 
+
  Library Usage:
  This work is licensed under the Creative Commons
  Attribution-NonCommercial-ShareAlike 3.0 Unported License.
@@ -13,9 +13,9 @@
  or send a letter to Creative Commons,
  444 Castro Street, Suite 900,
  Mountain View, California, 94041, USA.
- 
+
  This notice must be retained any source distribution.
- 
+
  \ingroup common
  This class is part of the group common (update)
  \sa NO LINK
@@ -30,13 +30,41 @@ using namespace ijg;
 
 ProtoCurve3::ProtoCurve3() {}
 
-ProtoCurve3::ProtoCurve3(const std::vector<Vec3f>& controlPts,int interpDetail, bool isCurveClosed):
+ProtoCurve3::ProtoCurve3(const std::vector<Vec3f>& controlPts, int interpDetail, bool isCurveClosed) :
 controlPts(controlPts), interpDetail(interpDetail), isCurveClosed(isCurveClosed){
-    
+	initBuffers();
 }
 
 ProtoCurve3::~ProtoCurve3() {
-    
+
+}
+
+void ProtoCurve3::initBuffers(){
+	// prepare shader handles to verts data
+	// 1. Create and bind VAO
+	glGenVertexArrays(1, &vaoVertsID); // Create VAO
+	glBindVertexArray(vaoVertsID); // Bind VAO (making it active)
+
+	// 2. Create and bind VBO
+	// a. Vertex attributes vboID;
+	glGenBuffers(1, &vboVertsID); // Create the buffer ID
+	glBindBuffer(GL_ARRAY_BUFFER, vboVertsID); // Bind the buffer (vertex array data)
+	int vertsDataSize = 0;// sizeof (GLfloat)* pathPrims.size();
+	glBufferData(GL_ARRAY_BUFFER, 0, NULL, GL_DYNAMIC_DRAW);// allocate space
+	//glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &pathPrims[0]); // upload the data
+
+	// fill state is true - need to create this
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	glEnableVertexAttribArray(0); // vertices
+	glEnableVertexAttribArray(2); // color
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(0)); // pos
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, stride * sizeof (GLfloat), BUFFER_OFFSET(12)); // col
+
+	// Disable buffers
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
 }
 
 /**
@@ -44,21 +72,21 @@ ProtoCurve3::~ProtoCurve3() {
  * with side effects
  */
 void ProtoCurve3::setControlPts(std::vector<Vec3f>& controlPts) {
-    this->controlPts = controlPts;
+	this->controlPts = controlPts;
 }
 
 /**
  * Gets control points array length.
  */
 int ProtoCurve3::getControlPtsLength() {
-    return static_cast<int>(controlPts.size());
+	return static_cast<int>(controlPts.size());
 }
 
 /**
  * Gets point count between control points.
  */
 int ProtoCurve3::getInterpDetail(){
-    return interpDetail;
+	return interpDetail;
 }
 
 /**
@@ -66,38 +94,38 @@ int ProtoCurve3::getInterpDetail(){
  * with side effects
  */
 std::vector<Vec3f>& ProtoCurve3::getControlPts() {
-    return controlPts;
+	return controlPts;
 }
 
 
 /**
  * Get the curve vertsBuff' length.
- * 
+ *
  * @return int
  */
 int ProtoCurve3::getVertsLength() const  {
-    return static_cast<int>(verts.size());
+	return static_cast<int>(verts.size());
 }
 
 /**
  * Set all the curve points
- * 
+ *
  * @param uniqueVerts
  *            Vector[] array
  */
 void ProtoCurve3::setVerts(std::vector<Vec3f> verts) {
-    this->verts = verts;
-    //std::cout<<"I'm in here dude!!!"<<std::endl;
+	this->verts = verts;
+	//std::cout<<"I'm in here dude!!!"<<std::endl;
 }
 
 /**
  * Get pointer all the curve points
- * 
+ *
  * @param uniqueVerts
  *            Vector array
  */
 std::vector<Vec3f>& ProtoCurve3::getVerts() {
-    return verts;
+	return verts;
 }
 
 
@@ -107,39 +135,39 @@ std::vector<Vec3f>& ProtoCurve3::getVerts() {
  **** To DO NOTE - switch all verts to vector eventually ****
  */
 std::vector<Vec3f>& ProtoCurve3::getVertices(){
-    return tempVecs;
-    //return verts;
+	return tempVecs;
+	//return verts;
 
 }
 
 /**
  * Get ProtoCurve3 object dimensions.
- * 
+ *
  * @return ProtoDimension3 object
  */
 ProtoDimension3<float>& ProtoCurve3::getDimension() {
-    double minX=0, maxX=0, minY=0, maxY=0, minZ=0, maxZ=0.0;
-    minX = verts[0].x;
-    maxX = verts[verts.size()-1].x;
-    minY = verts[0].y;
-    maxY = verts[verts.size()-1].y;
-    minZ = verts[0].z;
-    maxZ = verts[verts.size()-1].z;
-    
-    for(int i=1; i<verts.size(); i++){
-        minX = minX < verts[i].x ? minX : verts[i].x;
-        maxX = maxX > verts[i].x ? maxX : verts[i].x;
-        
-        minY = minY < verts[i].y ? minY : verts[i].y;
-        maxY = maxY > verts[i].y ? maxY : verts[i].y;
-        
-        minZ = minZ < verts[i].z ? minZ : verts[i].z;
-        maxZ = maxZ > verts[i].z ? maxZ : verts[i].z;
-    }
-    dim.w = maxX-minX;
-    dim.h = maxY-minY;
-    dim.d = maxZ-minZ;
-    return dim;
+	double minX = 0, maxX = 0, minY = 0, maxY = 0, minZ = 0, maxZ = 0.0;
+	minX = verts[0].x;
+	maxX = verts[verts.size() - 1].x;
+	minY = verts[0].y;
+	maxY = verts[verts.size() - 1].y;
+	minZ = verts[0].z;
+	maxZ = verts[verts.size() - 1].z;
+
+	for (int i = 1; i < verts.size(); i++){
+		minX = minX < verts[i].x ? minX : verts[i].x;
+		maxX = maxX > verts[i].x ? maxX : verts[i].x;
+
+		minY = minY < verts[i].y ? minY : verts[i].y;
+		maxY = maxY > verts[i].y ? maxY : verts[i].y;
+
+		minZ = minZ < verts[i].z ? minZ : verts[i].z;
+		maxZ = maxZ > verts[i].z ? maxZ : verts[i].z;
+	}
+	dim.w = maxX - minX;
+	dim.h = maxY - minY;
+	dim.d = maxZ - minZ;
+	return dim;
 }
 
 /**
@@ -149,7 +177,7 @@ ProtoDimension3<float>& ProtoCurve3::getDimension() {
 float ProtoCurve3::getCurveLength() const {
 	float len;
 
-	for (int i = 0; i<verts.size()-1; i++){
+	for (int i = 0; i < verts.size() - 1; i++){
 		Vec3 temp1 = verts.at(i);
 		Vec3 temp2 = verts.at(i + 1);
 		Vec3 segLen = temp2 - temp1;
@@ -160,70 +188,70 @@ float ProtoCurve3::getCurveLength() const {
 
 /**
  * Get vertex radius.
- * 
+ *
  * @return double value
  */
 
 double ProtoCurve3::getVertRad() const  {
-    return vertRad;
+	return vertRad;
 }
 
 /**
  * Set vertex radius
- * 
+ *
  * @param vertRad
  *            double value
  */
 void ProtoCurve3::setVertRad(double vertRad) {
-    this->vertRad = vertRad;
+	this->vertRad = vertRad;
 }
 
 
 /**
  * Get flag value telling if curve is closed
- * 
+ *
  * @return bool value
  */
 bool ProtoCurve3::getIsCurveClosed() const  {
-    return isCurveClosed;
+	return isCurveClosed;
 }
 
 /**
  * Set flag for Curve to be closed
- * 
+ *
  * @param isCurveClosed
  *            bool value
  */
 void ProtoCurve3::setIsCurveClosed(bool isCurveClosed) {
-    this->isCurveClosed = isCurveClosed;
+	this->isCurveClosed = isCurveClosed;
 }
 
 /**
  * Get flag value telling if curve at Terminals is continuous
- * 
+ *
  * @return bool value
  */
 bool ProtoCurve3::getIsTerminalSmooth() const  {
-    return isTerminalSmooth;
+	return isTerminalSmooth;
 }
 
 /**
  * Set flag for Curve at Terminals to be continuous
- * 
+ *
  * @param isTerminalSmooth
  *            bool value
  */
 void ProtoCurve3::setIsTerminalSmooth(bool isTerminalSmooth) {
-    this->isTerminalSmooth = isTerminalSmooth;
+	this->isTerminalSmooth = isTerminalSmooth;
 }
 
 /**
  * get Frenet Frames
- * 
+ *
  * @return Frenet Frame
  */
 const std::vector<ProtoFrenetFrame>& ProtoCurve3::getFrenetFrames() const
 {
-    return frenetFrames;
+	return frenetFrames;
 }
 

@@ -30,6 +30,10 @@
 #include <vector>
 #include "ProtoFrenetFrame.h"
 
+// for offset into the FBO interleaved buffer
+#define BUFFER_OFFSET(i) ((void*)(i))
+
+
 namespace ijg {
 
 	// forward declare & create namespace safe shortname
@@ -37,6 +41,14 @@ namespace ijg {
 	typedef ProtoCurve3 Curve3;
 
 	class ProtoCurve3 {
+	private:
+	
+		/**
+		* initialize shader handles and uniforms for rendering
+		*/
+		void initBuffers();
+	
+	
 	protected:
 
 		/**
@@ -60,6 +72,16 @@ namespace ijg {
 		std::vector<Vec3f> verts;
 
 		/**
+		* stride to move through interleaved primitives(x, y, z, r, g, b, a)
+		*/
+		int stride = 7;
+		
+		/**
+		* std::vector of interleaved curve primitives (x, y, z, r, g, b, a).
+		*/
+		std::vector<float> curveVertsPrims;
+
+		/**
 		 * std::vector of all curve vertices (Frenet frame).
 		 */
 		std::vector<Vec3f> biNorms;
@@ -78,7 +100,6 @@ namespace ijg {
 		 * std::vector of Parallel Transport thetas.
 		 */
 		std::vector<float> parallelTransportThetas;
-
 
 		/**
 		 * Radius of rectangle used for rendering vertsBuff (?)
@@ -105,6 +126,16 @@ namespace ijg {
 		 * Bounding box of entire curve
 		 */
 		ProtoDimension3<float> dim;
+
+		/**
+		 * Handle to verts VAO
+		*/
+		GLuint vaoVertsID;
+
+		/**
+		* Handle to verts VBO
+		*/
+		GLuint vboVertsID;
 
 		/**
 		* Bounding box of entire curve

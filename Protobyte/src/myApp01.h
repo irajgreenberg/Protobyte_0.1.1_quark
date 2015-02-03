@@ -47,6 +47,8 @@ private:
 
 	Vec3 boxPos[40][10];
 
+	Spline3 spline2;
+
 };
 
 #endif //__MYAPP01_H__

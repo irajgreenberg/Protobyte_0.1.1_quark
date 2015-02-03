@@ -168,6 +168,13 @@ void myApp01::init() {
 	tex3 = Texture("metal_blue.jpg", ProtoTexture::DIFFUSE_MAP);
 	tex4 = Texture("metal_blue.jpg", ProtoTexture::BUMP_MAP);
 
+	std::vector<Vec3f> splineVecs;
+	for (int i = 0; i < 20; ++i){
+		splineVecs.push_back(Vec3(random(-300, 300), random(-300, 300), random(-300, 300)));
+	}
+	spline2 = ProtoSpline3(splineVecs, 15, false, 0.5);
+
+
 }
 void myApp01::run() {
 
@@ -307,11 +314,11 @@ void myApp01::display() {
 	float theta = 0;
 	int sides = 12;
 	for (int i = 0; i < sides; ++i){
-		vertex(cos(theta) * abs(sin(theta) * 65), sin(theta) * abs(sin(theta) * 65), sin(theta) * sin(theta)*50);
+		vertex(cos(theta) * abs(sin(theta) * 65), sin(theta) * abs(sin(theta) * 65), sin(theta) * sin(theta) * 50);
 		theta += TWO_PI / sides;
 	}
 	endShape();
-	
+
 	noFill();
 	stroke(.5, .45, .6);
 	strokeWeight(6);
@@ -321,10 +328,10 @@ void myApp01::display() {
 
 
 	noFill();
-	push(); 
+	push();
 	scale(0.5);
 	stroke(1, .5, 0);
-	strokeWeight(.25); 
+	strokeWeight(.25);
 	beginShape();
 	for (int i = 0; i < pointCount; ++i){
 		vertex(pts[i].x, pts[i].y, pts[i].z);
@@ -344,23 +351,23 @@ void myApp01::display() {
 	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER);
 	pop();
 
-	strokeWeight(1); 
+	strokeWeight(1);
 	stroke(1, 1, 0);
 	//noFill();
 	//noStroke();
 	fill(.4, .3, .1, .85);
 	//noFill();
-	
+
 	//enable2DRendering();
 
-	
+
 
 	//GLuint bumpMap = boxBumpMapTexture.getTextureID();
-	
+
 
 
 	push();
-	translate(-150, 0, 0); 
+	translate(-150, 0, 0);
 	diffuseTexture(tex3);
 	bumpTexture(tex2);
 	//noTexture();
@@ -379,11 +386,13 @@ void myApp01::display() {
 	pop();
 	//disable2DRendering();
 
+	spline2.display();
+
 	endArcball();
 	//...
 	//	path.display();
 
-	
+
 }
 
 void myApp01::mousePressed(){

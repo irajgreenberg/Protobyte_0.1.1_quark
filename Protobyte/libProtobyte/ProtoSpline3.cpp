@@ -122,6 +122,29 @@ void ProtoSpline3::init() {
         //}
     /* ensure tube section don't flip */
     parallelTransport();
+
+	curveVertsPrims.clear();
+		// create convenient interleaved primitives array of vertices for shader based curve rendering
+	for (auto i : verts) {
+		curveVertsPrims.push_back(i.x);
+		curveVertsPrims.push_back(i.y);
+		curveVertsPrims.push_back(i.z);
+		curveVertsPrims.push_back(0.5); //r
+		curveVertsPrims.push_back(0.5); //g
+		curveVertsPrims.push_back(0.5); //b
+		curveVertsPrims.push_back(1.0); //a
+	}
+
+	//for (int i = 0; i < verts.size(); i++) {
+	//	curveVertsPrims.push_back(verts.at(i).x);
+	//	curveVertsPrims.push_back(verts.at(i).y);
+	//	curveVertsPrims.push_back(verts.at(i).z);
+	//	curveVertsPrims.push_back(0.5); //r
+	//	curveVertsPrims.push_back(0.5); //g
+	//	curveVertsPrims.push_back(0.5); //b
+	//	curveVertsPrims.push_back(1.0); //a
+	//}
+	//trace("curveVertsPrims.size() =", curveVertsPrims.size());
 }
 
 /**
@@ -151,53 +174,42 @@ void ProtoSpline3::setTerminalSmooth(bool isTerminalSmooth) {
  *
  */
 void ProtoSpline3::display() {
-    
-	glDisable(GL_CULL_FACE);
-    glDisable(GL_LIGHTING);
-    glLineWidth(4.0f);
-    glColor3f(1, 1, 0);
-    // int len = vertsLength;
-    glBegin(GL_LINE_STRIP);
-    glColor3f(1, 1, 0);
-    //glVertex3d(controlPts.at(0).getX(), controlPts.at(0).getY(), controlPts.at(0).getZ());
-    //glVertex3d(tempVecs.at(0).getX(), tempVecs.at(0).getY(), tempVecs.at(0).getZ());
-    // std::cout << "controlPts.at(0) = " <<  controlPts.at(0) << std::endl;
-    for (int i = 0; i < verts.size(); i++) {
-        //if (verts.at(i)) {
-        // std::cout <<" temp Vecs["<<i<<"] = " <<  tempVecs.at(i) << std::endl;
-        glVertex3d(verts.at(i).x, verts.at(i).y, verts.at(i).z);
-        //glVertex3d(tempVecs.at(i).getX(), tempVecs.at(i).getY(), tempVecs.at(i).getZ());
-        //  std::cout <<" TWO:: verts["<<i<<"] = " <<  verts.at(i) << std::endl;
-        //}
-        if (/*verts.at(i) != null && */isCurveClosed && i == verts.size() - 1) {
-            glVertex3d(verts.at(0).x, verts.at(0).y, verts.at(0).z);
-        }
-    }
-    glEnd();
-    
-    
-    //Start VBO's
-    //    glDisable(GL_CULL_FACE);
-    //    glDisable(GL_LIGHTING);
-    //    glLineWidth(4.0f);
-    //    glColor3f(1, 1, 0);
-    //
-    //    unsigned int vboID = 0;
-    //    glGenBuffers(1, &vboID);
-    //    glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    //    glBufferData(GL_ARRAY_BUFFER, sizeof(verts.size()) * 4 * sizeof(float), &verts[0], GL_STATIC_DRAW);
-    //
-    //    glEnableClientState(GL_VERTEX_ARRAY);
-    //    glVertexPointer(3, GL_FLOAT, 0, &verts[0]);
-    //
-    //    glDrawArrays(GL_LINES, 0, verts.size());
-    //
-    //    glDisableClientState(GL_VERTEX_ARRAY);
-    //
-    //    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    //    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    
-    //END VBO
+	//trace("curveVertsPrims.size() =", curveVertsPrims.size());
+	//for (int i = 0; i < pathPrims.size(); i += stride){
+	//	pathPrims.at(i + 3) = strokeColor.r;
+	//	pathPrims.at(i + 4) = strokeColor.g;
+	//	pathPrims.at(i + 5) = strokeColor.b;
+	//	pathPrims.at(i + 6) = strokeColor.a;
+	//}
+
+	//enable2DRendering();
+	glBindVertexArray(vaoVertsID);
+	// NOTE::this may not be most efficient - eventually refactor
+	glBindBuffer(GL_ARRAY_BUFFER, vboVertsID); // Bind the buffer (vertex array data)
+	int vertsDataSize = sizeof (GLfloat)* curveVertsPrims.size();
+	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &curveVertsPrims[0]); // upload the data
+
+	glLineWidth(8);
+
+	// closed path
+	//if (pathRenderMode){
+	//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//	glDrawArrays(GL_LINE_LOOP, 0, pathPrims.size() / stride);
+	//}
+	//// open path
+	//else {
+	//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//	glDrawArrays(GL_LINE_STRIP, 0, pathPrims.size() / stride);
+	//}
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glDrawArrays(GL_LINE_STRIP, 0, curveVertsPrims.size() / stride);
+
+	//disable2DRendering();
+
+	// Disable VAO
+	glBindVertexArray(0);
 }
 
 /**
