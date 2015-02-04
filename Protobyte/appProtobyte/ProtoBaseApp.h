@@ -559,10 +559,18 @@ namespace ijg {
 		// Drawing Methods API
 		void beginPath(PathRenderMode pathRenderMode = POLYGON);
 		void endPath(bool isClosed = 1);
+		
+		// straight path
 		void vertex(const Vec2f& vec);
 		void vertex(const Vec3f& vec);
 		void vertex(float x, float y);
 		void vertex(float x, float y, float z);
+
+		// Catmull-Rom spline curve
+		void curveVertex(const Vec2f& vec);
+		void curveVertex(const Vec3f& vec);
+		void curveVertex(float x, float y);
+		void curveVertex(float x, float y, float z);
 		/****END 2D API****/
 
 		// Lighting and Materials
@@ -691,6 +699,10 @@ namespace ijg {
 // immediate mode path plotting
 #define beginShape beginPath // processing style
 #define endShape endPath // processing style
+
+	// enable/disable 3D lighting
+#define disableLights enable2DRendering
+#define enableLights disable2DRendering
 
 
 	// remove this old stuff

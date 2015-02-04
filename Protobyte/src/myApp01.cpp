@@ -181,7 +181,7 @@ void myApp01::run() {
 }
 
 void myApp01::display() {
-
+	
 	background(0.2);
 	translate(0, 0, -100);
 
@@ -220,7 +220,7 @@ void myApp01::display() {
 	////pop();
 
 	push();
-	translate(0, -100, 0);
+	translate(0, -400, 0);
 	scale(20, 1, 20);
 	plane.display();
 	pop();
@@ -386,13 +386,14 @@ void myApp01::display() {
 	pop();
 	//disable2DRendering();
 
-	enable2DRendering(); 
+	
 	push(); 
-	//translate(0, 400, 0);
-	spline2.display();
-	spline2.displayInterpPts();
+	//disableLights();
+	spline2.display(4);
+	spline2.displayInterpPts(12);
+	//enableLights();
 	pop();
-	disable2DRendering();
+
 
 	endArcball();
 	//...

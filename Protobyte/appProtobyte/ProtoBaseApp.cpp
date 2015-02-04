@@ -791,6 +791,7 @@ void ProtoBaseApp::_run(const Vec2f& mousePos, const Vec4i& windowCoords/*, int 
 	glUniformMatrix3fv(N_U, 1, GL_FALSE, &N[0][0]);
 
 	// enable  /disable lighting effects ofr 2D rendering
+	ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 1.0); // default lighting
 	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 
 
@@ -893,6 +894,8 @@ void ProtoBaseApp::_run(const Vec2f& mousePos, const Vec4i& windowCoords/*, int 
 }
 
 void ProtoBaseApp::render(int x, int y, int scaleFactor) {
+
+	
 	// if shadowing is enabled do double pass with shadow map framebuffer
 	if (areShadowsEnabled){
 		//glEnable(GL_CULL_FACE);
@@ -944,6 +947,9 @@ void ProtoBaseApp::render(int x, int y, int scaleFactor) {
 		glUniform1i(shaderPassFlag_U, 0); // controls render pass in shader
 		//glUniform1i(shadowMap_U, 0);
 
+		// enable 3D lighting by default
+		enableLights();
+		
 		// render scene in second pass
 		display();
 	}
@@ -974,6 +980,8 @@ void ProtoBaseApp::render(int x, int y, int scaleFactor) {
 		//glUniform1i(shadowMap_U, 0);
 
 		// render scene in single pass
+
+
 		display();
 	}
 

@@ -54,7 +54,7 @@ ProtoCurve3(controlPts, interpDetail, isCurveClosed), smoothness(smoothness) {
  */
 void ProtoSpline3::init() {
     
-    
+	
     
     // double up first and last control points
     controlPts.insert(controlPts.begin(), controlPts.at(0));
@@ -173,7 +173,7 @@ void ProtoSpline3::setTerminalSmooth(bool isTerminalSmooth) {
  * Draw the curve.
  *
  */
-void ProtoSpline3::display() {
+void ProtoSpline3::display(float strokeWeight) {
 	//trace("curveVertsPrims.size() =", curveVertsPrims.size());
 	//for (int i = 0; i < pathPrims.size(); i += stride){
 	//	pathPrims.at(i + 3) = strokeColor.r;
@@ -190,7 +190,7 @@ void ProtoSpline3::display() {
 	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
 	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &curveVertsPrims[0]); // upload the data
 
-	glLineWidth(1);
+	glLineWidth(strokeWeight);
 
 	// closed path
 	//if (pathRenderMode){
@@ -203,8 +203,18 @@ void ProtoSpline3::display() {
 	//	glDrawArrays(GL_LINE_STRIP, 0, pathPrims.size() / stride);
 	//}
 
+	// turn off lighting
+	Vec4f ltRenderingFactors(0.0, 0.0, 0.0, 1.0);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glDrawArrays(GL_LINE_STRIP, 0, curveVertsPrims.size() / stride);
+
+	//turn on lighting
+	ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 1.0);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x); 
+	
+	
 
 	//disable2DRendering();
 
@@ -233,19 +243,8 @@ void ProtoSpline3::displayControlPts() {
  * Draw the interpolated points.
  *
  */
-void ProtoSpline3::displayInterpPts() {
-    //glDisable(GL_CULL_FACE);
-    //glDisable(GL_LIGHTING);
-    //glPointSize(7);
-    //glColor3f(1, .5, .3);
-    //// draw points
-    //glBegin(GL_POINTS);
-    //for (int i = 0; i < verts.size(); i++) {
-    //    glVertex3f(verts.at(i).x, verts.at(i).y, verts.at(i).z);
-    //}
-    //glEnd();
-
-	//enable2DRendering();
+void ProtoSpline3::displayInterpPts(float pointSize) {
+  
 	glBindVertexArray(vaoVertsID);
 	// NOTE::this may not be most efficient - eventually refactor
 	glBindBuffer(GL_ARRAY_BUFFER, vboVertsID); // Bind the buffer (vertex array data)
@@ -253,24 +252,18 @@ void ProtoSpline3::displayInterpPts() {
 	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
 	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &curveVertsPrims[0]); // upload the data
 
-	//glLineWidth(15);
-	glPointSize(4);
-
-	// closed path
-	//if (pathRenderMode){
-	//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//	glDrawArrays(GL_LINE_LOOP, 0, pathPrims.size() / stride);
-	//}
-	//// open path
-	//else {
-	//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//	glDrawArrays(GL_LINE_STRIP, 0, pathPrims.size() / stride);
-	//}
-
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+	glPointSize(pointSize);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_POINT); // do I need this anymore?
+	
+	// turn off lighting
+	Vec4f ltRenderingFactors(0.0, 0.0, 0.0, 1.0);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
+	
 	glDrawArrays(GL_POINTS, 0, curveVertsPrims.size() / stride);
-
-	//disable2DRendering();
+	
+	//turn on lighting
+	ltRenderingFactors = Vec4f(1.0, 1.0, 1.0, 1.0);
+	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 
 	// Disable VAO
 	glBindVertexArray(0);

@@ -65,6 +65,10 @@ void ProtoCurve3::initBuffers(){
 	// Disable buffers
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+	// used to disable/enable lighting in shader
+	// passed to shader in display functions
+	lightRenderingFactors_U = glGetUniformLocation(ProtoShader::getID_2(), "lightRenderingFactors");
 }
 
 /**

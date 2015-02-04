@@ -27,6 +27,8 @@
 
 //#include <SFML/OpenGL.hpp>
 #include "ProtoDimension3.h"
+#include "ProtoVector4.h"
+#include "ProtoShader.h"
 #include <vector>
 #include "ProtoFrenetFrame.h"
 
@@ -142,6 +144,11 @@ namespace ijg {
 		*/
 		float getCurveLength() const;
 
+		/**
+		* Handle to shader to disable/enable lighting for curve path/curve vertices rendering
+		*/
+		GLuint lightRenderingFactors_U;
+
 
 	public:
 		// constructors
@@ -170,7 +177,7 @@ namespace ijg {
 		/**
 		 * Draw the curve.
 		 */
-		virtual void display() = 0;
+		virtual void display(float strokeWeight = 1) = 0;
 
 		/**
 		 * Draw the curve points.
@@ -180,7 +187,7 @@ namespace ijg {
 		/**
 		 * Draw the curve points.
 		 */
-		virtual void displayInterpPts() = 0;
+		virtual void displayInterpPts(float pointSize = 2) = 0;
 
 		/**
 		 * Draw the Frenet Frame.

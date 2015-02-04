@@ -109,6 +109,9 @@ void ProtoGeom3::init() {
 	emissive_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "emissiveMaterial");
 	shininess_loc_U = glGetUniformLocation(ProtoShader::getID_2(), "shininess");
 
+	// set lighting on by default for 3D forms
+	//lightRenderingFactors_U = glGetUniformLocation(ProtoShader::getID_2(), "lightRenderingFactors");
+
 	// diffuse, bump, more soon!
 	//setTextureUniforms();
     
@@ -454,6 +457,10 @@ void ProtoGeom3::display(RenderMode render, float pointSize) {
 	glUniform4fv(specular_loc_U, 1, &materials.specular.r);
 	glUniform4fv(emissive_loc_U, 1, &materials.emissive.r);
 	glUniform1f(shininess_loc_U, materials.shininess);
+
+	//turn on default lighting for all 3D forms
+	//Vec4f ltRenderingFactors(0.0, 0.0, 0.0, 1.0);
+	//glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 	
 
 	switch (render) {

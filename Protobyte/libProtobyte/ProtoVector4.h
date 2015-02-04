@@ -30,6 +30,7 @@
 #include "ProtoMath.h"
 #include <cmath>
 #include <cassert>
+#include "ProtoVector3.h"
 #include "ProtoPoint3.h"
 
 

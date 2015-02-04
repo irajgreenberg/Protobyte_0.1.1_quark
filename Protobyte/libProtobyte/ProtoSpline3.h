@@ -63,7 +63,7 @@ namespace ijg {
          * Draw the curve.
          * 
          */
-        void display();
+		void display(float strokeWeight = 1);
 
         /**
          * Draw the control points.
@@ -75,7 +75,7 @@ namespace ijg {
          * Draw the interpolated points.
          * 
          */
-        void displayInterpPts();
+        void displayInterpPts(float pointSize = 2);
 
         /**
          * Draw the Frenet Frames.

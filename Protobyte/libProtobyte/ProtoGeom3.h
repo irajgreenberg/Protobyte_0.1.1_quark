@@ -158,6 +158,12 @@ namespace ijg {
 
 		// material uniform locations 
 		GLuint diffuse_loc_U, ambient_loc_U, specular_loc_U, emissive_loc_U, shininess_loc_U;
+		
+		// default lighting set on
+		/**
+		* Handle to shader to disable/enable lighting for curve path/curve vertices rendering
+		*/
+		//GLuint lightRenderingFactors_U;
         
         
         bool isTextureEnabled;
