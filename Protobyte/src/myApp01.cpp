@@ -169,7 +169,7 @@ void myApp01::init() {
 	tex4 = Texture("metal_blue.jpg", ProtoTexture::BUMP_MAP);
 
 	std::vector<Vec3f> splineVecs;
-	for (int i = 0; i < 20; ++i){
+	for (int i = 0; i < 500; ++i){
 		splineVecs.push_back(Vec3(random(-300, 300), random(-300, 300), random(-300, 300)));
 	}
 	spline2 = ProtoSpline3(splineVecs, 15, false, 0.5);
@@ -386,7 +386,12 @@ void myApp01::display() {
 	pop();
 	//disable2DRendering();
 
+	enable2DRendering(); 
+	push(); 
+	//translate(0, 400, 0);
 	spline2.display();
+	pop();
+	disable2DRendering();
 
 	endArcball();
 	//...
