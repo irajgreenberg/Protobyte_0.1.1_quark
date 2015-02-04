@@ -390,6 +390,7 @@ void myApp01::display() {
 	push(); 
 	//translate(0, 400, 0);
 	spline2.display();
+	spline2.displayInterpPts();
 	pop();
 	disable2DRendering();
 

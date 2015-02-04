@@ -234,16 +234,46 @@ void ProtoSpline3::displayControlPts() {
  *
  */
 void ProtoSpline3::displayInterpPts() {
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_LIGHTING);
-    glPointSize(7);
-    glColor3f(1, .5, .3);
-    // draw points
-    glBegin(GL_POINTS);
-    for (int i = 0; i < verts.size(); i++) {
-        glVertex3f(verts.at(i).x, verts.at(i).y, verts.at(i).z);
-    }
-    glEnd();
+    //glDisable(GL_CULL_FACE);
+    //glDisable(GL_LIGHTING);
+    //glPointSize(7);
+    //glColor3f(1, .5, .3);
+    //// draw points
+    //glBegin(GL_POINTS);
+    //for (int i = 0; i < verts.size(); i++) {
+    //    glVertex3f(verts.at(i).x, verts.at(i).y, verts.at(i).z);
+    //}
+    //glEnd();
+
+	//enable2DRendering();
+	glBindVertexArray(vaoVertsID);
+	// NOTE::this may not be most efficient - eventually refactor
+	glBindBuffer(GL_ARRAY_BUFFER, vboVertsID); // Bind the buffer (vertex array data)
+	int vertsDataSize = sizeof (GLfloat)* curveVertsPrims.size();
+	glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
+	glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &curveVertsPrims[0]); // upload the data
+
+	//glLineWidth(15);
+	glPointSize(4);
+
+	// closed path
+	//if (pathRenderMode){
+	//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//	glDrawArrays(GL_LINE_LOOP, 0, pathPrims.size() / stride);
+	//}
+	//// open path
+	//else {
+	//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//	glDrawArrays(GL_LINE_STRIP, 0, pathPrims.size() / stride);
+	//}
+
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+	glDrawArrays(GL_POINTS, 0, curveVertsPrims.size() / stride);
+
+	//disable2DRendering();
+
+	// Disable VAO
+	glBindVertexArray(0);
 }
 
 /**
