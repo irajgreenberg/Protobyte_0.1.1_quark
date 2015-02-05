@@ -520,6 +520,8 @@ namespace ijg {
 		enum PathRenderMode {
 			POLYGON, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN, LINES, LINE_STRIP, LINE_LOOP
 		} pathRenderMode;
+		// keeps track of where curveVertices inserted in path
+		std::vector<int> curveVertexInsertionIndices;
 
 		//3D
 		// box buffer ids

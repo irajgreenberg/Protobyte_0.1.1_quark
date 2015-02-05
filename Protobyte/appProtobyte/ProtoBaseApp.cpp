@@ -1762,6 +1762,92 @@ void ProtoBaseApp::vertex(float x, float y, float z) {
 		trace("Path Recording Failure: You must precede vertex() calls with beginPath()");
 	}
 }
+
+// Catmull-Rom implementation
+void ProtoBaseApp::curveVertex(const Vec2f& vec) {
+	curveVertex(vec.x, vec.y, 0);
+}
+void ProtoBaseApp::curveVertex(const Vec3f& vec) {
+	curveVertex(vec.x, vec.y, vec.z);
+}
+void ProtoBaseApp::curveVertex(float x, float y) {
+	curveVertex(x, y, 0);
+}
+void ProtoBaseApp::curveVertex(float x, float y, float z) {
+
+
+	int stride = 7; 
+	curveVertexInsertionIndices.push_back(pathPrims.size() / stride);
+
+	if (isPathRecording){
+		pathPrims.push_back(x);
+		pathPrims.push_back(y);
+		pathPrims.push_back(z);
+		pathPrims.push_back(fillColor.r);
+		pathPrims.push_back(fillColor.g);
+		pathPrims.push_back(fillColor.b);
+		pathPrims.push_back(fillColor.a);
+	}
+	else {
+		trace("Path Recording Failure: You must precede vertex() calls with beginPath()");
+	}
+		
+		
+	//	int interpDetail = 12;
+	//float smoothness = 0.5;
+	//if (isPathRecording){
+
+	//	// begin Catmull-Rom implementation
+	//	// double up first and last control points
+	//	std::vector<Vec3f> controlPts;
+
+	//	controlPts.insert(controlPts.begin(), controlPts.at(0));
+	//	controlPts.push_back(controlPts.at(controlPts.size() - 1));
+
+	//	Vec3f v0, v1, v2, v3;
+	//	float t2 = 0, t3 = 0;
+	//	float step = 1.0 / (interpDetail + 1);
+
+	//	
+	//	int currentPathCount = pathPrims.size() / stride;
+	//	if (currentPathCount > 1) {
+
+	//	}
+	//	//for (int i = 0; i < controlPts.size() - 3; i++) {
+	//	Vec3 in = (pathPrims.size() - 1) / 7
+	//	    v0 = pathPrims.at();
+	//		v1 = controlPts.at(i + 1);
+	//		v2 = controlPts.at(i + 2);
+	//		v3 = controlPts.at(i + 3);
+
+
+
+	//		for (float t = 0; t < 1; t += step) {
+	//			t2 = t*t;
+	//			t3 = t*t*t;
+	//			// from: http://www.mvps.org/directx/articles/catmull/
+
+	//			Vec3f v = smoothness * (
+	//				(2.0f * v1) +
+	//				(-v0 + v2) * t +
+	//				(2.0f * v0 - 5.0f * v1 + 4.0f * v2 - v3) * t2 +
+	//				(-v0 + 3.0f * v1 - 3.0f * v2 + v3) * t3
+	//				);
+	//			verts.push_back(v);
+	//		}
+	//	// End 
+	//	pathPrims.push_back(x);
+	//	pathPrims.push_back(y);
+	//	pathPrims.push_back(z);
+	//	pathPrims.push_back(fillColor.r);
+	//	pathPrims.push_back(fillColor.g);
+	//	pathPrims.push_back(fillColor.b);
+	//	pathPrims.push_back(fillColor.a);
+	////}
+	//else {
+	//	trace("Path Recording Failure: You must precede vertex() calls with beginPath()");
+	//}
+}
 /****END 2D API****/
 //3D
 void ProtoBaseApp::box(float sz, Registration reg) {
