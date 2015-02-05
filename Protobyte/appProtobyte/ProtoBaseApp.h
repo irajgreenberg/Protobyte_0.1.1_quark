@@ -511,7 +511,18 @@ namespace ijg {
 		// path buffer ids (for begin(), vertex(), end())
 		bool isPathRecording;
 		//ProtoTessellator tess;
-		std::vector<float> pathPrims;
+		
+		//std::vector<float> pathPrims;
+		// class for pathPrims
+		struct PathPrims {
+			float x, y, z, r, g, b, a;
+			PathPrims(float x, float y, float z, float r, float g, float b, float a) :
+				x(x), y(y), z(z), r(r), g(g), b(b), a(a){}
+		};
+		std::vector<PathPrims> pathPrimsFill;
+		std::vector<PathPrims> pathPrimsStroke;
+
+
 		std::vector<GLdouble> tessellatedPrims;
 		std::vector<std::vector<GLdouble>> pathPrimsForTessellator;
 		std::vector<int> pathInds;

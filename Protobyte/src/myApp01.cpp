@@ -1,13 +1,18 @@
 
 #include "myApp01.h"
 
-const int pointCount = 3000;
+const int pointCount = 100;
+Col4f fCols[pointCount];
 Vec3 pts[pointCount];
 
 void myApp01::init() {
 
+	for (int i = 0; i < pointCount; ++i){
+		fCols[i] = Col4f(random(), random(), random(), 1);
+	}
+
 	for (int i = 0; i < pointCount; i++){
-		pts[i] = Vec3(random(-200, 200), random(-200, 200), random(-200, 200));
+		pts[i] = Vec3(random(-500, 500), random(-500, 500), random(-500, 500));
 	}
 
 	//_initUniforms(&shader3D);
@@ -222,7 +227,7 @@ void myApp01::display() {
 	push();
 	translate(0, -400, 0);
 	scale(20, 1, 20);
-	plane.display();
+	//plane.display();
 	pop();
 	//rotate(getFrameCount()*.05f, 1, 0, 0);
 	//rotate(getFrameCount()*.05f, 0, 1, 0);
@@ -234,7 +239,7 @@ void myApp01::display() {
 		rotate(getFrameCount()*.05f, 0, 1, 0);
 		rotate(getFrameCount()*.065f, 0, 0, 1);
 		scale(90);
-		tube.display();
+		//tube.display();
 	}
 	pop();
 	////
@@ -309,10 +314,11 @@ void myApp01::display() {
 
 	push();
 	//scale(3);
-	fill(1, 0, 1);
+	
 	beginShape();
 	float theta = 0;
 	int sides = 12;
+	fill(1, 1, 0);
 	for (int i = 0; i < sides; ++i){
 		vertex(cos(theta) * abs(sin(theta) * 65), sin(theta) * abs(sin(theta) * 65), sin(theta) * sin(theta) * 50);
 		theta += TWO_PI / sides;
@@ -323,20 +329,37 @@ void myApp01::display() {
 	stroke(.5, .45, .6);
 	strokeWeight(6);
 	ellipseDetail = 24;
-	rect(0, 0, 50, 50);
+	//rect(0, 0, 50, 50);
 	pop();
 
 
 	noFill();
 	push();
 	scale(0.5);
-	stroke(1, .5, 0);
+	stroke(0, 1, 1);
 	strokeWeight(.25);
 	beginShape();
 	for (int i = 0; i < pointCount; ++i){
+		stroke(fCols[i]);
 		vertex(pts[i].x, pts[i].y, pts[i].z);
+		if (i % 15 == 0) {
+			curveVertex(pts[i].x, pts[i].y, pts[i].z);
+		}
 	}
 	endShape(OPEN);
+
+
+
+	beginShape();
+	for (int i = 0; i < pointCount; ++i){
+		stroke(fCols[i]);
+		vertex(pts[i].x, pts[i].y, pts[i].z);
+		if (i % 15 == 0) {
+			curveVertex(pts[i].x, pts[i].y, pts[i].z);
+		}
+	}
+	endShape(OPEN);
+
 	pop();
 
 
@@ -344,11 +367,11 @@ void myApp01::display() {
 	strokeWeight(3);
 	stroke(.85, .12, .4);
 	scale(6);
-	quad(0, 0, 0, -40, 40, -40, 40, 0);
-	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_BL);
-	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_BR);
-	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_TR);
-	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER);
+	//quad(0, 0, 0, -40, 40, -40, 40, 0);
+	//quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_BL);
+	//quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_BR);
+	//quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_TR);
+	//quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER);
 	pop();
 
 	strokeWeight(1);
@@ -371,7 +394,7 @@ void myApp01::display() {
 	diffuseTexture(tex3);
 	bumpTexture(tex2);
 	//noTexture();
-	box(120, 20, 60);
+	//box(120, 20, 60);
 	pop();
 
 	push();
@@ -382,16 +405,14 @@ void myApp01::display() {
 	diffuseTexture(tex1);
 	bumpTexture(tex4);
 	//noTexture();
-	box(120, 40, 200);
+	//box(120, 40, 200);
 	pop();
 	//disable2DRendering();
 
 	
 	push(); 
-	//disableLights();
-	spline2.display(4);
-	spline2.displayInterpPts(12);
-	//enableLights();
+	//spline2.display(4);
+	//spline2.displayInterpPts(12);
 	pop();
 
 

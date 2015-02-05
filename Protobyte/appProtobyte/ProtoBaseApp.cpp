@@ -475,7 +475,6 @@ void ProtoBaseApp::_createPath(){
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	pathPrims.clear();
 }
 
 // start 3D prmitive funcs
@@ -1649,85 +1648,79 @@ void ProtoBaseApp::star(int sides, const Vec2& radiusAndRatio) {
 void ProtoBaseApp::beginPath(PathRenderMode renderMode) {
 	this->pathRenderMode = pathRenderMode;
 	isPathRecording = true;
-	pathPrims.clear();
+	pathPrimsFill.clear();
+	pathPrimsStroke.clear();
+	// keeps track of insertion points of curveVertices in path
+	curveVertexInsertionIndices.clear();
 	//pathInds.clear();
 }
 void ProtoBaseApp::endPath(bool isClosed) {
 
 	isPathRecording = false;
-	int stride = 7;
+	
+
+	if (curveVertexInsertionIndices.size() > 0){
+		for (auto i : curveVertexInsertionIndices) {
+			trace("curveInsertion point = ", i);
+		}
+	}
 	
 	switch (pathRenderMode) {
 	case POLYGON:
+		enable2DRendering(); // turn off 3D lighting
+		glBindVertexArray(vaoPathID);
+		// NOTE::this may not be most efficient - eventually refactor
+		glBindBuffer(GL_ARRAY_BUFFER, vboPathID); // Bind the buffer (vertex array data)
 		if (isFill){
-			for (int i = 0; i < pathPrims.size(); i += stride){
-				pathPrims.at(i + 3) = fillColor.r;
-				pathPrims.at(i + 4) = fillColor.g;
-				pathPrims.at(i + 5) = fillColor.b;
-				pathPrims.at(i + 6) = fillColor.a;
-			}
-
-			enable2DRendering();
-			glBindVertexArray(vaoPathID);
-			// NOTE::this may not be most efficient - eventually refactor
-			glBindBuffer(GL_ARRAY_BUFFER, vboPathID); // Bind the buffer (vertex array data)
-			int vertsDataSize = sizeof (GLfloat)* pathPrims.size();
+			// using struct prims for coding tersity
+			int vertsDataSize = sizeof (PathPrims)* pathPrimsFill.size(); 
 			glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
-			glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &pathPrims[0]); // upload the data
+			glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &pathPrimsFill[0].x); // upload the data
 			
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			glDrawArrays(GL_POLYGON, 0, pathPrims.size() / stride);
-			disable2DRendering();
-
-			// Disable VAO
-			glBindVertexArray(0);
+			glDrawArrays(GL_POLYGON, 0, pathPrimsFill.size());
+			
 		}
 		if (isStroke){
-			for (int i = 0; i < pathPrims.size(); i += stride){
-				pathPrims.at(i + 3) = strokeColor.r;
-				pathPrims.at(i + 4) = strokeColor.g;
-				pathPrims.at(i + 5) = strokeColor.b;
-				pathPrims.at(i + 6) = strokeColor.a;
-			}
-
-			enable2DRendering();
-			glBindVertexArray(vaoPathID);
-			// NOTE::this may not be most efficient - eventually refactor
-			glBindBuffer(GL_ARRAY_BUFFER, vboPathID); // Bind the buffer (vertex array data)
-			int vertsDataSize = sizeof (GLfloat)* pathPrims.size();
+			// using struct prims for coding tersity
+			int vertsDataSize = sizeof (PathPrims)* pathPrimsStroke.size();
 			glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
-			glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &pathPrims[0]); // upload the data
+			glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &pathPrimsStroke[0].x); // upload the data
 			
 			glLineWidth(lineWidth);
 			
 			// closed path
 			if (pathRenderMode){
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-				glDrawArrays(GL_LINE_LOOP, 0, pathPrims.size() / stride);
+				glDrawArrays(GL_LINE_LOOP, 0, pathPrimsStroke.size());
 			}
 			// open path
 			else {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-				glDrawArrays(GL_LINE_STRIP, 0, pathPrims.size() / stride);
+				glDrawArrays(GL_LINE_LOOP, 0, pathPrimsStroke.size());
 			}
-
-			disable2DRendering();
-
-			// Disable VAO
-			glBindVertexArray(0);
 		}
+
+		disable2DRendering(); // turn on 3D lighting
+		// Disable VAO
+		glBindVertexArray(0);
+
 		break;
 	case TRIANGLES:
-		glDrawArrays(GL_TRIANGLES, 0, pathPrims.size() / stride);
+		//glDrawArrays(GL_TRIANGLES, 0, pathPrims.size() / stride);
+		glDrawArrays(GL_TRIANGLES, 0, pathPrimsFill.size());
 		break;
 	case TRIANGLE_STRIP:
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, pathPrims.size() / stride);
+		//glDrawArrays(GL_TRIANGLE_STRIP, 0, pathPrims.size() / stride);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, pathPrimsFill.size());
 		break;
 	case TRIANGLE_FAN:
-		glDrawArrays(GL_TRIANGLE_FAN, 0, pathPrims.size() / stride);
+		//glDrawArrays(GL_TRIANGLE_FAN, 0, pathPrims.size() / stride);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, pathPrimsFill.size());
 		break;
 	default:
-		glDrawArrays(GL_POLYGON, 0, pathPrims.size() / stride);
+		//glDrawArrays(GL_POLYGON, 0, pathPrims.size() / stride);
+		glDrawArrays(GL_POLYGON, 0, pathPrimsFill.size());
 
 	}
 
@@ -1735,7 +1728,9 @@ void ProtoBaseApp::endPath(bool isClosed) {
 	disable2DRendering();
 
 	// clean up vectors between each frame
-	pathPrims.clear();
+	//pathPrims.clear();
+	pathPrimsStroke.clear();
+	pathPrimsFill.clear();
 }
 
 
@@ -1750,13 +1745,8 @@ void ProtoBaseApp::vertex(float x, float y) {
 }
 void ProtoBaseApp::vertex(float x, float y, float z) {
 	if (isPathRecording){
-		pathPrims.push_back(x);
-		pathPrims.push_back(y);
-		pathPrims.push_back(z);
-		pathPrims.push_back(fillColor.r);
-		pathPrims.push_back(fillColor.g);
-		pathPrims.push_back(fillColor.b);
-		pathPrims.push_back(fillColor.a);
+		pathPrimsFill.push_back(PathPrims(x, y, z, fillColor.r, fillColor.g, fillColor.b, fillColor.a));
+		pathPrimsStroke.push_back(PathPrims(x, y, z, strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a));
 	}
 	else {
 		trace("Path Recording Failure: You must precede vertex() calls with beginPath()");
@@ -1775,21 +1765,14 @@ void ProtoBaseApp::curveVertex(float x, float y) {
 }
 void ProtoBaseApp::curveVertex(float x, float y, float z) {
 
-
-	int stride = 7; 
-	curveVertexInsertionIndices.push_back(pathPrims.size() / stride);
-
+	//int stride = 7; 
 	if (isPathRecording){
-		pathPrims.push_back(x);
-		pathPrims.push_back(y);
-		pathPrims.push_back(z);
-		pathPrims.push_back(fillColor.r);
-		pathPrims.push_back(fillColor.g);
-		pathPrims.push_back(fillColor.b);
-		pathPrims.push_back(fillColor.a);
+		curveVertexInsertionIndices.push_back(pathPrimsFill.size());
+		pathPrimsFill.push_back(PathPrims(x, y, z, fillColor.r, fillColor.g, fillColor.b, fillColor.a));
+		pathPrimsStroke.push_back(PathPrims(x, y, z, strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a));
 	}
 	else {
-		trace("Path Recording Failure: You must precede vertex() calls with beginPath()");
+		trace("Path Recording Failure: You must precede curveVertex() calls with beginPath()");
 	}
 		
 		
