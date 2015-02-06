@@ -1657,13 +1657,35 @@ void ProtoBaseApp::beginPath(PathRenderMode renderMode) {
 void ProtoBaseApp::endPath(bool isClosed) {
 
 	isPathRecording = false;
-	
 
-	if (curveVertexInsertionIndices.size() > 0){
-		for (auto i : curveVertexInsertionIndices) {
-			trace("curveInsertion point = ", i);
-		}
+	int interpDetail = 8;
+	
+	for (auto i : curveVertexInsertionIndices2){
+		trace("1st =", i.first, "2nd =", i.second);
 	}
+
+	//if (curveVertexInsertionIndices.size() > 0){
+
+	//	Vec3f v0, v1, v2, v3;
+	//	float t2 = 0, t3 = 0;
+	//	float step = 1.0 / (interpDetail + 1);
+
+	//	
+	//	for (int i = 0;  curveVertexInsertionIndices.size(); ++i) {
+	//		//trace("curveInsertion point = ", i);
+	//		if (i > 2){
+	//			v0 = pathPrimsFill.at(i - 3).vec();
+	//			v1 = pathPrimsFill.at(i - 2).vec();
+	//			v2 = pathPrimsFill.at(i - 1).vec();
+	//			v3 = pathPrimsFill.at(i).vec();
+
+	//		}
+	//		else if (i == 1){
+	//		}
+
+
+	//	}
+	//}
 	
 	switch (pathRenderMode) {
 	case POLYGON:
@@ -1745,6 +1767,7 @@ void ProtoBaseApp::vertex(float x, float y) {
 }
 void ProtoBaseApp::vertex(float x, float y, float z) {
 	if (isPathRecording){
+		curveVertexInsertionIndices2.push_back(std::pair<Vec3f, char>(Vec3f(x, y, z), 'v'));
 		pathPrimsFill.push_back(PathPrims(x, y, z, fillColor.r, fillColor.g, fillColor.b, fillColor.a));
 		pathPrimsStroke.push_back(PathPrims(x, y, z, strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a));
 	}
@@ -1767,6 +1790,7 @@ void ProtoBaseApp::curveVertex(float x, float y, float z) {
 
 	//int stride = 7; 
 	if (isPathRecording){
+		curveVertexInsertionIndices2.push_back(std::pair<Vec3f, char>(Vec3f(x, y, z), 'c'));
 		curveVertexInsertionIndices.push_back(pathPrimsFill.size());
 		pathPrimsFill.push_back(PathPrims(x, y, z, fillColor.r, fillColor.g, fillColor.b, fillColor.a));
 		pathPrimsStroke.push_back(PathPrims(x, y, z, strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a));

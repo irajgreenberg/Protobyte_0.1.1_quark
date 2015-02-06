@@ -518,7 +518,12 @@ namespace ijg {
 			float x, y, z, r, g, b, a;
 			PathPrims(float x, float y, float z, float r, float g, float b, float a) :
 				x(x), y(y), z(z), r(r), g(g), b(b), a(a){}
+
+			Vec3f vec() {
+				return Vec3f(x, y, z);
+			}
 		};
+
 		std::vector<PathPrims> pathPrimsFill;
 		std::vector<PathPrims> pathPrimsStroke;
 
@@ -533,6 +538,7 @@ namespace ijg {
 		} pathRenderMode;
 		// keeps track of where curveVertices inserted in path
 		std::vector<int> curveVertexInsertionIndices;
+		std::vector < std::pair<Vec3f, char> > curveVertexInsertionIndices2;
 
 		//3D
 		// box buffer ids

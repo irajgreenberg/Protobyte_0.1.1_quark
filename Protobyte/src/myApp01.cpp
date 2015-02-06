@@ -315,7 +315,7 @@ void myApp01::display() {
 	push();
 	//scale(3);
 	
-	beginShape();
+	/*beginShape();
 	float theta = 0;
 	int sides = 12;
 	fill(1, 1, 0);
@@ -323,7 +323,7 @@ void myApp01::display() {
 		vertex(cos(theta) * abs(sin(theta) * 65), sin(theta) * abs(sin(theta) * 65), sin(theta) * sin(theta) * 50);
 		theta += TWO_PI / sides;
 	}
-	endShape();
+	endShape();*/
 
 	noFill();
 	stroke(.5, .45, .6);
@@ -338,7 +338,7 @@ void myApp01::display() {
 	scale(0.5);
 	stroke(0, 1, 1);
 	strokeWeight(.25);
-	beginShape();
+	/*beginShape();
 	for (int i = 0; i < pointCount; ++i){
 		stroke(fCols[i]);
 		vertex(pts[i].x, pts[i].y, pts[i].z);
@@ -346,18 +346,24 @@ void myApp01::display() {
 			curveVertex(pts[i].x, pts[i].y, pts[i].z);
 		}
 	}
-	endShape(OPEN);
+	endShape(OPEN);*/
 
 
 
 	beginShape();
-	for (int i = 0; i < pointCount; ++i){
+	/*for (int i = 0; i < pointCount; ++i){
 		stroke(fCols[i]);
 		vertex(pts[i].x, pts[i].y, pts[i].z);
 		if (i % 15 == 0) {
 			curveVertex(pts[i].x, pts[i].y, pts[i].z);
 		}
-	}
+	}*/
+
+	vertex(100, 100);
+	curveVertex(300, 100);
+	curveVertex(400, 100);
+	curveVertex(500, 100);
+	vertex(600, 100);
 	endShape(OPEN);
 
 	pop();
