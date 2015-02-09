@@ -1,9 +1,10 @@
 
 #include "myApp01.h"
 
-const int pointCount = 100;
+const int pointCount = 300;
 Col4f fCols[pointCount];
 Vec3 pts[pointCount];
+Vec3 pts2[pointCount];
 
 void myApp01::init() {
 
@@ -13,6 +14,7 @@ void myApp01::init() {
 
 	for (int i = 0; i < pointCount; i++){
 		pts[i] = Vec3(random(-500, 500), random(-500, 500), random(-500, 500));
+		pts2[i] = Vec3(random(-500, 500), random(-500, 500), random(-500, 500));
 	}
 
 	//_initUniforms(&shader3D);
@@ -351,20 +353,15 @@ void myApp01::display() {
 
 
 	beginShape();
-	/*for (int i = 0; i < pointCount; ++i){
+	strokeWeight(2);
+	//vertex(100, 100);
+	for (int i = 0; i <pointCount; i++){
 		stroke(fCols[i]);
-		vertex(pts[i].x, pts[i].y, pts[i].z);
-		if (i % 15 == 0) {
-			curveVertex(pts[i].x, pts[i].y, pts[i].z);
-		}
-	}*/
-
-	vertex(100, 100);
-	curveVertex(300, 100);
-	curveVertex(400, 100);
-	curveVertex(500, 100);
-	vertex(600, 100);
-	endShape(OPEN);
+		curveVertex(pts[i]);
+		//vertex(pts2[i]);
+	}
+	//vertex(600, 100);
+	endShape(false);
 
 	pop();
 
@@ -373,11 +370,11 @@ void myApp01::display() {
 	strokeWeight(3);
 	stroke(.85, .12, .4);
 	scale(6);
-	//quad(0, 0, 0, -40, 40, -40, 40, 0);
-	//quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_BL);
-	//quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_BR);
-	//quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_TR);
-	//quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER);
+	quad(0, 0, 0, -40, 40, -40, 40, 0);
+	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_BL);
+	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_BR);
+	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_TR);
+	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER);
 	pop();
 
 	strokeWeight(1);

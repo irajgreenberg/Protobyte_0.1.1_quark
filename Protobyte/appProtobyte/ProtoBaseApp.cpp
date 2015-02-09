@@ -212,7 +212,7 @@ void ProtoBaseApp::_init(){
 	// create primitives for immediate drawing
 
 	// for primitives
-	
+
 	textureScale.x = textureScale.y = 1.0;
 
 	// default no texture
@@ -367,7 +367,7 @@ void ProtoBaseApp::_createEllipse() {
 
 	glEnableVertexAttribArray(0); // vertices
 	glEnableVertexAttribArray(2); // color
-	
+
 	// stride is 7: pos(3) + col(4)
 	// (x, y, z, r, g, b, a)
 	int stride = 7;
@@ -436,14 +436,14 @@ void ProtoBaseApp::_createPath(){
 	/*int pathDetail = 1;
 	float theta = 0.0;
 	for (int i = 0; i < pathDetail; i++){
-		pathPrims.push_back(0 + cos(theta));
-		pathPrims.push_back(0 + sin(theta));
-		pathPrims.push_back(0);
-		pathPrims.push_back(fillColor.r);
-		pathPrims.push_back(fillColor.g);
-		pathPrims.push_back(fillColor.b);
-		pathPrims.push_back(fillColor.a);
-		theta += TWO_PI / ellipseDetail;
+	pathPrims.push_back(0 + cos(theta));
+	pathPrims.push_back(0 + sin(theta));
+	pathPrims.push_back(0);
+	pathPrims.push_back(fillColor.r);
+	pathPrims.push_back(fillColor.g);
+	pathPrims.push_back(fillColor.b);
+	pathPrims.push_back(fillColor.a);
+	theta += TWO_PI / ellipseDetail;
 	}*/
 
 	// vert data
@@ -502,13 +502,13 @@ void ProtoBaseApp::_createBox() {
 	Vertex3 verts[24];
 	Vec3 norms[6];
 	Vec3 tans[6];
-	
+
 	// F
 	verts[0] = ProtoVertex3(boxVecs[0], fillColor, Tup2f(0.0, 0.0));
 	verts[1] = ProtoVertex3(boxVecs[1], fillColor, Tup2f(0.0, 1.0 * textureScale.y));
 	verts[2] = ProtoVertex3(boxVecs[2], fillColor, Tup2f(1.0 * textureScale.x, 1.0 * textureScale.y));
 	verts[3] = ProtoVertex3(boxVecs[3], fillColor, Tup2f(1.0 * textureScale.x, 0.0));
-	
+
 	// R
 	verts[4] = ProtoVertex3(boxVecs[2], fillColor, Tup2f(0.0, 1.0 * textureScale.y));
 	verts[5] = ProtoVertex3(boxVecs[5], fillColor, Tup2f(1.0 * textureScale.x, 1.0 * textureScale.y));
@@ -538,7 +538,7 @@ void ProtoBaseApp::_createBox() {
 	verts[21] = ProtoVertex3(boxVecs[6], fillColor, Tup2f(0.0, 1.0 * textureScale.y));
 	verts[22] = ProtoVertex3(boxVecs[5], fillColor, Tup2f(1.0 * textureScale.x, 1.0 * textureScale.y));
 	verts[23] = ProtoVertex3(boxVecs[2], fillColor, Tup2f(1.0 * textureScale.x, 0.0));
-	
+
 	// calc normals and tangents and add to box vertices
 	for (int i = 0; i < 6; ++i){
 		Face3 f = Face3(&verts[0 + i * 4], &verts[1 + i * 4], &verts[2 + i * 4]);
@@ -546,7 +546,7 @@ void ProtoBaseApp::_createBox() {
 		norms[i].normalize();
 		tans[i] = f.getTangent();
 		tans[i].normalize();
-		
+
 		for (int j = 0; j < 4; ++j){
 			int k = i * 4 + j;
 			verts[k].setNormal(norms[i]);
@@ -557,7 +557,7 @@ void ProtoBaseApp::_createBox() {
 
 	// calc prims
 	// (x, y, z, nx, ny, nz, r, g, b, a, u, v, tx, ty, tz)
-	for (int i = 0, j = 0;  i < 24; i++, j+=15){
+	for (int i = 0, j = 0; i < 24; i++, j += 15){
 		boxPrims[j] = verts[i].pos.x;
 		boxPrims[j + 1] = verts[i].pos.y;
 		boxPrims[j + 2] = verts[i].pos.z;
@@ -729,7 +729,7 @@ void ProtoBaseApp::_run(const Vec2f& mousePos, const Vec4i& windowCoords/*, int 
 	// reset state
 	fillColor = Col4f(1, 1, 1, 1); // white fill
 	strokeColor = Col4f(0, 0, 0, 1); // black stroke
-	
+
 
 
 	mouseX = mousePos.x;
@@ -894,7 +894,7 @@ void ProtoBaseApp::_run(const Vec2f& mousePos, const Vec4i& windowCoords/*, int 
 
 void ProtoBaseApp::render(int x, int y, int scaleFactor) {
 
-	
+
 	// if shadowing is enabled do double pass with shadow map framebuffer
 	if (areShadowsEnabled){
 		//glEnable(GL_CULL_FACE);
@@ -948,7 +948,7 @@ void ProtoBaseApp::render(int x, int y, int scaleFactor) {
 
 		// enable 3D lighting by default
 		enableLights();
-		
+
 		// render scene in second pass
 		display();
 	}
@@ -1185,23 +1185,23 @@ void ProtoBaseApp::fill(const Col4f& col) {
 	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 void ProtoBaseApp::fill(float gray) {
-	isFill = true; 
+	isFill = true;
 	fillColor = Col4f(gray, gray, gray, 1);
 	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 void ProtoBaseApp::fill(float gray, float a) {
-	isFill = true; 
+	isFill = true;
 	fillColor = Col4f(gray, gray, gray, a);
 	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 void ProtoBaseApp::fill(float r, float g, float b) {
-	isFill = true; 
+	isFill = true;
 	fillColor = Col4f(r, g, b, 1);
 	ltRenderingFactors = Vec4f(0.0, 0.0, 0.0, 1.0);
 	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
 void ProtoBaseApp::fill(float r, float g, float b, float a) {
-	isFill = true; 
+	isFill = true;
 	fillColor = Col4f(r, g, b, a);
 	glUniform4fv(lightRenderingFactors_U, 1, &ltRenderingFactors.x);
 }
@@ -1215,11 +1215,11 @@ void ProtoBaseApp::stroke(const Col4f& col) {
 	strokeColor = col;
 }
 void ProtoBaseApp::stroke(float gray) {
-	isStroke = true; 
+	isStroke = true;
 	strokeColor = Col4f(gray, gray, gray, 1);
 }
 void ProtoBaseApp::stroke(float gray, float a) {
-	isStroke = true; 
+	isStroke = true;
 	strokeColor = Col4f(gray, gray, gray, a);
 }
 void ProtoBaseApp::stroke(float r, float g, float b) {
@@ -1227,7 +1227,7 @@ void ProtoBaseApp::stroke(float r, float g, float b) {
 	isStroke = true; strokeColor = Col4f(r, g, b, 1);
 }
 void ProtoBaseApp::stroke(float r, float g, float b, float a) {
-	isStroke = true; 
+	isStroke = true;
 	strokeColor = Col4f(r, g, b, a);
 }
 void ProtoBaseApp::noStroke() {
@@ -1262,8 +1262,8 @@ void ProtoBaseApp::diffuseTexture(const ProtoTexture& diffuseTexture) {
 }
 void ProtoBaseApp::bumpTexture(const ProtoTexture& bumpTexture) {
 	bumpMapLocation = glGetUniformLocation(ProtoShader::getID_2(), "bumpMap");
-	glUniform1i(boxBumpMapLoc, 1); 
-	
+	glUniform1i(boxBumpMapLoc, 1);
+
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, bumpTexture.getTextureID());
 }
@@ -1394,8 +1394,8 @@ void ProtoBaseApp::quad(float x0, float y0, float x1, float y1, float x2, float 
 	Vec2f sz = Vec2f(getMax(x3, x2) - getMin(x1, y0), getMax(y0, y3) - getMin(y1, y2));
 	switch (reg){
 	case CENTER:
-		quadPrims[0] = x0 - sz.x/2;
-		quadPrims[1] = y0 +  sz.y / 2;
+		quadPrims[0] = x0 - sz.x / 2;
+		quadPrims[1] = y0 + sz.y / 2;
 		quadPrims[2] = 0;
 		quadPrims[7] = x1 - sz.x / 2;
 		quadPrims[8] = y1 + sz.y / 2;
@@ -1564,7 +1564,7 @@ void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg)
 
 	int stride = 7;
 	float theta = 0.0;
-	for (int i = 0; i < ellipseDetail; i ++){
+	for (int i = 0; i < ellipseDetail; i++){
 		ellipsePrims.push_back(_x + cos(theta)*w / 2.0);
 		ellipsePrims.push_back(_y + sin(theta)*h / 2.0);
 		ellipsePrims.push_back(0);
@@ -1648,45 +1648,151 @@ void ProtoBaseApp::star(int sides, const Vec2& radiusAndRatio) {
 void ProtoBaseApp::beginPath(PathRenderMode renderMode) {
 	this->pathRenderMode = pathRenderMode;
 	isPathRecording = true;
+	pathVerticesAll.clear();
 	pathPrimsFill.clear();
 	pathPrimsStroke.clear();
 	// keeps track of insertion points of curveVertices in path
-	curveVertexInsertionIndices.clear();
+	//curveVertexInsertionIndices.clear();
 	//pathInds.clear();
 }
-void ProtoBaseApp::endPath(bool isClosed) {
 
+
+
+void ProtoBaseApp::vertex(const Vec2f& vec) {
+	vertex(vec.x, vec.y, 0);
+}
+void ProtoBaseApp::vertex(const Vec3f& vec) {
+	vertex(vec.x, vec.y, vec.z);
+}
+void ProtoBaseApp::vertex(float x, float y) {
+	vertex(x, y, 0);
+}
+void ProtoBaseApp::vertex(float x, float y, float z) {
+	if (isPathRecording){
+		pathVerticesAll.push_back(std::tuple<Vec3f, char, Col4f, Col4f>(Vec3f(x, y, z), 'v', fillColor, strokeColor));
+	}
+	else {
+		trace("Path Recording Failure: You must precede vertex() calls with beginPath()");
+	}
+}
+
+// Catmull-Rom implementation
+void ProtoBaseApp::curveVertex(const Vec2f& vec) {
+	curveVertex(vec.x, vec.y, 0);
+}
+void ProtoBaseApp::curveVertex(const Vec3f& vec) {
+	curveVertex(vec.x, vec.y, vec.z);
+}
+void ProtoBaseApp::curveVertex(float x, float y) {
+	curveVertex(x, y, 0);
+}
+void ProtoBaseApp::curveVertex(float x, float y, float z) {
+	if (isPathRecording){
+		pathVerticesAll.push_back(std::tuple<Vec3f, char, Col4f, Col4f>(Vec3f(x, y, z), 'c', fillColor, strokeColor));
+	}
+	else {
+		trace("Path Recording Failure: You must precede curveVertex() calls with beginPath()");
+	}
+}
+
+void ProtoBaseApp::endPath(bool isClosed) {
 	isPathRecording = false;
 
-	int interpDetail = 8;
-	
-	for (auto i : curveVertexInsertionIndices2){
-		trace("1st =", i.first, "2nd =", i.second);
+	// eventually parameterize these
+	int interpDetail = 18;
+	float smoothness = 0.5;
+
+	if (pathVerticesAll.size() > 0){
+		for (int i = 0; i < pathVerticesAll.size(); ++i) {
+			// detected curve vertex: create spline segment
+			Col4f c1, c2;
+			auto c = pathVerticesAll.at(i);
+			char flag = std::get<1>(c);
+			if (flag == 'c') {
+				Vec3f v0, v1, v2, v3;
+				float t2 = 0, t3 = 0;
+				float step = 1.0 / (interpDetail + 1);
+
+				if (i>0){
+					// within bounds
+					auto v = pathVerticesAll.at(i - 1);
+					v0 = std::get<0>(v);
+					c1 = std::get<3>(v);
+				}
+				else {
+					// will exceed left bounds so double up
+					auto v = pathVerticesAll.at(i);
+					v0 = std::get<0>(v);
+					c1 = std::get<3>(v);
+					c2 = std::get<3>(v);
+				}
+				
+				// within bounds
+				auto v = pathVerticesAll.at(i);
+				v1 = std::get<0>(v); 
+				c2 = std::get<3>(v);
+				if (i < pathVerticesAll.size() - 2){
+					// still at safe rigt bounds
+					auto v = pathVerticesAll.at(i+1); 
+					v2 = std::get<0>(v);
+					//c2 = std::get<3>(v);
+
+					v = pathVerticesAll.at(i+2);
+					v3 = std::get<0>(v);
+				}
+				else if (i < pathVerticesAll.size() - 1){
+					// will exceed right bounds so double up
+					auto v = pathVerticesAll.at(i + 1);
+					v2 = std::get<0>(v);
+					//c2 = std::get<3>(v);
+
+					v3 = std::get<0>(v);
+				} else {
+					// will exceed right bounds so triple up
+					auto v = pathVerticesAll.at(i);
+					v2 = std::get<0>(v);
+					c2 = std::get<3>(v);
+
+					v3 = std::get<0>(v);
+				}
+				//trace("c1 =", c1);
+				//trace("c2 =", c2);
+				// NOTE: add overloaded op func at some point
+				//Col4f deltaCol = c2 - c1;
+				// stroke only at present
+				float deltaR = (c2.r - c1.r) / (interpDetail + 1);
+				//trace("deltaR =", deltaR);
+				float deltaG = (c2.g - c1.g) / (interpDetail + 1);
+				float deltaB = (c2.b - c1.b) / (interpDetail + 1);
+				float deltaA = (c2.a - c1.a) / (interpDetail + 1);
+				for (float t = 0; t < 1; t += step) {
+					t2 = t*t;
+					t3 = t*t*t;
+					// from: http://www.mvps.org/directx/articles/catmull/
+					Vec3f v = smoothness * (
+						(2.0f * v1) +
+						(-v0 + v2) * t +
+						(2.0f * v0 - 5.0f * v1 + 4.0f * v2 - v3) * t2 +
+						(-v0 + 3.0f * v1 - 3.0f * v2 + v3) * t3
+						);
+					//trace("c1.r + deltaR*t =", c1.r + deltaR*t);
+					Col4f sc(c1.r + deltaR*t, c1.g + deltaG*t, c1.b + deltaB*t, c1.a + deltaA*t);
+					//trace(sc);
+					pathPrimsFill.push_back(PathPrims(v.x, v.y, v.z, fillColor.r, fillColor.b, fillColor.g, fillColor.a));
+					pathPrimsStroke.push_back(PathPrims(v.x, v.y, v.z, sc.r, sc.g, sc.b, sc.a));
+				}
+			}
+			else {
+				// detected linear vertex
+				auto v = pathVerticesAll.at(i); 
+				pathPrimsFill.push_back(PathPrims(std::get<0>(v).x, std::get<0>(v).y, std::get<0>(v).z, 
+					std::get<2>(v).r, std::get<2>(v).g, std::get<2>(v).b, std::get<2>(v).a));
+				pathPrimsStroke.push_back(PathPrims(std::get<0>(v).x, std::get<0>(v).y, std::get<0>(v).z,
+					std::get<3>(v).r, std::get<3>(v).g, std::get<3>(v).b, std::get<3>(v).a));
+			}
+		}
 	}
 
-	//if (curveVertexInsertionIndices.size() > 0){
-
-	//	Vec3f v0, v1, v2, v3;
-	//	float t2 = 0, t3 = 0;
-	//	float step = 1.0 / (interpDetail + 1);
-
-	//	
-	//	for (int i = 0;  curveVertexInsertionIndices.size(); ++i) {
-	//		//trace("curveInsertion point = ", i);
-	//		if (i > 2){
-	//			v0 = pathPrimsFill.at(i - 3).vec();
-	//			v1 = pathPrimsFill.at(i - 2).vec();
-	//			v2 = pathPrimsFill.at(i - 1).vec();
-	//			v3 = pathPrimsFill.at(i).vec();
-
-	//		}
-	//		else if (i == 1){
-	//		}
-
-
-	//	}
-	//}
-	
 	switch (pathRenderMode) {
 	case POLYGON:
 		enable2DRendering(); // turn off 3D lighting
@@ -1695,22 +1801,22 @@ void ProtoBaseApp::endPath(bool isClosed) {
 		glBindBuffer(GL_ARRAY_BUFFER, vboPathID); // Bind the buffer (vertex array data)
 		if (isFill){
 			// using struct prims for coding tersity
-			int vertsDataSize = sizeof (PathPrims)* pathPrimsFill.size(); 
+			int vertsDataSize = sizeof (PathPrims)* pathPrimsFill.size();
 			glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
 			glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &pathPrimsFill[0].x); // upload the data
-			
+
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 			glDrawArrays(GL_POLYGON, 0, pathPrimsFill.size());
-			
+
 		}
 		if (isStroke){
 			// using struct prims for coding tersity
 			int vertsDataSize = sizeof (PathPrims)* pathPrimsStroke.size();
 			glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
 			glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &pathPrimsStroke[0].x); // upload the data
-			
+
 			glLineWidth(lineWidth);
-			
+
 			// closed path
 			if (pathRenderMode){
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -1719,7 +1825,7 @@ void ProtoBaseApp::endPath(bool isClosed) {
 			// open path
 			else {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-				glDrawArrays(GL_LINE_LOOP, 0, pathPrimsStroke.size());
+				glDrawArrays(GL_LINE_STRIP, 0, pathPrimsStroke.size());
 			}
 		}
 
@@ -1750,110 +1856,9 @@ void ProtoBaseApp::endPath(bool isClosed) {
 	disable2DRendering();
 
 	// clean up vectors between each frame
-	//pathPrims.clear();
 	pathPrimsStroke.clear();
 	pathPrimsFill.clear();
-}
-
-
-void ProtoBaseApp::vertex(const Vec2f& vec) {
-	vertex(vec.x, vec.y, 0);
-}
-void ProtoBaseApp::vertex(const Vec3f& vec) {
-	vertex(vec.x, vec.y, vec.z);
-}
-void ProtoBaseApp::vertex(float x, float y) {
-	vertex(x, y, 0);
-}
-void ProtoBaseApp::vertex(float x, float y, float z) {
-	if (isPathRecording){
-		curveVertexInsertionIndices2.push_back(std::pair<Vec3f, char>(Vec3f(x, y, z), 'v'));
-		pathPrimsFill.push_back(PathPrims(x, y, z, fillColor.r, fillColor.g, fillColor.b, fillColor.a));
-		pathPrimsStroke.push_back(PathPrims(x, y, z, strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a));
-	}
-	else {
-		trace("Path Recording Failure: You must precede vertex() calls with beginPath()");
-	}
-}
-
-// Catmull-Rom implementation
-void ProtoBaseApp::curveVertex(const Vec2f& vec) {
-	curveVertex(vec.x, vec.y, 0);
-}
-void ProtoBaseApp::curveVertex(const Vec3f& vec) {
-	curveVertex(vec.x, vec.y, vec.z);
-}
-void ProtoBaseApp::curveVertex(float x, float y) {
-	curveVertex(x, y, 0);
-}
-void ProtoBaseApp::curveVertex(float x, float y, float z) {
-
-	//int stride = 7; 
-	if (isPathRecording){
-		curveVertexInsertionIndices2.push_back(std::pair<Vec3f, char>(Vec3f(x, y, z), 'c'));
-		curveVertexInsertionIndices.push_back(pathPrimsFill.size());
-		pathPrimsFill.push_back(PathPrims(x, y, z, fillColor.r, fillColor.g, fillColor.b, fillColor.a));
-		pathPrimsStroke.push_back(PathPrims(x, y, z, strokeColor.r, strokeColor.g, strokeColor.b, strokeColor.a));
-	}
-	else {
-		trace("Path Recording Failure: You must precede curveVertex() calls with beginPath()");
-	}
-		
-		
-	//	int interpDetail = 12;
-	//float smoothness = 0.5;
-	//if (isPathRecording){
-
-	//	// begin Catmull-Rom implementation
-	//	// double up first and last control points
-	//	std::vector<Vec3f> controlPts;
-
-	//	controlPts.insert(controlPts.begin(), controlPts.at(0));
-	//	controlPts.push_back(controlPts.at(controlPts.size() - 1));
-
-	//	Vec3f v0, v1, v2, v3;
-	//	float t2 = 0, t3 = 0;
-	//	float step = 1.0 / (interpDetail + 1);
-
-	//	
-	//	int currentPathCount = pathPrims.size() / stride;
-	//	if (currentPathCount > 1) {
-
-	//	}
-	//	//for (int i = 0; i < controlPts.size() - 3; i++) {
-	//	Vec3 in = (pathPrims.size() - 1) / 7
-	//	    v0 = pathPrims.at();
-	//		v1 = controlPts.at(i + 1);
-	//		v2 = controlPts.at(i + 2);
-	//		v3 = controlPts.at(i + 3);
-
-
-
-	//		for (float t = 0; t < 1; t += step) {
-	//			t2 = t*t;
-	//			t3 = t*t*t;
-	//			// from: http://www.mvps.org/directx/articles/catmull/
-
-	//			Vec3f v = smoothness * (
-	//				(2.0f * v1) +
-	//				(-v0 + v2) * t +
-	//				(2.0f * v0 - 5.0f * v1 + 4.0f * v2 - v3) * t2 +
-	//				(-v0 + 3.0f * v1 - 3.0f * v2 + v3) * t3
-	//				);
-	//			verts.push_back(v);
-	//		}
-	//	// End 
-	//	pathPrims.push_back(x);
-	//	pathPrims.push_back(y);
-	//	pathPrims.push_back(z);
-	//	pathPrims.push_back(fillColor.r);
-	//	pathPrims.push_back(fillColor.g);
-	//	pathPrims.push_back(fillColor.b);
-	//	pathPrims.push_back(fillColor.a);
-	////}
-	//else {
-	//	trace("Path Recording Failure: You must precede vertex() calls with beginPath()");
-	//}
+	pathVerticesAll.clear();
 }
 /****END 2D API****/
 //3D
@@ -1899,7 +1904,7 @@ void ProtoBaseApp::box(float w, float h, float d, Registration reg) {
 
 	//}
 
-	
+
 
 	int stride = 15;
 
@@ -1924,7 +1929,7 @@ void ProtoBaseApp::box(float w, float h, float d, Registration reg) {
 		//glActiveTexture(GL_TEXTURE1);
 		//glBindTexture(GL_TEXTURE_2D, bumpMap);
 
-		
+
 		for (int i = 0; i < boxPrimCount; i += stride){
 			boxPrims[i + 6] = fillColor.r;
 			boxPrims[i + 7] = fillColor.g;
@@ -1947,7 +1952,7 @@ void ProtoBaseApp::box(float w, float h, float d, Registration reg) {
 		glBindVertexArray(0);
 	}
 
-	
+
 
 
 	if (isStroke){
@@ -1966,7 +1971,7 @@ void ProtoBaseApp::box(float w, float h, float d, Registration reg) {
 		int vertsDataSize = sizeof (GLfloat)* boxPrimCount;
 		glBufferData(GL_ARRAY_BUFFER, vertsDataSize, NULL, GL_STREAM_DRAW);// allocate space
 		glBufferSubData(GL_ARRAY_BUFFER, 0, vertsDataSize, &boxPrims[0]); // upload the data
-		
+
 		glLineWidth(lineWidth);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDrawArrays(GL_QUADS, 0, boxPrimCount / stride);
@@ -2070,117 +2075,117 @@ void ProtoBaseApp::save(std::string name, int scaleFactor){
 	trace("ProtoUtility::getPathToOutput() =", ProtoUtility::getPathToOutput());
 	//if (getFrameCount() < 1){
 
-		//ProtoBaseApp pba;
-		//std::thread t(&ProtoBaseApp::threadSave, &pba, name, scaleFactor);
-		//t.join();
+	//ProtoBaseApp pba;
+	//std::thread t(&ProtoBaseApp::threadSave, &pba, name, scaleFactor);
+	//t.join();
 
 
 
 #if defined (_WIN32) || defined(_WIN64)
-		time_t now = time(0);
-		tm ltm;
-		localtime_s(&ltm, &now);
+	time_t now = time(0);
+	tm ltm;
+	localtime_s(&ltm, &now);
 #else // os x uses localtime instead of localtime_s
-		time_t now = time(0);
-		tm* ltm = localtime(&now);
+	time_t now = time(0);
+	tm* ltm = localtime(&now);
 #endif
 
-		// thanks: http://stackoverflow.com/questions/191757/c-concatenate-string-and-int, DannyT
-		std::stringstream stream;
-		stream << (ltm.tm_year + 1900) << "_" << (ltm.tm_mon + 1) << "_" << ltm.tm_mday << "_" << ltm.tm_hour << "_" << ltm.tm_min << "_" << ltm.tm_sec;
-
-		
-
-		std::string url = ProtoUtility::getPathToOutput();
-		std::string directory = url + name + "_" + stream.str();
-		CreateDirectory(directory.c_str(), 0);
+	// thanks: http://stackoverflow.com/questions/191757/c-concatenate-string-and-int, DannyT
+	std::stringstream stream;
+	stream << (ltm.tm_year + 1900) << "_" << (ltm.tm_mon + 1) << "_" << ltm.tm_mday << "_" << ltm.tm_hour << "_" << ltm.tm_min << "_" << ltm.tm_sec;
 
 
-		/*trace("width =", width);
-		trace("height =", height);*/
-		for (int i = 0; i < scaleFactor; ++i){
-			for (int j = 0; j < scaleFactor; ++j){
-				//trace("in drawToFrameBuffer");
-				//glClearColor(0, 0, 0, 1.0f);
-				//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-				//From: http://stackoverflow.com/questions/12157646/how-to-render-offscreen-on-opengl
 
-				//glViewport(-i*width, -j*height, scaleFactor * width, scaleFactor * height);
-				//if (i == 0) trace("scaleFactor =", scaleFactor);
-				render(-i, -j, scaleFactor);
-				//trace(" in loop, in save");
-				/*glReadPixels(0, 0, WIDTH, HEIGHT, GL_BGR, GL_BYTE, pixels);
-				FIBITMAP Image = FreeImage_ConvertFromRawBits(pixels, WIDTH, HEIGHT, 3WIDTH, 24, 0xFF0000, 0x00FF00, 0x0000FF, false);
-				FreeImage_Save(FIF_BMP, Image, "test.bmp", 0)*/
+	std::string url = ProtoUtility::getPathToOutput();
+	std::string directory = url + name + "_" + stream.str();
+	CreateDirectory(directory.c_str(), 0);
 
 
-				//after drawing
-				std::vector<uint8_t> data(width * height * 3);
-				glReadBuffer(GL_BACK);
-				glReadPixels(0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, &data[0]);
+	/*trace("width =", width);
+	trace("height =", height);*/
+	for (int i = 0; i < scaleFactor; ++i){
+		for (int j = 0; j < scaleFactor; ++j){
+			//trace("in drawToFrameBuffer");
+			//glClearColor(0, 0, 0, 1.0f);
+			//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+			//From: http://stackoverflow.com/questions/12157646/how-to-render-offscreen-on-opengl
 
-				//std::vector<std::uint8_t> data(width*height * 4);
-				//glReadBuffer(GL_BACK);
-				//glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_BYTE, &data[0]);
+			//glViewport(-i*width, -j*height, scaleFactor * width, scaleFactor * height);
+			//if (i == 0) trace("scaleFactor =", scaleFactor);
+			render(-i, -j, scaleFactor);
+			//trace(" in loop, in save");
+			/*glReadPixels(0, 0, WIDTH, HEIGHT, GL_BGR, GL_BYTE, pixels);
+			FIBITMAP Image = FreeImage_ConvertFromRawBits(pixels, WIDTH, HEIGHT, 3WIDTH, 24, 0xFF0000, 0x00FF00, 0x0000FF, false);
+			FreeImage_Save(FIF_BMP, Image, "test.bmp", 0)*/
+
+
+			//after drawing
+			std::vector<uint8_t> data(width * height * 3);
+			glReadBuffer(GL_BACK);
+			glReadPixels(0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, &data[0]);
+
+			//std::vector<std::uint8_t> data(width*height * 4);
+			//glReadBuffer(GL_BACK);
+			//glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_BYTE, &data[0]);
 
 
 
 #if defined (_WIN32) || defined(_WIN64)
-				time_t now = time(0);
-				tm ltm;
-				localtime_s(&ltm, &now);
+			time_t now = time(0);
+			tm ltm;
+			localtime_s(&ltm, &now);
 #else // os x uses localtime instead of localtime_s
-				time_t now = time(0);
-				tm* ltm = localtime(&now);
+			time_t now = time(0);
+			tm* ltm = localtime(&now);
 #endif
 
 
-				// FROM http://stackoverflow.com/questions/5844858/how-to-take-screenshot-in-opengl
-				// Convert to FreeImage format & save to file
-				FIBITMAP* image = FreeImage_ConvertFromRawBits(&data[0], width, height, width * 3, 24, 0xFF0000, 0x00FF00, 0x0000FF, false);
-				// FreeImage_ConvertFromRawBits(pixels, WIDTH, HEIGHT, 3WIDTH, 24, 0xFF0000, 0x00FF00, 0x0000FF, false);
+			// FROM http://stackoverflow.com/questions/5844858/how-to-take-screenshot-in-opengl
+			// Convert to FreeImage format & save to file
+			FIBITMAP* image = FreeImage_ConvertFromRawBits(&data[0], width, height, width * 3, 24, 0xFF0000, 0x00FF00, 0x0000FF, false);
+			// FreeImage_ConvertFromRawBits(pixels, WIDTH, HEIGHT, 3WIDTH, 24, 0xFF0000, 0x00FF00, 0x0000FF, false);
 
 
-				// thanks: http://stackoverflow.com/questions/191757/c-concatenate-string-and-int, DannyT
-				//std::stringstream stream;
+			// thanks: http://stackoverflow.com/questions/191757/c-concatenate-string-and-int, DannyT
+			//std::stringstream stream;
 #if defined (_WIN32) || defined(_WIN64)
-				// stream << (ltm.tm_year + 1900) << "_" << (ltm.tm_mon + 1) << "_" << ltm.tm_mday << "_" << ltm.tm_hour << "_" << ltm.tm_min << "_" << ltm.tm_sec;
-				// c++ 11 conversion form num to string
-				//std::string url = "\\Users\\Ira\\Desktop\\ProtoJucnusEffusus01_stills\\" + name + "_" + std::to_string(i*scaleFactor+j) + ".jpg";
+			// stream << (ltm.tm_year + 1900) << "_" << (ltm.tm_mon + 1) << "_" << ltm.tm_mday << "_" << ltm.tm_hour << "_" << ltm.tm_min << "_" << ltm.tm_sec;
+			// c++ 11 conversion form num to string
+			//std::string url = "\\Users\\Ira\\Desktop\\ProtoJucnusEffusus01_stills\\" + name + "_" + std::to_string(i*scaleFactor+j) + ".jpg";
 
-				// ensure no single digit nums, for easy sorting
-				std::string imgNum;
+			// ensure no single digit nums, for easy sorting
+			std::string imgNum;
 
-				if (i*scaleFactor + j < 10){
-					imgNum = "00" + std::to_string(i*scaleFactor + j);
-				}
-				else if (i*scaleFactor + j < 100){
-					imgNum = "0" + std::to_string(i*scaleFactor + j);
-				}
-				else {
-					imgNum = std::to_string(i*scaleFactor + j);
-				}
-
-				std::string tileURL = directory + "\\" + name + "_" + imgNum + ".jpg";
-#else
-				// stream << (ltm->tm_year + 1900) << "_" << (ltm->tm_mon + 1) << "_" << ltm->tm_mday << "_" << ltm->tm_hour << "_" << ltm->tm_min << "_" << ltm->tm_sec;
-				// c++ 11 conversion form num to string
-				std::string url = "/Users/33993405/Desktop/ProtoJucnusEffusus01_stills/" + namme + "_" + std::to_string(i*scaleFactor + j) + ".jpg";
-#endif
-
-				FreeImage_Save(FIF_JPEG, image, tileURL.c_str(), JPEG_QUALITYSUPERB);
-				//trace("-i = ", -i, "-j =", -j);
-
-				// Free resources
-				FreeImage_Unload(image);
-
-
-				// Return to onscreen rendering:
-				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+			if (i*scaleFactor + j < 10){
+				imgNum = "00" + std::to_string(i*scaleFactor + j);
 			}
+			else if (i*scaleFactor + j < 100){
+				imgNum = "0" + std::to_string(i*scaleFactor + j);
+			}
+			else {
+				imgNum = std::to_string(i*scaleFactor + j);
+			}
+
+			std::string tileURL = directory + "\\" + name + "_" + imgNum + ".jpg";
+#else
+			// stream << (ltm->tm_year + 1900) << "_" << (ltm->tm_mon + 1) << "_" << ltm->tm_mday << "_" << ltm->tm_hour << "_" << ltm->tm_min << "_" << ltm->tm_sec;
+			// c++ 11 conversion form num to string
+			std::string url = "/Users/33993405/Desktop/ProtoJucnusEffusus01_stills/" + namme + "_" + std::to_string(i*scaleFactor + j) + ".jpg";
+#endif
+
+			FreeImage_Save(FIF_JPEG, image, tileURL.c_str(), JPEG_QUALITYSUPERB);
+			//trace("-i = ", -i, "-j =", -j);
+
+			// Free resources
+			FreeImage_Unload(image);
+
+
+			// Return to onscreen rendering:
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		}
-		//trace("ProtoUtility::getPath() =", ProtoUtility::getPath());
-		bool isOk = stitchTiles(directory, scaleFactor);
+	}
+	//trace("ProtoUtility::getPath() =", ProtoUtility::getPath());
+	bool isOk = stitchTiles(directory, scaleFactor);
 	//}
 }
 
@@ -2464,7 +2469,7 @@ void ProtoBaseApp::pop(){
 
 	// pop transformation matrix off top of stack
 	matrixStack.pop();
-	
+
 	// rebuild matrices and update on GPU
 	concat();
 }

@@ -537,8 +537,9 @@ namespace ijg {
 			POLYGON, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN, LINES, LINE_STRIP, LINE_LOOP
 		} pathRenderMode;
 		// keeps track of where curveVertices inserted in path
-		std::vector<int> curveVertexInsertionIndices;
-		std::vector < std::pair<Vec3f, char> > curveVertexInsertionIndices2;
+		//std::vector<int> curveVertexInsertionIndices;
+		//std::vector < std::pair<Vec3f, char> > pathVerticesAll;
+		std::vector < std::tuple<Vec3f, char, Col4f, Col4f> > pathVerticesAll;
 
 		//3D
 		// box buffer ids
@@ -577,7 +578,7 @@ namespace ijg {
 
 		// Drawing Methods API
 		void beginPath(PathRenderMode pathRenderMode = POLYGON);
-		void endPath(bool isClosed = 1);
+		void endPath(bool isClosed = OPEN);
 		
 		// straight path
 		void vertex(const Vec2f& vec);
