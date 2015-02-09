@@ -355,12 +355,17 @@ void myApp01::display() {
 	beginShape();
 	strokeWeight(2);
 	//vertex(100, 100);
-	for (int i = 0; i <pointCount; i++){
-		stroke(fCols[i]);
-		curveVertex(pts[i]);
-		//vertex(pts2[i]);
-	}
-	//vertex(600, 100);
+	//for (int i = 0; i <pointCount; i++){
+	//	stroke(fCols[i]);
+	//	curveVertex(pts[i]);
+	//	//vertex(pts2[i]);
+	//}
+	////vertex(600, 100);
+
+	curveVertex(Vec3(-300, -100, 0)); 
+	curveVertex(Vec3(-200, 100, 0));
+	curveVertex(Vec3(200, -100, 0));
+	curveVertex(Vec3(300, 100, 0));
 	endShape(false);
 
 	pop();

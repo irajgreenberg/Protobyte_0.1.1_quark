@@ -1700,7 +1700,7 @@ void ProtoBaseApp::endPath(bool isClosed) {
 
 	// eventually parameterize these
 	int interpDetail = 18;
-	float smoothness = 0.5;
+	float smoothness = .7;
 
 	if (pathVerticesAll.size() > 0){
 		for (int i = 0; i < pathVerticesAll.size(); ++i) {
@@ -1765,11 +1765,12 @@ void ProtoBaseApp::endPath(bool isClosed) {
 				float deltaG = (c2.g - c1.g) / (interpDetail + 1);
 				float deltaB = (c2.b - c1.b) / (interpDetail + 1);
 				float deltaA = (c2.a - c1.a) / (interpDetail + 1);
+
 				for (float t = 0; t < 1; t += step) {
 					t2 = t*t;
-					t3 = t*t*t;
+					t3 = t*t2;
 					// from: http://www.mvps.org/directx/articles/catmull/
-					Vec3f v = smoothness * (
+					Vec3f v = 0.5f * (
 						(2.0f * v1) +
 						(-v0 + v2) * t +
 						(2.0f * v0 - 5.0f * v1 + 4.0f * v2 - v3) * t2 +
