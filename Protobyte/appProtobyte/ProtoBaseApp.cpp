@@ -1776,6 +1776,7 @@ void ProtoBaseApp::endPath(bool isClosed) {
 						(2.0f * v0 - 5.0f * v1 + 4.0f * v2 - v3) * t2 +
 						(-v0 + 3.0f * v1 - 3.0f * v2 + v3) * t3
 						);
+
 					//trace("c1.r + deltaR*t =", c1.r + deltaR*t);
 					Col4f sc(c1.r + deltaR*t, c1.g + deltaG*t, c1.b + deltaB*t, c1.a + deltaA*t);
 					//trace(sc);
