@@ -577,6 +577,9 @@ namespace ijg {
 
 
 		// Drawing Methods API
+		int curveInterpolationDetail = 0;
+		float curveTension = 0;
+		float curveBias = 0;
 		void beginPath(PathRenderMode pathRenderMode = POLYGON);
 		void endPath(bool isClosed = OPEN);
 		
@@ -590,7 +593,7 @@ namespace ijg {
 		void curveVertex(const Vec2f& vec);
 		void curveVertex(const Vec3f& vec);
 		void curveVertex(float x, float y);
-		void curveVertex(float x, float y, float z);
+		void curveVertex(float x, float y, float z, int interpolationDetail = 0, float tension = 0, float bias = 0);
 		/****END 2D API****/
 
 		// Lighting and Materials

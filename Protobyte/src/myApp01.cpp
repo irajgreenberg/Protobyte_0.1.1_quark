@@ -5,6 +5,7 @@ const int pointCount = 300;
 Col4f fCols[pointCount];
 Vec3 pts[pointCount];
 Vec3 pts2[pointCount];
+float curveRadius = 700;
 
 void myApp01::init() {
 
@@ -13,8 +14,8 @@ void myApp01::init() {
 	}
 
 	for (int i = 0; i < pointCount; i++){
-		pts[i] = Vec3(random(-500, 500), random(-500, 500), random(-500, 500));
-		pts2[i] = Vec3(random(-500, 500), random(-500, 500), random(-500, 500));
+		pts[i] = Vec3(random(-curveRadius, curveRadius), random(-curveRadius, curveRadius), random(-curveRadius, curveRadius));
+		pts2[i] = Vec3(random(-curveRadius, curveRadius), random(-curveRadius, curveRadius), random(-curveRadius, curveRadius));
 	}
 
 	//_initUniforms(&shader3D);
@@ -46,15 +47,15 @@ void myApp01::init() {
 	//tube = ProtoTube();
 
 	float theta = 0;
-	float radius = .107;
+	float radius = .307;
 	Vec3f v(0, 0, 0);
 
-	int segments = 20;
+	int segments = 50;
 	v = Vec3f(0, 0, 0);
 	Vec3f spd(0, 0, 0);
 	std::vector <Vec3> cps;
 	cps.push_back(v);
-	float turbulence = 2.5f;
+	float turbulence = 4.5f;
 	Dim3f size(3.25, 3.25, 3.25);
 	Spline3 spline;
 
@@ -73,7 +74,7 @@ void myApp01::init() {
 
 	spline = Spline3(cps, 12, false, .5);
 
-	TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(2.2, random(3, 8)), 40/*int(random(3, 25))*/);
+	TransformFunction t1 = TransformFunction(TransformFunction::SINUSOIDAL, Tup2f(1.2, random(3, 8)), 40/*int(random(3, 25))*/);
 
 	tube = ProtoTube(Vec3f(), Vec3f(), Dim3f(1), Col4f(1, 1, 1, .85), spline, .09, 24, t1, true, "metal_panel01.jpg", Vec2f(3, .025));
 	tube.setShininess(int(random(6, 27)));
@@ -353,19 +354,20 @@ void myApp01::display() {
 
 
 	beginShape();
-	strokeWeight(2);
+	strokeWeight(5);
 	//vertex(100, 100);
-	//for (int i = 0; i <pointCount; i++){
-	//	stroke(fCols[i]);
-	//	curveVertex(pts[i]);
-	//	//vertex(pts2[i]);
-	//}
+	for (int i = 0; i <pointCount; i++){
+		stroke(fCols[i]);
+		curveVertex(pts[i]);
+		//vertex(x, y, 5, 0);
+		//vertex(pts2[i]);
+	}
 	////vertex(600, 100);
 
-	curveVertex(Vec3(-300, -100, 0)); 
-	curveVertex(Vec3(-200, 100, 0));
-	curveVertex(Vec3(200, -100, 0));
-	curveVertex(Vec3(300, 100, 0));
+	//curveVertex(Vec3(-300, -100, 0)); 
+	//curveVertex(Vec3(-200, 100, 0));
+	//curveVertex(Vec3(200, -100, 0));
+	//curveVertex(Vec3(300, 100, 0));
 	endShape(false);
 
 	pop();

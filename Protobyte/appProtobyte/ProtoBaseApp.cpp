@@ -1686,7 +1686,10 @@ void ProtoBaseApp::curveVertex(const Vec3f& vec) {
 void ProtoBaseApp::curveVertex(float x, float y) {
 	curveVertex(x, y, 0);
 }
-void ProtoBaseApp::curveVertex(float x, float y, float z) {
+void ProtoBaseApp::curveVertex(float x, float y, float z, int interpolationDetail, float tension, float bias) {
+	curveInterpolationDetail = interpolationDetail;
+	curveTension = tension;
+	curveBias = bias;
 	if (isPathRecording){
 		pathVerticesAll.push_back(std::tuple<Vec3f, char, Col4f, Col4f>(Vec3f(x, y, z), 'c', fillColor, strokeColor));
 	}
@@ -1699,8 +1702,8 @@ void ProtoBaseApp::endPath(bool isClosed) {
 	isPathRecording = false;
 
 	// eventually parameterize these
-	int interpDetail = 18;
-	float smoothness = .7;
+	//int interpDetail = 3;
+	//float smoothness = .7;
 
 	if (pathVerticesAll.size() > 0){
 		for (int i = 0; i < pathVerticesAll.size(); ++i) {
@@ -1711,7 +1714,7 @@ void ProtoBaseApp::endPath(bool isClosed) {
 			if (flag == 'c') {
 				Vec3f v0, v1, v2, v3;
 				float t2 = 0, t3 = 0;
-				float step = 1.0 / (interpDetail + 1);
+				float step = 1.0 / (curveInterpolationDetail + 1);
 
 				if (i>0){
 					// within bounds
@@ -1760,22 +1763,54 @@ void ProtoBaseApp::endPath(bool isClosed) {
 				// NOTE: add overloaded op func at some point
 				//Col4f deltaCol = c2 - c1;
 				// stroke only at present
-				float deltaR = (c2.r - c1.r) / (interpDetail + 1);
+				float deltaR = (c2.r - c1.r) / (curveInterpolationDetail + 1);
 				//trace("deltaR =", deltaR);
-				float deltaG = (c2.g - c1.g) / (interpDetail + 1);
-				float deltaB = (c2.b - c1.b) / (interpDetail + 1);
-				float deltaA = (c2.a - c1.a) / (interpDetail + 1);
+				float deltaG = (c2.g - c1.g) / (curveInterpolationDetail + 1);
+				float deltaB = (c2.b - c1.b) / (curveInterpolationDetail + 1);
+				float deltaA = (c2.a - c1.a) / (curveInterpolationDetail + 1);
+
+				// hermite implementation
+				//float curveTension = -3;
+				//float bias = 0;
+				float a0, a1, a2, a3;
+				Vec3f m0, m1;
 
 				for (float t = 0; t < 1; t += step) {
 					t2 = t*t;
 					t3 = t*t2;
+					float tf = 1.0f;
 					// from: http://www.mvps.org/directx/articles/catmull/
-					Vec3f v = 0.5f * (
-						(2.0f * v1) +
-						(-v0 + v2) * t +
-						(2.0f * v0 - 5.0f * v1 + 4.0f * v2 - v3) * t2 +
-						(-v0 + 3.0f * v1 - 3.0f * v2 + v3) * t3
-						);
+					
+					// Catmull-Rom (working)
+					//Vec3f v = 0.5f * (
+					//	(2.0f * v1) +
+					//	(-v0 + v2) * t +
+					//	(2.0f * v0 - 5.0f * v1 + 4.0f * v2 - v3) * t2 +
+					//	(-v0 + 3.0f * v1 - 3.0f * v2 + v3) * t3
+					//	);
+
+					// Catmull-Rom with tightness factor (screwed up for some reaon ;-{)
+					/*Vec3f v = v1 +
+						(-tf*v0 + tf*v2) * t +
+						(2*tf*v0 + (tf-3)*v1 + (3-2*tf)*v2 - tf*v3) * t2 +
+						(tf*v0 + (2-tf)*v1 + (tf-2)*v2 + tf*v3) * t3;*/
+
+					// Hermite Implementation from Master Bourke (who else?)
+					// http://paulbourke.net/miscellaneous/interpolation/
+					m0 = (v1 - v0)*(1 + curveBias)*(1 - curveTension) / 2.0f;
+					m0 += (v2 - v1)*(1 - curveBias)*(1 - curveTension) / 2.0f;
+					m1 = (v2 - v1)*(1 + curveBias)*(1 - curveTension) / 2.0f;
+					m1 += (v3 - v2)*(1 - curveBias)*(1 - curveTension) / 2.0f;
+					a0 = 2 * t3 - 3 * t2 + 1;
+					a1 = t3 - 2 * t2 + t;
+					a2 = t3 - t2;
+					a3 = -2 * t3 + 3 * t2;
+
+					Vec3f v = a0*v1 + a1*m0 + a2*m1 + a3*v2;
+
+
+
+
 
 					//trace("c1.r + deltaR*t =", c1.r + deltaR*t);
 					Col4f sc(c1.r + deltaR*t, c1.g + deltaG*t, c1.b + deltaB*t, c1.a + deltaA*t);

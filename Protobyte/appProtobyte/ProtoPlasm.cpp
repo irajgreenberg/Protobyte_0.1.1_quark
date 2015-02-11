@@ -106,7 +106,7 @@ void ProtoPlasm::initGLFW(){
 	// anti-aliasing
 	glfwWindowHint(GLFW_SAMPLES, 8);
 
-	window = glfwCreateWindow(appWidth, appHeight, appTitle.c_str(), /*glfwGetPrimaryMonitor()*/ NULL, NULL);
+	window = glfwCreateWindow(appWidth, appHeight, appTitle.c_str(), NULL, NULL);
 	
 	
 	//figure out window resolution:
