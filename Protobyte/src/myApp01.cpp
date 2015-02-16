@@ -1,11 +1,13 @@
 
 #include "myApp01.h"
 
-const int pointCount = 300;
+const int pointCount = 6;
 Col4f fCols[pointCount];
 Vec3 pts[pointCount];
 Vec3 pts2[pointCount];
 float curveRadius = 700;
+
+float c3 = .0001;
 
 void myApp01::init() {
 
@@ -182,7 +184,7 @@ void myApp01::init() {
 	}
 	spline2 = ProtoSpline3(splineVecs, 15, false, 0.5);
 
-
+	
 }
 void myApp01::run() {
 
@@ -268,9 +270,9 @@ void myApp01::display() {
 	////GLUquadric* quadric = gluNewQuadric();
 	////gluPartialDisk(quadric,50,100,20,5,0,270);
 
-	rotate(-getFrameCount()*.5f, 1, 0, 0);
-	rotate(getFrameCount()*.5f, 0, 1, 0);
-	rotate(-getFrameCount()*.5f, 0, 0, 1);
+	//rotate(-getFrameCount()*.5f, 1, 0, 0);
+	//rotate(getFrameCount()*.5f, 0, 1, 0);
+	//rotate(-getFrameCount()*.5f, 0, 0, 1);
 
 	//push();
 	//path1.display();
@@ -340,42 +342,63 @@ void myApp01::display() {
 	push();
 	scale(0.5);
 	stroke(0, 1, 1);
-	strokeWeight(.25);
-	/*beginShape();
+	strokeWeight(10);
+	float step = 2000.0 / pointCount;
+	beginShape();
+	float theta = 0.0;
+	curveTension(0);
 	for (int i = 0; i < pointCount; ++i){
 		stroke(fCols[i]);
-		vertex(pts[i].x, pts[i].y, pts[i].z);
-		if (i % 15 == 0) {
-			curveVertex(pts[i].x, pts[i].y, pts[i].z);
-		}
+		/*vertex(pts[i].x, pts[i].y, pts[i].z);
+		if (i % 15 == 0) {*/
+		curveDetail(i);
+		curveVertex(-1000+step*i, -200+sin(theta) * 150, 0);
+			theta += TWO_PI*2 / pointCount;
+		//}
 	}
-	endShape(OPEN);*/
+	endShape(OPEN);
+
+	theta = 0;
+	beginShape();
+	strokeWeight(2);
+	theta = 0.0;
+	curveTension(-1); 
+	//curveDetail(int(getFrameCount()*.001));
+	for (int i = 0; i < pointCount; ++i){
+		stroke(fCols[i]);
+		//strokeWeight(i*2);
+		//curveVertex(-1000 + step*i, 200+sin(theta) * 150, 0);
+		theta += TWO_PI*2 / pointCount;
+	}
+	endShape(OPEN);
+
+	theta = 0;
+	beginShape();
+	theta = 0.0;
+	for (int i = 0; i < pointCount; ++i){
+		stroke(fCols[i]);
+		//vertex(-1000 + step*i, sin(theta) * 150, 0);
+		theta += TWO_PI * 2 / pointCount;
+	}
+	endShape(OPEN);
 
 
 
 	beginShape();
-	strokeWeight(5);
-	//vertex(100, 100);
-	for (int i = 0; i <pointCount; i++){
+	strokeWeight(3);
+	for (int i = 0; i <20; i++){
 		stroke(fCols[i]);
 		curveVertex(pts[i]);
-		//vertex(x, y, 5, 0);
 		//vertex(pts2[i]);
 	}
-	////vertex(600, 100);
-
-	//curveVertex(Vec3(-300, -100, 0)); 
-	//curveVertex(Vec3(-200, 100, 0));
-	//curveVertex(Vec3(200, -100, 0));
-	//curveVertex(Vec3(300, 100, 0));
 	endShape(false);
 
 	pop();
 
 
 	push();
-	strokeWeight(3);
-	stroke(.85, .12, .4);
+	strokeWeight(.25);
+	stroke(.85, .12, .4, .4);
 	scale(6);
 	quad(0, 0, 0, -40, 40, -40, 40, 0);
 	quad(0, 0, 0, -40, 40, -40, 40, 0, CORNER_BL);

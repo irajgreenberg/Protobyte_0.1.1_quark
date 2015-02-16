@@ -53,7 +53,7 @@ namespace ijg {
 
         /**
          * Set flag for Curve at Terminals to be continuous
-         * 
+         *          * 
          * @param isTerminalSmooth
          *            boolean value
          */
@@ -61,7 +61,7 @@ namespace ijg {
 
         /**
          * Draw the curve.
-         * 
+
          */
 		void display(float strokeWeight = 1);
 

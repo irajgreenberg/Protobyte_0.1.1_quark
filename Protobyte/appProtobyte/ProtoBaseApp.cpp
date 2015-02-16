@@ -69,6 +69,9 @@ void ProtoBaseApp::setWindowFrameSize(const Dim2i& windowFrameSize) {
 
 
 void ProtoBaseApp::_init(){
+	//GLint range[2];
+	//glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range);
+	//trace(range[0], ",", range[1]);
 	//trace("GL_TRIANGLES =", GL_TRIANGLES);
 	//trace("GL_TRIANGLE_FAN =", GL_TRIANGLE_FAN);
 	//trace(ProtoBaseApp::baseApp);
@@ -1648,9 +1651,14 @@ void ProtoBaseApp::star(int sides, const Vec2& radiusAndRatio) {
 void ProtoBaseApp::beginPath(PathRenderMode renderMode) {
 	this->pathRenderMode = pathRenderMode;
 	isPathRecording = true;
-	pathVerticesAll.clear();
-	pathPrimsFill.clear();
-	pathPrimsStroke.clear();
+	pathVerticesAll.size()>0 ? pathVerticesAll.clear() : 0;
+	pathPrimsFill.size()>0 ? pathPrimsFill.clear() : 0;
+	pathPrimsStroke.size()>0 ? pathPrimsStroke.clear() : 0;
+
+	curveDetails.size()>0 ? curveDetails.clear() : 0;
+	curveTensions.size()>0 ? curveTensions.clear() : 0;
+	curveBiases.size()>0 ? curveBiases.clear() : 0;
+	pathStrokeWeights.size()>0 ? pathStrokeWeights.clear() : 0;
 	// keeps track of insertion points of curveVertices in path
 	//curveVertexInsertionIndices.clear();
 	//pathInds.clear();
@@ -1669,7 +1677,8 @@ void ProtoBaseApp::vertex(float x, float y) {
 }
 void ProtoBaseApp::vertex(float x, float y, float z) {
 	if (isPathRecording){
-		pathVerticesAll.push_back(std::tuple<Vec3f, char, Col4f, Col4f>(Vec3f(x, y, z), 'v', fillColor, strokeColor));
+		pathVerticesAll.push_back(std::tuple<Vec3f, char, Col4f, Col4f, float>(Vec3f(x, y, z), 'v', fillColor, strokeColor, lineWidth));
+		//pathStrokeWeights.push_back(lineWidth);
 	}
 	else {
 		trace("Path Recording Failure: You must precede vertex() calls with beginPath()");
@@ -1686,16 +1695,29 @@ void ProtoBaseApp::curveVertex(const Vec3f& vec) {
 void ProtoBaseApp::curveVertex(float x, float y) {
 	curveVertex(x, y, 0);
 }
-void ProtoBaseApp::curveVertex(float x, float y, float z, int interpolationDetail, float tension, float bias) {
-	curveInterpolationDetail = interpolationDetail;
-	curveTension = tension;
-	curveBias = bias;
+void ProtoBaseApp::curveVertex(float x, float y, float z) {
 	if (isPathRecording){
-		pathVerticesAll.push_back(std::tuple<Vec3f, char, Col4f, Col4f>(Vec3f(x, y, z), 'c', fillColor, strokeColor));
+		pathVerticesAll.push_back(std::tuple<Vec3f, char, Col4f, Col4f, float>(Vec3f(x, y, z), 'c', fillColor, strokeColor, lineWidth));
+		curveDetails.push_back(_curveDetail);
+		curveTensions.push_back(_curveTension);
+		curveBiases.push_back(_curveBias);
+
 	}
 	else {
 		trace("Path Recording Failure: You must precede curveVertex() calls with beginPath()");
 	}
+}
+
+void ProtoBaseApp::curveDetail(int curveDetail) {
+	_curveDetail = curveDetail;
+}
+
+void ProtoBaseApp::curveTension(float curveTension) {
+	_curveTension = curveTension;
+}
+
+void ProtoBaseApp::curveBias(float curveBias) {
+	_curveBias = curveBias;
 }
 
 void ProtoBaseApp::endPath(bool isClosed) {
@@ -1706,21 +1728,24 @@ void ProtoBaseApp::endPath(bool isClosed) {
 	//float smoothness = .7;
 
 	if (pathVerticesAll.size() > 0){
+		
 		for (int i = 0; i < pathVerticesAll.size(); ++i) {
+			
 			// detected curve vertex: create spline segment
 			Col4f c1, c2;
+			float wt1, wt2;
 			auto c = pathVerticesAll.at(i);
 			char flag = std::get<1>(c);
 			if (flag == 'c') {
 				Vec3f v0, v1, v2, v3;
 				float t2 = 0, t3 = 0;
-				float step = 1.0 / (curveInterpolationDetail + 1);
-
+				float step = 1.0 / (curveDetails.at(i) + 1);
 				if (i>0){
 					// within bounds
 					auto v = pathVerticesAll.at(i - 1);
 					v0 = std::get<0>(v);
 					c1 = std::get<3>(v);
+					wt1 = std::get<4>(v);
 				}
 				else {
 					// will exceed left bounds so double up
@@ -1728,12 +1753,17 @@ void ProtoBaseApp::endPath(bool isClosed) {
 					v0 = std::get<0>(v);
 					c1 = std::get<3>(v);
 					c2 = std::get<3>(v);
+
+					wt1 = std::get<4>(v);
+					wt2 = std::get<4>(v);
+
 				}
 				
 				// within bounds
 				auto v = pathVerticesAll.at(i);
 				v1 = std::get<0>(v); 
 				c2 = std::get<3>(v);
+				wt2 = std::get<4>(v);
 				if (i < pathVerticesAll.size() - 2){
 					// still at safe rigt bounds
 					auto v = pathVerticesAll.at(i+1); 
@@ -1755,6 +1785,7 @@ void ProtoBaseApp::endPath(bool isClosed) {
 					auto v = pathVerticesAll.at(i);
 					v2 = std::get<0>(v);
 					c2 = std::get<3>(v);
+					wt2 = std::get<4>(v);
 
 					v3 = std::get<0>(v);
 				}
@@ -1763,11 +1794,13 @@ void ProtoBaseApp::endPath(bool isClosed) {
 				// NOTE: add overloaded op func at some point
 				//Col4f deltaCol = c2 - c1;
 				// stroke only at present
-				float deltaR = (c2.r - c1.r) / (curveInterpolationDetail + 1);
+				float deltaR = (c2.r - c1.r) / (curveDetails.at(i) + 1);
 				//trace("deltaR =", deltaR);
-				float deltaG = (c2.g - c1.g) / (curveInterpolationDetail + 1);
-				float deltaB = (c2.b - c1.b) / (curveInterpolationDetail + 1);
-				float deltaA = (c2.a - c1.a) / (curveInterpolationDetail + 1);
+				float deltaG = (c2.g - c1.g) / (curveDetails.at(i) + 1);
+				float deltaB = (c2.b - c1.b) / (curveDetails.at(i) + 1);
+				float deltaA = (c2.a - c1.a) / (curveDetails.at(i) + 1);
+
+				float deltaWeight = (wt2 - wt1) / (curveDetails.at(i) + 1);
 
 				// hermite implementation
 				//float curveTension = -3;
@@ -1797,10 +1830,10 @@ void ProtoBaseApp::endPath(bool isClosed) {
 
 					// Hermite Implementation from Master Bourke (who else?)
 					// http://paulbourke.net/miscellaneous/interpolation/
-					m0 = (v1 - v0)*(1 + curveBias)*(1 - curveTension) / 2.0f;
-					m0 += (v2 - v1)*(1 - curveBias)*(1 - curveTension) / 2.0f;
-					m1 = (v2 - v1)*(1 + curveBias)*(1 - curveTension) / 2.0f;
-					m1 += (v3 - v2)*(1 - curveBias)*(1 - curveTension) / 2.0f;
+					m0 = (v1 - v0)*(1 + curveBiases.at(i))*(1 - curveTensions.at(i)) / 2.0f;
+					m0 += (v2 - v1)*(1 - curveBiases.at(i))*(1 - curveTensions.at(i)) / 2.0f;
+					m1 = (v2 - v1)*(1 + curveBiases.at(i))*(1 - curveTensions.at(i)) / 2.0f;
+					m1 += (v3 - v2)*(1 - curveBiases.at(i))*(1 - curveTensions.at(i)) / 2.0f;
 					a0 = 2 * t3 - 3 * t2 + 1;
 					a1 = t3 - 2 * t2 + t;
 					a2 = t3 - t2;
@@ -1813,6 +1846,7 @@ void ProtoBaseApp::endPath(bool isClosed) {
 
 
 					//trace("c1.r + deltaR*t =", c1.r + deltaR*t);
+					strokeWeight(wt1 + deltaWeight*t);
 					Col4f sc(c1.r + deltaR*t, c1.g + deltaG*t, c1.b + deltaB*t, c1.a + deltaA*t);
 					//trace(sc);
 					pathPrimsFill.push_back(PathPrims(v.x, v.y, v.z, fillColor.r, fillColor.b, fillColor.g, fillColor.a));

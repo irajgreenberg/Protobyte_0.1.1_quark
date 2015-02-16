@@ -539,7 +539,8 @@ namespace ijg {
 		// keeps track of where curveVertices inserted in path
 		//std::vector<int> curveVertexInsertionIndices;
 		//std::vector < std::pair<Vec3f, char> > pathVerticesAll;
-		std::vector < std::tuple<Vec3f, char, Col4f, Col4f> > pathVerticesAll;
+		// pos, type, fill, stroke, weight
+		std::vector < std::tuple<Vec3f, char, Col4f, Col4f, float> > pathVerticesAll;
 
 		//3D
 		// box buffer ids
@@ -577,9 +578,7 @@ namespace ijg {
 
 
 		// Drawing Methods API
-		int curveInterpolationDetail = 0;
-		float curveTension = 0;
-		float curveBias = 0;
+		
 		void beginPath(PathRenderMode pathRenderMode = POLYGON);
 		void endPath(bool isClosed = OPEN);
 		
@@ -593,7 +592,20 @@ namespace ijg {
 		void curveVertex(const Vec2f& vec);
 		void curveVertex(const Vec3f& vec);
 		void curveVertex(float x, float y);
-		void curveVertex(float x, float y, float z, int interpolationDetail = 30, float tension = 0, float bias = 0);
+		void curveVertex(float x, float y, float z);
+
+		int _curveDetail = 6;
+		float _curveTension = 0;
+		float _curveBias = 0;
+		std::vector<int> curveDetails;
+		std::vector<float> curveTensions;
+		std::vector<float> curveBiases;
+		std::vector<float> pathStrokeWeights;
+		void curveDetail(int curveDetail = 20);
+		void curveTension(float curveTension = 0);
+		void curveBias(float curveBias = 0);
+		//void curveStrokeWeight(float curveStrokeWeight = 0);
+
 		/****END 2D API****/
 
 		// Lighting and Materials
