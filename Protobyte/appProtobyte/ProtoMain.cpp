@@ -10,6 +10,7 @@
 #include "rootBallStudy01.h"
 #include "myApp01.h"
 #include "myApp02.h"
+#include "endCapTest.h"
 #include "ThanksgivingBeast.h"
 
 namespace {
@@ -32,6 +33,6 @@ int main(int argc, char const** argv)
 	//std::thread t1(runOSC);
 	
 	
-	ijg::ProtoPlasm p(1300, 800, "Happy ThanksgivingBeast", new myApp01());
+	ijg::ProtoPlasm p(1300, 800, "End Cap test", new endCapTest());
 	return EXIT_SUCCESS;
 }

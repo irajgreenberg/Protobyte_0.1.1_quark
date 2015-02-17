@@ -118,7 +118,8 @@ void ProtoPlasm::initGLFW(){
 	//trace("monitor 02 =", mons[1]);
 	
 	// position for multi-screen setup
-	glfwSetWindowPos(window, (1920 - appWidth) / 2, -1080 + (1080-appHeight) / 2);
+	//glfwSetWindowPos(window, (1920 - appWidth) / 2, -1080 + (1080-appHeight) / 2);
+	glfwSetWindowPos(window, 1920 + (1920 - appWidth) / 2, -1080 + (1080 - appHeight) / 2);
 
 	// position for laptop
 	//glfwSetWindowPos(window, (1920 - appWidth) / 2, (1080 - appHeight) / 2);
