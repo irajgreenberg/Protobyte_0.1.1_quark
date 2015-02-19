@@ -17,8 +17,9 @@ struct MyQuad {
 	}
 };
 
-const int VEC_COUNT = 9;
+const int VEC_COUNT = 30;
 Vec3 vecs[VEC_COUNT];
+Vec3 tempVecs[VEC_COUNT-1];
 
 
 
@@ -34,6 +35,16 @@ void endCapTest::init() {
 	}
 
 	// test 1
+	// capture initial vecs
+	for (int i = 0; i < VEC_COUNT; ++i){
+		if (i>0){
+			dv = vecs[i] - vecs[i - 1];
+			float x = dv.x;
+			dv.x = -dv.y;
+			dv.y = x;
+			tempVecs[i - 1] = dv;
+		}
+	}
 
 
 
@@ -45,6 +56,8 @@ void endCapTest::run() {
 }
 
 void endCapTest::display() {
+	arcballBegin();
+
 	strokeWeight(2);
 	background(.75, .25, .65);
 	noFill();
@@ -57,15 +70,17 @@ void endCapTest::display() {
 	}
 	endShape();
 
+	strokeWeight(8);
 	for (int i = 0; i < VEC_COUNT; ++i){
 		if (i>0){
 
 
 			dv = vecs[i] - vecs[i-1];
+			//past = dv;
 
-			if (i > 1){
+			/*if (i > 1){
 				dv += past;
-			}
+			}*/
 			//trace(dv);
 			dv.normalize();
 			float x = dv.x;
@@ -85,7 +100,9 @@ void endCapTest::display() {
 				stroke(.75, 0, 0);
 			}
 			
+			
 			beginShape();
+			stroke(i * 5);
 			vertex(vecs[i-1]);
 			vertex(vecs[i-1] - dv);
 			endShape(CLOSE);
@@ -95,10 +112,8 @@ void endCapTest::display() {
 			vertex(vecs[i-1] + dv);
 			endShape();
 		}
-		if (i > 1){
-			past = dv;
-		}
 	}
+	arcBallEnd();
 
 
 
