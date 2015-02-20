@@ -1,3 +1,4 @@
+//http://gamedeveloperjourney.blogspot.com/2009/04/point-plane-collision-detection.html
 
 #ifndef __COLLISIONTEST_H__
 #define __COLLISIONTEST_H__
