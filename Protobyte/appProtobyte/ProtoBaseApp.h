@@ -150,7 +150,8 @@ namespace ijg {
 
 		
 
-	protected:
+	//protected:
+	public:
 		void _initUniforms(ProtoShader* shader_ptr); // temporarily here. put back in private eventually
 		void concat();
 		/************************************
