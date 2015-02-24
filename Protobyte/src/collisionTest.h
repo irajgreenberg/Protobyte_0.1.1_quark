@@ -1,4 +1,7 @@
+// on hyperplane
 //http://gamedeveloperjourney.blogspot.com/2009/04/point-plane-collision-detection.html
+// baycentric:
+//http://blogs.msdn.com/b/rezanour/archive/2011/08/07/barycentric-coordinates-and-point-in-triangle-tests.aspx
 
 #ifndef __COLLISIONTEST_H__
 #define __COLLISIONTEST_H__
@@ -43,6 +46,8 @@ struct Tri{
 		base->vertex(C().x + N().x * len, C().y + N().y * len, C().z + N().z * len);
 		base->endShape(CLOSE);
 	}
+
+
 };
 
 class collisionTest : public ProtoBaseApp {
@@ -51,10 +56,12 @@ public:
 void init();
 void run();
 void display();
+bool collide(const Vec3&);
 
 private:
 
-	Vec3 orb, spd;
+	static const int COUNT = 1000;
+	Vec3 orbs[COUNT], spds[COUNT];
 	Tri t;
 };
 
