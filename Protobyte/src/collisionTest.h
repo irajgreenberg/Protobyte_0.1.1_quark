@@ -33,9 +33,9 @@ struct Tri{
 	void draw(ProtoBaseApp* base = nullptr){
 
 		base->beginShape();
-		base->vertex(-175, 100, -50);
-		base->vertex(-25, 100, -150);
-		base->vertex(-100, -100, -100);
+		base->vertex(v0);
+		base->vertex(v1);
+		base->vertex(v2);
 		base->endShape(CLOSE);
 	}
 
@@ -56,11 +56,11 @@ public:
 void init();
 void run();
 void display();
-bool collide(const Vec3&);
+bool collide(const Vec3&, Vec3& pos);
 
 private:
 
-	static const int COUNT = 1000;
+	static const int COUNT = 500;
 	Vec3 orbs[COUNT], spds[COUNT];
 	Tri t;
 };
