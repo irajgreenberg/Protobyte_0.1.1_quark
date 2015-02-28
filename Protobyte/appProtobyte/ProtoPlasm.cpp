@@ -112,17 +112,20 @@ void ProtoPlasm::initGLFW(){
 	//figure out window resolution:
 	/*const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 	trace(mode->width, ",", mode->height);*/
+	
 
 	//int monitors;
 	//GLFWmonitor** mons = glfwGetMonitors(&monitors);
 	//trace("monitor 02 =", mons[1]);
-	
 	// position for multi-screen setup
 	//glfwSetWindowPos(window, (1920 - appWidth) / 2, -1080 + (1080-appHeight) / 2);
 	//glfwSetWindowPos(window, 1920 + (1920 - appWidth) / 2, -1080 + (1080 - appHeight) / 2);
 
-	// position for laptop
-	glfwSetWindowPos(window, 1920+(1920 - appWidth) / 2, (1080 - appHeight) / 2);
+	const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+	//trace("screen.width = ", mode->width, ", screen.height = ", mode->height);
+		
+		// position for laptop
+	glfwSetWindowPos(window, (mode->width - appWidth) / 2, (mode->height - appHeight) / 2);
 
 	glfwSetWindowUserPointer(window, baseApp); // enable callback funcs to speak to baseApp
 	glfwSetWindowSizeCallback(window, window_size_callback); // dynamically change viewport on resize

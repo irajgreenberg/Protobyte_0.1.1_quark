@@ -3,7 +3,18 @@
 
 void collisionTest::init() {
 	t = Tri(Vec3(-175 * 2, 100 * 2, -50 * 2), Vec3(-25 * 2, 100 * 2, -150 * 2), Vec3(-100 * 2, -100 * 2, -100 * 2));
-	for (int i = 0; i < COUNT; i++){
+
+	for (int i = 0; i < TRI_COUNT; i++){
+		float x = random(-175, 175);
+		float y = random(-175, 175);
+		float z = random(-275, -175);
+		Vec3 v0 = Vec3(x, y, z);
+		Vec3 v1 = Vec3(x+35, y+15, z-5);
+		Vec3 v2 = Vec3(x+17.5, y-25, z-10);
+		ts[i] = Tri(v0, v1, v2);
+	}
+
+	for (int i = 0; i < ORB_COUNT; i++){
 		orbs[i] = Vec3(random(20, 200), random(-100, 100), random(-100, -50));
 		spds[i] = t.C() - orbs[i];
 		spds[i].x *= random(.35, 1);
@@ -16,10 +27,6 @@ void collisionTest::init() {
 
 	//trace(t.C());
 	//trace(t.N());
-
-	int vals[3];
-	trace(vals);
-	trace(&vals[0]);
 }
 
 void collisionTest::run() {
@@ -31,7 +38,7 @@ void collisionTest::display() {
 	beginArcBall();
 
 	fill(.75, .345, .1);
-	for (int i = 0; i < COUNT; i++){
+	for (int i = 0; i < ORB_COUNT; i++){
 
 		push();
 		translate(orbs[i]);
@@ -43,15 +50,13 @@ void collisionTest::display() {
 		t.draw(this);
 		t.drawNorm(this);
 
-		orbs[i] += spds[i]+random(.6);
+		orbs[i] += spds[i];
 
 		// collision detection/response
 		Vec3f pos;
-		if (collide(orbs[i], pos)){
-			
+		if (collide(orbs[i])){
 			// glue to surface
-
-			spds[i] *= -1;
+			spds[i] = 0;
 			//spds[i] = Vec3(random(-.3, .3), random(-.3, .3), random(-.3, .3));
 		}
 	}
@@ -60,7 +65,7 @@ void collisionTest::display() {
 
 }
 
-bool collisionTest::collide(const Vec3& orb, Vec3& pos) {
+bool collisionTest::collide(const Vec3& orb) {
 	Vec3f tmp = orb;
 	tmp.normalize();
 	Vec3 d = t.C() - orb;
@@ -91,8 +96,7 @@ bool collisionTest::collide(const Vec3& orb, Vec3& pos) {
 		float denom = uv.mag();
 		float r = vw.mag() / denom;
 		float t = uw.mag() / denom;
-		pos = orb;
-		trace(pos);
+
 		return (r + t <= 1);
 	}
 	return false;

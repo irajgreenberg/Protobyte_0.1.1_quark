@@ -223,7 +223,7 @@ namespace ijg {
 			x = y = z = ijg::random(xyzMax);
 		}
 		else {
-			x = y = z = yzMax;
+			x = y = z = xyzMax;
 		}
 	}
     

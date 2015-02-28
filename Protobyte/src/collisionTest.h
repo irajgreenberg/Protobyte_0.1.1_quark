@@ -56,13 +56,16 @@ public:
 void init();
 void run();
 void display();
-bool collide(const Vec3&, Vec3& pos);
+bool collide(const Vec3&);
 
 private:
 
-	static const int COUNT = 500;
-	Vec3 orbs[COUNT], spds[COUNT];
+	static const int ORB_COUNT = 500;
+	Vec3 orbs[ORB_COUNT], spds[ORB_COUNT];
 	Tri t;
+
+	static const int TRI_COUNT = 500; 
+	Tri ts[TRI_COUNT];
 };
 
 #endif //__COLLISIONTEST_H__
