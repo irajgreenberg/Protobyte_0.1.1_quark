@@ -56,11 +56,11 @@ public:
 void init();
 void run();
 void display();
-bool collide(const Vec3&);
+bool collide(Tri& t, const Vec3&);
 
 private:
 
-	static const int ORB_COUNT = 500;
+	static const int ORB_COUNT = 1000;
 	Vec3 orbs[ORB_COUNT], spds[ORB_COUNT];
 	Tri t;
 
