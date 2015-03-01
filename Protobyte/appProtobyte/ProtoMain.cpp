@@ -13,6 +13,7 @@
 #include "endCapTest.h"
 #include "ThanksgivingBeast.h"
 #include "collisionTest.h"
+#include "collisionTest02.h"
 
 namespace {
 	//ijg::ProtoOSC listener;
@@ -34,6 +35,6 @@ int main(int argc, char const** argv)
 	//std::thread t1(runOSC);
 	
 	
-	ijg::ProtoPlasm p(1300, 800, "Collision test", new collisionTest());
+	ijg::ProtoPlasm p(1300, 800, "Collision test 02", new CollisionTest02());
 	return EXIT_SUCCESS;
 }
