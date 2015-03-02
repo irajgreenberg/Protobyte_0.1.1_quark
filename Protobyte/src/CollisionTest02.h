@@ -18,7 +18,7 @@ bool collide(Face3& t, const Vec3& orb);
 
 private:
 
-	static const int ORB_COUNT = 500;
+	static const int ORB_COUNT = 2000;
 	Vec3 orbs[ORB_COUNT], spds[ORB_COUNT];
 
 	ProtoSphere sphere;
