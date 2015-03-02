@@ -60,7 +60,7 @@ bool collide(Tri& t, const Vec3&);
 
 private:
 
-	static const int ORB_COUNT = 1000;
+	static const int ORB_COUNT = 4000;
 	Vec3 orbs[ORB_COUNT], spds[ORB_COUNT];
 	Tri t;
 
