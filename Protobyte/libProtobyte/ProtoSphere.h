@@ -38,6 +38,10 @@ namespace ijg {
         ProtoSphere(const Vec3f& pos, const Vec3f& rot, const Dim3f size,
                 const ProtoColor4f col4, const std::string& textureImageURL, float textureScale, int spines, int spineNodes);
 
+		// add chaos
+		ProtoSphere(const Vec3f& pos, const Vec3f& rot, const Dim3f size,
+			const ProtoColor4f col4, const std::string& textureImageURL, float textureScale, int spines, int spineNodes, const Vec3f& chaos);
+
 //        void init(); // temp override
         void calcVerts();
         void calcInds();
@@ -47,6 +51,7 @@ namespace ijg {
         void calcInds2();
 
     private:
+		Vec3f chaos{0, 0, 0};
         int spines;
         int spineNodes;
 

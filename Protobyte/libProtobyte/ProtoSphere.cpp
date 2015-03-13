@@ -41,6 +41,13 @@ ProtoGeom3(pos, rot, size, col4), spines(spines), spineNodes(spineNodes) {
     init();
 }
 
+ProtoSphere::ProtoSphere(const Vec3f& pos, const Vec3f& rot, const Dim3f size,
+	const ProtoColor4f col4, const std::string& textureImageURL, float textureScale, int spines, int spineNodes, const Vec3f& chaos) :
+	ProtoGeom3(pos, rot, size, col4), spines(spines), spineNodes(spineNodes), chaos(chaos) {
+	init();
+
+}
+
 //void ProtoSphere::init() {
 //    calcVerts();
 //    calcInds();
@@ -60,13 +67,18 @@ void ProtoSphere::calcVerts2() {
     //int radiusX = size.w / 2.0;
     //int radiusY = size.w / 2.0;
     
+	float theta3 = 0;
     // always 1 more segment than points along spline
     for (int i = 0; i < spineNodes; i++) {
         // z rotation
-        x = cos(theta) * .5;
-        y = sin(theta) * .5;
+       /* x = cos(theta) * *.5;
+        y = sin(theta) * .5;*/
+
+		x = cos(theta) * .5 * (1+random(chaos.x));
+		y = sin(theta) * .5 * (1+random(chaos.y));
         z = 0.0;
         phi = 0.0;
+		theta3 += TWO_PI / 180.0;
         for (int j = 0; j < spines; j++) {
             
             // y rotation
@@ -186,6 +198,8 @@ void ProtoSphere::calcVerts() {
     float tempX = 0, tempZ = 0;
     float theta = -PI / 2.0, phi = 0.0;
     // int counter = 0;
+	//NEW
+	float xi = 0;
     
     // untransformed UNit sphere
     float radiusX = .5;
@@ -194,15 +208,21 @@ void ProtoSphere::calcVerts() {
     // always 1 more segment than points along spline
     for (int i = 0; i < spineNodes; i++) {
         // z rotation
-        x = cos(theta) * size.w/2;
-        y = sin(theta) * size.h/2;
+        //x = cos(theta) * size.w/2;
+        //y = sin(theta) * size.h/2;
+
+		//x = cos(theta) * .5 * (1 + random(-chaos.x, chaos.x));
+		//y = sin(theta) * .5 * (1 + random(-chaos.y, chaos.y));
+		
+		x = cos(theta) * size.w / 2 * (1 + random(-chaos.x, chaos.x));
+		y = sin(theta) * size.h / 2 * (1 + random(-chaos.y, chaos.y));
         z = 0.0;
         phi = 0.0;
         for (int j = 0; j < spines; j++) {
             
             // y rotation
-            tempZ = cos(phi) * z - sin(phi) * x;
-            tempX = sin(phi) * z + cos(phi) * x;
+			tempZ = cos(phi) * (z + random(-chaos.z, chaos.z)) - sin(phi) * (x + random(-chaos.x, chaos.x));
+			tempX = sin(phi) * (z + random(-chaos.z, chaos.z)) + cos(phi) * (x + random(-chaos.x, chaos.x));
             
             // test
             //std::cout << "radiusX = " << radiusX << std::endl;

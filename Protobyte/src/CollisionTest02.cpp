@@ -40,7 +40,7 @@ void CollisionTest02::init() {
 					//const ProtoColor4f col4, const std::string& textureImageURL, 
 					//float textureScale, int spines, int spineNodes); 
 	
-	sphere = ProtoSphere(Vec3f(), Vec3f(), Dim3f(400.0), Col4f(1, 1, 1, 1.0), "metal_flaky_blue.jpg", 1, 12, 12);
+	sphere = ProtoSphere(Vec3f(), Vec3f(), Dim3f(400.0), Col4f(1, 1, 1, 1.0), "metal_flaky_blue.jpg", 1, 34, 34);
 	sphere.setBumpMap("metal_flaky_blue.jpg");
 	//plane.loadBumpMapTexture("shipPlate_normal.jpg");
 	sphere.setTextureScale(Vec2f(.2));
@@ -70,7 +70,7 @@ void CollisionTest02::display() {
 	
 	push();
 	scale(.965);
-	sphere.display();
+	sphere.display(WIREFRAME);
 	pop();
 
 
@@ -81,6 +81,7 @@ void CollisionTest02::display() {
 				// glue to surface
 				//spds[j] *= 1;
 				spds[j] = 0;
+				
 				//spds[i] = Vec3(random(-.3, .3), random(-.3, .3), random(-.3, .3));
 			}
 		}
@@ -95,6 +96,10 @@ void CollisionTest02::display() {
 	endShape();
 
 	endArcBall();
+
+	for (int j = 0; j < ORB_COUNT; j++){
+		//trace(spds[j]);
+	}
 
 }
 
