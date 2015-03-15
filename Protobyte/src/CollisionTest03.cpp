@@ -3,14 +3,14 @@
 
 void CollisionTest03::init() {
 
-	globalAmbient = Col3f(.15, .15, .15);
+	globalAmbient = Col3f(.13, .13, .13);
 
 	//light0.setPosition(Vec3f(.1, 300, 0));
-	light0.setPosition(Vec3f(0, 150, -50));
-	light0.setIntensity(Vec3f(.85, .85, .85));
+	light0.setPosition(Vec3f(0, 150, 50));
+	light0.setIntensity(Vec3f(1, .95, .95));
 
-	light1.setPosition(Vec3f(-10, -400, 0));
-	light1.setIntensity(Vec3f(1, 1, 1));
+	//light1.setPosition(Vec3f(-10, -400, 100));
+	//light1.setIntensity(Vec3f(.1, .1, .1));
 
 	float theta = 0.0;
 	float phi = 0.0;
@@ -26,12 +26,12 @@ void CollisionTest03::init() {
 		float ty = y*cos(phi) - z*sin(phi);
 		float tz = y*sin(phi) + z*cos(phi);
 
-		orbs[i] = Vec3(x, ty, tz);
-		spds[i] = Vec3f() - orbs[i];
+		orbs.push_back(Vec3(x, ty, tz));
+		spds.push_back(Vec3f() - orbs[i]);
 		/*spds[i].x *= random(.15, 1.3);
 		spds[i].y *= random(.15, 1.3);
 		spds[i].z *= random(.15, 1.3);*/
-		spds[i] *= .001;
+		spds.at(i) *= .001;
 		theta += (TWO_PI / ORB_COUNT) * 50;
 		phi += (TWO_PI / ORB_COUNT) * 11;
 	}
@@ -68,16 +68,16 @@ void CollisionTest03::init() {
 
 	while (counter++ < 800) {
 		for (int j = 0; j < ORB_COUNT; j++){
-			orbs[j] += spds[j];
+			orbs.at(j) += spds.at(j);
 		}
 		
 		// collision detection/response
 		for (int i = 0; i < faces.size(); i++){
 			for (int j = 0; j < ORB_COUNT; j++){
 
-				if (collide(faces.at(i), orbs[j])){
+				if (collide(faces.at(i), orbs.at(j))){
 					// glue to surface
-					spds[j] = 0;
+					spds.at(j) = 0;
 				}
 			}
 		}
@@ -85,18 +85,18 @@ void CollisionTest03::init() {
 		if (counter >798){
 			std::vector<Vec3f> tempVecs;
 			for (int i = 0; i < ORB_COUNT; i++){
-				tempVecs.push_back(orbs[i]);
+				tempVecs.push_back(orbs.at(i));
 			}
 			spline = ProtoSpline3(tempVecs, 4, FALSE, .5);
 		}
 	}
 
 	ProtoTransformFunction tf(ProtoTransformFunction::SINUSOIDAL, ProtoTuple2f(.65, 2.65), 620);
-	tube = ProtoTube(spline, 3.125, 6, tf, true, "reptile5.jpg", Vec2f(.5, .001));
-	tube.setBumpMap("reptile5.jpg");
+	tube = ProtoTube(spline, 3.125, 6, tf, true, "vascular5.jpg", Vec2f(.5, .001));
+	tube.setBumpMap("vascular5.jpg");
 	tube.setAmbientMaterial(Col4f(1, 1, 1, 1.0));
 	tube.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
-	tube.setShininess(3);
+	tube.setShininess(30);
 
 
 	// vein
@@ -111,8 +111,9 @@ void CollisionTest03::init() {
 	outerSphereFaces = outerSphere.getFaces();
 	theta = 0.0;
 	phi = 0.0;
-
-	for (int i = 0; i < ORB_COUNT; i++){
+	orbs.clear();
+	spds.clear();
+	for (int i = 0; i < VEIN_COUNT; i++){
 		float x = sin(theta) * random(380, 420);
 		float y = -200 + i + sin(theta*random(1.5))*random(32, 32);
 		//float y = 0;
@@ -124,71 +125,136 @@ void CollisionTest03::init() {
 		float ty = y*cos(phi) - z*sin(phi);
 		float tz = y*sin(phi) + z*cos(phi);
 
-		orbs[i] = Vec3(x, ty, tz);
-		spds[i] = Vec3f() - orbs[i];
+		orbs.push_back(Vec3(x, ty, tz));
+		spds.push_back(Vec3f() - orbs.at(i));
 		/*spds[i].x *= random(.15, 1.3);
 		spds[i].y *= random(.15, 1.3);
 		spds[i].z *= random(.15, 1.3);*/
-		spds[i] *= .001;
-		theta += (TWO_PI / ORB_COUNT) * 50;
-		phi += (TWO_PI / ORB_COUNT) * 11;
+		spds.at(i) *= .001;
+		theta += (TWO_PI / VEIN_COUNT) * 50;
+		phi += (TWO_PI / VEIN_COUNT) * 11;
 	}
 
 	counter = 0;
-	while (counter++ < 800) {
-		for (int j = 0; j < ORB_COUNT; j++){
-			orbs[j] += spds[j];
+	while (counter++ < 900) {
+		for (int j = 0; j < VEIN_COUNT; j++){
+			orbs.at(j) += spds.at(j);
 		}
 
 		// collision detection/response
 		for (int i = 0; i < outerSphereFaces.size(); i++){
-			for (int j = 0; j < ORB_COUNT; j++){
+			for (int j = 0; j < VEIN_COUNT; j++){
 
-				if (collide(outerSphereFaces.at(i), orbs[j])){
+				if (collide(outerSphereFaces.at(i), orbs.at(j))){
 					// glue to surface
-					spds[j] = 0;
+					spds.at(j) = 0;
 				}
 			}
 		}
 
-		if (counter >798){
+		if (counter >898){
 			std::vector<Vec3f> tempVecs;
-			for (int i = 0; i < ORB_COUNT; i++){
-				tempVecs.push_back(orbs[i]);
+			for (int i = 0; i < VEIN_COUNT; i++){
+				tempVecs.push_back(orbs.at(i));
 			}
-			spline = ProtoSpline3(tempVecs, 4, FALSE, .5);
+			spline = ProtoSpline3(tempVecs, 2, FALSE, .5);
 		}
 	}
 
-	tf = ProtoTransformFunction(ProtoTransformFunction::SINUSOIDAL, ProtoTuple2f(.25, .65), 620);
-	vein = ProtoTube(spline, 3.125, 6, tf, true, "metal_flaky_blue.jpg", Vec2f(.5, .001));
+	tf = ProtoTransformFunction(ProtoTransformFunction::SINUSOIDAL, ProtoTuple2f(.075, .29), 620);
+	vein = ProtoTube(spline, 3.125, 4, tf, true, "metal_flaky_blue.jpg", Vec2f(.5, .001));
+	vein.setColor(Col4(.01, .35, .55, .75));
 	vein.setBumpMap("metal_flaky_blue.jpg");
 	vein.setAmbientMaterial(Col4f(1, 1, 1, 1.0));
 	vein.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
-	vein.setShininess(3);
+	vein.setShininess(30);
+
+
+	// vein 2
+	theta = 0.0;
+	phi = 0.0;
+	orbs.clear();
+	spds.clear();
+	for (int i = 0; i < VEIN_COUNT; i++){
+		float x = sin(theta) * random(380, 420);
+		float y = -200 + i + sin(theta*random(1.5))*random(32, 32);
+		//float y = 0;
+		float z = cos(theta) * random(380, 420);
+
+		//y' = y*cos q - z*sin q
+		//z' = y*sin q + z*cos q
+
+		float ty = y*cos(phi) - z*sin(phi);
+		float tz = y*sin(phi) + z*cos(phi);
+
+		orbs.push_back(Vec3(x, ty, tz));
+		spds.push_back(Vec3f() - orbs.at(i));
+		/*spds[i].x *= random(.15, 1.3);
+		spds[i].y *= random(.15, 1.3);
+		spds[i].z *= random(.15, 1.3);*/
+		spds.at(i) *= .001;
+		theta += (TWO_PI / VEIN_COUNT) * 50;
+		phi += (TWO_PI / VEIN_COUNT) * 11;
+	}
+
+	counter = 0;
+	while (counter++ < 900) {
+		for (int j = 0; j < VEIN_COUNT; j++){
+			orbs.at(j) += spds.at(j);
+		}
+
+		// collision detection/response
+		for (int i = 0; i < outerSphereFaces.size(); i++){
+			for (int j = 0; j < VEIN_COUNT; j++){
+
+				if (collide(outerSphereFaces.at(i), orbs.at(j))){
+					// glue to surface
+					spds.at(j) = 0;
+				}
+			}
+		}
+
+		if (counter >898){
+			std::vector<Vec3f> tempVecs;
+			for (int i = 0; i < VEIN_COUNT; i++){
+				tempVecs.push_back(orbs.at(i));
+			}
+			spline = ProtoSpline3(tempVecs, 2, FALSE, .5);
+		}
+	}
+
+	tf = ProtoTransformFunction(ProtoTransformFunction::SINUSOIDAL, ProtoTuple2f(.075, .29), 620);
+	vein2 = ProtoTube(spline, 3.125, 4, tf, true, "metal_flaky_blue.jpg", Vec2f(.5, .001));
+	vein2.setColor(Col4(.01, .55, .35, .75));
+	vein2.setBumpMap("metal_flaky_blue.jpg");
+	vein2.setAmbientMaterial(Col4f(1, 1, 1, 1.0));
+	vein2.setSpecularMaterial(Col4f(1, 1, 1, 1.0));
+	vein2.setShininess(30);
 }
 
 void CollisionTest03::run() {
 }
 
 void CollisionTest03::display() {
+	background(1);
 	strokeWeight(.25);
 	stroke(.75);
+	translate(0, 0, -25);
 	beginArcBall();
-	for (int j = 0; j < ORB_COUNT; j++){
-		push();
-		translate(orbs[j]);
-		noFill();
-		rect(0, 0, 2, 2);
-		pop();
-		//orbs[j] += spds[j];
-	}
+	//for (int j = 0; j < ORB_COUNT; j++){
+	//	push();
+	//	translate(orbs[j]);
+	//	noFill();
+	//	rect(0, 0, 2, 2);
+	//	pop();
+	//	//orbs[j] += spds[j];
+	//}
 
-	push();
-	scale(.935);
-	//sphere.display();
-	//toroid.display();
-	pop();
+	//push();
+	//scale(.935);
+	////sphere.display();
+	////toroid.display();
+	//pop();
 
 
 	//// collision detection/response
@@ -219,6 +285,7 @@ void CollisionTest03::display() {
 	//tube = ProtoTube(spline, .8, 12, true, "white_tile.jpg", Vec2f(1, .01));
 	tube.display();
 	vein.display();
+	vein2.display();
 	endArcBall();
 
 

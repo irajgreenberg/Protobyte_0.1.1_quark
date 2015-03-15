@@ -21,10 +21,14 @@ private:
 	bool isForming = true;
 	int counter = 0;
 	static const int ORB_COUNT = 1000;
-	Vec3 orbs[ORB_COUNT], spds[ORB_COUNT];
+	static const int VEIN_COUNT = 3000;
+	
+	std::vector<Vec3> orbs;
+	std::vector<Vec3> spds;
 	ProtoSpline3 spline;
 	ProtoTube tube;
-	ProtoTube vein;
+	
+	ProtoTube vein, vein2;
 
 	void test();
 
