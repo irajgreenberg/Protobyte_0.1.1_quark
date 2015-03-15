@@ -15,6 +15,7 @@
 #include "collisionTest.h"
 #include "collisionTest02.h"
 #include "collisionTest03.h"
+#include "trailExperiment01.h"
 
 namespace {
 	//ijg::ProtoOSC listener;
@@ -36,6 +37,6 @@ int main(int argc, char const** argv)
 	//std::thread t1(runOSC);
 	
 	
-	ijg::ProtoPlasm p(1300, 800, "Collision test 03", new CollisionTest03());
+	ijg::ProtoPlasm p(1300, 800, "trail Experiment 01", new trailExperiment01());
 	return EXIT_SUCCESS;
 }
