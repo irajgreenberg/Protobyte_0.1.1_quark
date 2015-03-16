@@ -37,6 +37,6 @@ int main(int argc, char const** argv)
 	//std::thread t1(runOSC);
 	
 	
-	ijg::ProtoPlasm p(1300, 800, "trail Experiment 01", new trailExperiment01());
+	ijg::ProtoPlasm p(1800, 1000, "trail Experiment 01", new trailExperiment01());
 	return EXIT_SUCCESS;
 }
