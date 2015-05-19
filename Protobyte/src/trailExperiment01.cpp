@@ -2,7 +2,6 @@
 #include "trailExperiment01.h"
 
 void trailExperiment01::init() {
-
 	plane = ProtoGroundPlane(Vec3f(0, -300, 0), Vec3f(), Dim2f(500, 500),
 		Col4f(.5, .4, .6, 1), 10, 10, "white_tile.jpg");
 
@@ -10,11 +9,11 @@ void trailExperiment01::init() {
 		Vec3f orb(0, 850, 0);
 		float gravity = random(-.53, -.28);
 		float friction = random(.96, .99);
-		float damping = random(.275, .59);
+		float damping = random(.675, .89);
 		std::vector<Vec3> orbs;
 		Vec3f spd(random(-4.04, 4.04), random(-6, -4), random(-4.04, 4.04));
 		for (int j = 0; j < 270; ++j){
-			Vec3f jitter(random(-20.04, 20.04), random(-1.9, -1.0), random(-20.04, 20.04));
+			Vec3f jitter(random(-50.04, 50.04), random(-1.9, -1.0), random(-50.04, 50.04));
 			if (j % 5 == 0){
 				orbs.push_back(orb);
 			}
@@ -62,7 +61,7 @@ void trailExperiment01::run() {
 }
 
 void trailExperiment01::display() {
-	translate(0, 0, -600);
+	translate(0, 0, -1200);
 	strokeWeight(5);
 	stroke(1, .5, .125, .75);
 	beginArcBall();

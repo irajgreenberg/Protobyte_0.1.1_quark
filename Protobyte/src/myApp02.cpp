@@ -31,7 +31,7 @@ void myApp02::init() {
 
 	float startY = -.5;
 
-	int ribCount = 11;// 17;
+	int ribCount = 3;// 17;
 	float ribSpan = 4.5;
 	float ribRadius = 0;
 	float ribRadiusMax = 2.0;
@@ -145,7 +145,7 @@ void myApp02::run() {
 
 void myApp02::display() {
 	background(1.0, .5, 0);
-	scale(1.06);
+	scale(3.06);
 		// shadowsOn();
 		// shape display()
 		push();

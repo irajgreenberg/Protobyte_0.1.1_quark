@@ -31,7 +31,7 @@ private:
 	ProtoTube vascularWrap; 
 	
 	// organs
-	const static int ROOTBALL_COUNT = 6;// 34;
+	const static int ROOTBALL_COUNT = 1;// 34;
 	ProtoRootBall rootBalls[ROOTBALL_COUNT];
 
 };
