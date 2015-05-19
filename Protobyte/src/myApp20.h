@@ -15,7 +15,7 @@ void run();
 void display();
 
 private:
-	ProtoGroundPlane plane;
+
 };
 
 #endif //__MYAPP20_H__
