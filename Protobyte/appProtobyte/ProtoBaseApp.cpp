@@ -1528,6 +1528,10 @@ void ProtoBaseApp::quad(const Vec2& pt0, const Vec2& pt1, const Vec2& pt2, const
 
 
 void ProtoBaseApp::ellipse(float x, float y, float w, float h, Registration reg) {
+	if (ellipsePrims.size() > 0){
+		ellipsePrims.clear();
+	}
+	
 	float _x = 0, _y = 0;
 
 	/* CENTER,
