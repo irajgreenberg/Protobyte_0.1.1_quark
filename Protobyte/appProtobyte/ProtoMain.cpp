@@ -39,6 +39,6 @@ int main(int argc, char const** argv)
 	//std::thread t1(runOSC);
 	
 	
-	ijg::ProtoPlasm p(1800, 1000, "My App 20 - Learning Protobyte", new myApp20());
+	ijg::ProtoPlasm p(1800, 1000, "My App 20 - Learning Protobyte - Brittni L. Watkins", new myApp20());
 	return EXIT_SUCCESS;
 }
