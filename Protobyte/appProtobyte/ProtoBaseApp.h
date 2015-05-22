@@ -159,6 +159,8 @@ namespace ijg {
 		int frameCount;
 		float frameRate;
 
+		Col3f bgColor;
+
 
 		
 
@@ -186,7 +188,8 @@ namespace ijg {
 		//float frameRate;
 
 		// background color
-		Col3f bgColor;
+		//made private -bw
+		//Col3f bgColor;
 
 		// mouse fields
 		float mouseX, mouseY, mouseLastFrameX, mouseLastFrameY;
