@@ -22,7 +22,12 @@ class myApp20 : public ProtoBaseApp {
 
 		Col4 green = Col4(0.0, 1.0, 0.0, 1);
 
+		Col4f black = Col4f(0, 0, 0, 1);
+
 		Vec2f mine = Vec2(0.5, 0.6);
+
+		int topCornerX;
+		int topCornerY;
 
 		int x;
 		int y;
