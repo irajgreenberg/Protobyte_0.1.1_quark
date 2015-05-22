@@ -148,6 +148,18 @@ namespace ijg {
 		//void pathTessellate(struct triangulateio *io, int markers, int reporttriangles, int reportneighbors, int reportsegments,
 		//	int reportedges, int reportnorms);
 
+		void setFrameCount(float frameCount);
+
+		int canvasWidth;
+		int canvasHeight;
+		int width, height;
+		Dim2i canvasSize;
+		Dim2i windowFrameSize;
+
+		int frameCount;
+		float frameRate;
+
+
 		
 
 	//protected:
@@ -158,17 +170,20 @@ namespace ijg {
 		 **********     FIELDS     **********
 		 ***********************************/
 		std::unique_ptr<ProtoWorld> world;
-		int appWidth;
-		int appHeight;
-		std::string appTitle;
-		int canvasWidth;
-		int canvasHeight;
-		int width, height;
-		Dim2i canvasSize;
-		Dim2i windowFrameSize;
+		//int appWidth;
+		//int appHeight;
+		//std::string appTitle;
 
-		int frameCount;
-		float frameRate;
+		//made private -bw 
+		//int canvasWidth;
+		//int canvasHeight;
+		//int width, height;
+		//Dim2i canvasSize;
+		//Dim2i windowFrameSize;
+
+		//made private -bw
+		//int frameCount;
+		//float frameRate;
 
 		// background color
 		Col3f bgColor;
@@ -366,7 +381,8 @@ namespace ijg {
 		// frame values
 		void setFrameRate(float frameRate);
 		float getFrameRate() const;
-		void setFrameCount(float frameCount);
+		//setFrameCount() moved to private - bw
+		//void setFrameCount(float frameCount);
 		int getFrameCount() const;
 
 		// Add content to world
@@ -392,6 +408,12 @@ namespace ijg {
 		int getWidth()const;
 		int getHeight()const;
 		Dim2i getSize()const;
+
+		//addtional get window properties -bw
+		int getCanvasWidth() const;
+		int getCanvasHeight() const;
+		Dim2i getCanvasSize() const;
+		Dim2i getWindowFrameSize() const;
 
 		// image loading using SFML
 		// IS THIS STILL BEING USED?? - NO MORE SFML

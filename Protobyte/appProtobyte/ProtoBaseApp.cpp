@@ -769,7 +769,7 @@ void ProtoBaseApp::_run(const Vec2f& mousePos, const Vec4i& windowCoords/*, int 
 	// I thought I needed this to reset matrix each frame?
 	M = glm::mat4(1.0f);
 	// was 18
-	V = glm::lookAt(glm::vec3(0.0, 0.0, 500.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	V = glm::lookAt(glm::vec3(0.0, 0.0, 700.0f), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 	//M = T * R * S;
 	MV = V * M;
 	MVP = P * MV;
@@ -1089,6 +1089,22 @@ int ProtoBaseApp::getHeight() const{
 
 Dim2i ProtoBaseApp::getSize()const {
 	return canvasSize;
+}
+
+int ProtoBaseApp::getCanvasWidth() const {
+	return canvasWidth;
+}
+
+int ProtoBaseApp::getCanvasHeight() const {
+	return canvasHeight;
+}
+
+Dim2i ProtoBaseApp::getCanvasSize() const {
+	return canvasSize;
+}
+
+Dim2i ProtoBaseApp::getWindowFrameSize() const {
+	return windowFrameSize;
 }
 
 // Load Image
