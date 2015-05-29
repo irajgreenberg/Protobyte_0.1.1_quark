@@ -9,10 +9,10 @@ void BlockNet::init() {
 		pos[i] = Vec3(random(-400, 400), random(-400, 400), random(-600, 600));
 		rot[i] = Vec3(random(-360, 360), random(-360, 360), random(-360, 360));
 		float sz = random(20, 125);
-		scl[i] = Vec3(sz);
+		dim[i] = Dim3f(sz);
 
 		
-		blocks[i] = ProtoBlock(Vec3(), Vec3(), Dim3f(sz), Col4(.5, .4, .5, 1), "corroded_red.jpg");
+		blocks[i] = ProtoBlock(pos[i], rot[i], dim[i], Col4(.5, .4, .5, 1), "corroded_red.jpg");
 		blocks[i].setBumpMap("corroded_red.jpg");
 		//block.setTextureScale(Vec2f(.5));
 		blocks[i].setAmbientMaterial(Col4f(1, 1, 1, 1.0));
@@ -30,12 +30,12 @@ void BlockNet::display() {
 	translate(0, 0, -500);
 	for (int i = 0; i < BLOCK_COUNT; ++i){
 		push();
-		translate(pos[i]);
-		rotate(rot[i].x, 1, 0, 0);
-		rotate(rot[i].y, 0, 1, 0);
-		rotate(rot[i].z, 0, 0, 1);
-		scale(scl[i].x, scl[i].y, scl[i].z);
-		blocks[i].display(WIREFRAME);
+		translate(blocks[i].getPosition());
+		rotate(blocks[i].getRotation().x, 1, 0, 0);
+		rotate(blocks[i].getRotation().y, 0, 1, 0);
+		rotate(blocks[i].getRotation().z, 0, 0, 1);
+		scale(blocks[i].getSize().w, blocks[i].getSize().h, blocks[i].getSize().d);
+		blocks[i].display();
 		pop();
 	}
 	arcBallEnd();

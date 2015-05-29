@@ -20,7 +20,7 @@ private:
 	ProtoBlock blocks[BLOCK_COUNT];
 	Vec3 pos[BLOCK_COUNT];
 	Vec3 rot[BLOCK_COUNT];
-	Vec3 scl[BLOCK_COUNT];
+	Dim3f dim[BLOCK_COUNT];
 	ProtoTube tube;
 };
 
