@@ -1014,6 +1014,13 @@ void ProtoBaseApp::setMouseButton(int mouseAction, int mouseButton, int mouseMod
 	trace("LEFT mouse button pressed");*/
 }
 
+//key event
+void ProtoBaseApp::setKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods) {
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+		glfwSetWindowShouldClose(window, GL_TRUE);
+	}
+}
+
 //arcball
 void ProtoBaseApp::arcballBegin(){
 	//isArcballOn = true;

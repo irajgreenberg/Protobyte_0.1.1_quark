@@ -48,11 +48,13 @@ namespace ijg {
 	{
 		fputs(description, stderr);
 	}
-	static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+	/*static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
-		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+			
 			glfwSetWindowShouldClose(window, GL_TRUE);
-	}
+		}
+	}*/
 
 	// foward declare
 	//class ProtoBaseApp;
@@ -62,6 +64,7 @@ namespace ijg {
     public:
 		friend void mouseBtn_callback(GLFWwindow* window, int button, int action, int mods);
 		friend void window_size_callback(GLFWwindow* window, int width, int height);
+		friend void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
         int frameCount;
         float frameRate;
@@ -89,6 +92,8 @@ namespace ijg {
         int appWidth;
         int appHeight;
         std::string appTitle;
+
+		float currentTimeStamp, lastTimeStamp;
 
 		
     };

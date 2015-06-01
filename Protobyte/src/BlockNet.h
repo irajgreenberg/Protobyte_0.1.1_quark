@@ -16,11 +16,12 @@ void display();
 
 private:
 	ProtoBlock block;
-	const static int BLOCK_COUNT = 100;
+	const static int BLOCK_COUNT = 150;
 	ProtoBlock blocks[BLOCK_COUNT];
 	Vec3 pos[BLOCK_COUNT];
 	Vec3 rot[BLOCK_COUNT];
 	Dim3f dim[BLOCK_COUNT];
+	Spline3 path;
 	ProtoTube tube;
 };
 

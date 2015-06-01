@@ -35,16 +35,23 @@ namespace ijg {
 		ProtoBaseApp* ba = (ProtoBaseApp*)glfwGetWindowUserPointer(window);
 		ba->setWindowFrameSize(Dim2i(width, height));
 	}
+
+	void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+		ProtoBaseApp* ba = (ProtoBaseApp*)glfwGetWindowUserPointer(window);
+		ba->setKeyEvent(window, key, scancode, action, mods);
+	}
 }
 
 using namespace ijg;
 
 
+// set default window size as homage to DBN and PRocessing
 ProtoPlasm::ProtoPlasm(ProtoBaseApp* baseApp) :
-baseApp(baseApp), appWidth(1920), appHeight(1080), appTitle("Protobyte App")
+baseApp(baseApp), appWidth(100), appHeight(100), appTitle("Protobyte App")
 {
-	// instantiate world
-	//world = std::unique_ptr<ProtoWorld>(new ProtoWorld(appWidth, appHeight));
+	
+	baseApp->setWidth(100);
+	baseApp->setHeight(100);
 
 	// init app and call init() and run() to activate functions in user defined BaseApp derived class
 	initGLFW();
@@ -65,6 +72,8 @@ appWidth(appWidth), appHeight(appHeight), appTitle(appTitle), baseApp(baseApp){
 
 
 void ProtoPlasm::initGLFW(){
+	currentTimeStamp = 0;
+
 
 	//#if defined(_WIN32) || defined (_WIN64) 
 	//	glewExperimental = TRUE;
@@ -75,10 +84,6 @@ void ProtoPlasm::initGLFW(){
 	//		std::cout << "glewInit failed, aborting." << std::endl;
 	//	}
 	//#endif
-
-
-
-
 
 
 	baseApp->setFrameCount(0);
@@ -105,6 +110,7 @@ void ProtoPlasm::initGLFW(){
 
 	// anti-aliasing
 	glfwWindowHint(GLFW_SAMPLES, 8);
+	//glfwWindowHint(GLFW_REFRESH_RATE, 120);
 
 	window = glfwCreateWindow(appWidth, appHeight, appTitle.c_str(), NULL, NULL);
 	
@@ -140,11 +146,13 @@ void ProtoPlasm::initGLFW(){
 	}
 	glfwMakeContextCurrent(window);
 
-	//glfwSetKeyCallback(window, key_callback);
+	// key callback events
+	glfwSetKeyCallback(window, key_callback);
 
 	// mouse press events
 	glfwSetMouseButtonCallback(window, mouseBtn_callback);
 	// end GLFW setup
+
 
 
 	// set gl states
@@ -312,7 +320,6 @@ void ProtoPlasm::initGLFW(){
 
 // activate animation thread and run() function in user defined BaseApp derived class
 void ProtoPlasm::runGLFW(){
-
 	// Activate derived user class implementations of events:
 	/*
 	 • run
@@ -326,12 +333,18 @@ void ProtoPlasm::runGLFW(){
 	int mouseBtn = 0;
 	while (!glfwWindowShouldClose(window))
 	{
-		/*
+
+		// calculate precise frameCount
+		currentTimeStamp = glfwGetTime();
+		if (frameCount > 1){
+			//trace(1.0/(currentTimeStamp - lastTimeStamp));
+		}
+			/*
 		 TO DO – fix timing issues with control for users:
 		 From: http://stackoverflow.com/questions/2182675/how-do-you-make-sure-the-speed-of-opengl-animation-is-consistent-on-different-ma
 		 */
 
-
+		//trace(glfwGetTime());
 		//capture mouse button
 		double mouseX, mouseY;
 		glfwGetCursorPos(window, &mouseX, &mouseY);
@@ -370,6 +383,8 @@ void ProtoPlasm::runGLFW(){
 		//glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 		frameCount++;
+
+		lastTimeStamp = currentTimeStamp;
 	}
 
 	glfwDestroyWindow(window);

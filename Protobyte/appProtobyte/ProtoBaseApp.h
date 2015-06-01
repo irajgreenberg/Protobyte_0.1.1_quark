@@ -124,6 +124,9 @@ namespace ijg {
 		// GLFW window events
 		void setWindowFrameSize(const Dim2i& windowFrameSize);
 
+		// GLFW key events
+		void setKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods);
+
 
 		static ProtoBaseApp* baseApp;
 		static ProtoBaseApp* getBaseApp();
